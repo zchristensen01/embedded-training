@@ -1,0 +1,52 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+# What CI can and cannot check here.
+#
+# practice/katas/*/src/ is gitignored on purpose — the implementation is deleted
+# before every rep, so it is never committed and CI can never link a kata binary.
+# What CI does check is that the artifacts that ARE permanent stay valid: every
+# frozen header parses, every frozen test suite compiles against it, and the
+# practice log is well formed. `make test` still runs, and is a no-op unless you
+# happen to have an implementation in the working tree.
+
+jobs:
+  frozen:
+    # GCC and Clang disagree about what is worth warning about, and the union of
+    # the two catches more than either alone.
+    strategy:
+      fail-fast: false
+      matrix:
+        cc: [gcc, clang]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: make check-frozen (${{ matrix.cc }})
+        run: make check-frozen CC=${{ matrix.cc }}
+
+  log:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: validate logs/log.tsv
+        run: make check-log
+      - name: schedule and build plan agree
+        run: make check-calendar
+      - name: every capability has a mechanism
+        run: make check-coverage
+
+  tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: tools import and parse cleanly
+        run: |
+          python3 -m compileall -q tools/
+          python3 tools/schedule.py > /dev/null
+          python3 tools/report.py

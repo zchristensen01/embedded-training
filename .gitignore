@@ -1,0 +1,21 @@
+# The whole point: your implementation is disposable, the tests are not.
+practice/katas/*/src/
+
+# drill state, deck scheduling, and your start date — local, not the repo's
+logs/.drill_state.json
+logs/.start_date
+practice/decks/.state.json
+
+# job-search material never belongs in a public training repo
+plan/APPLICATIONS.md
+plan/private/
+
+# build output
+build/
+*.o
+*.out
+a.out
+
+__pycache__/
+*.pyc
+.venv/

@@ -1,0 +1,1438 @@
+{
+  "generated": "2026-08-12",
+  "totals": {
+    "all": 78,
+    "scorable": 63,
+    "met": 0
+  },
+  "capabilities": [
+    {
+      "id": "B1",
+      "group": "B",
+      "statement": "Answer \"why hardware, coming from web?\" convincingly",
+      "owners": [
+        "R"
+      ],
+      "mechanisms": [
+        "rehearsal"
+      ],
+      "bar": "rehearsal",
+      "done": false,
+      "detail": [
+        "0 take(s)"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "B2",
+      "group": "B",
+      "statement": "Answer \"why this domain \u2014 space/subsea/medical?\"",
+      "owners": [
+        "R"
+      ],
+      "mechanisms": [
+        "rehearsal"
+      ],
+      "bar": "rehearsal",
+      "done": false,
+      "detail": [
+        "0 take(s)"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "B3",
+      "group": "B",
+      "statement": "Walk a project end to end: what, why that design, what you gave up",
+      "owners": [
+        "M0",
+        "R"
+      ],
+      "mechanisms": [
+        "rehearsal",
+        "Mimic"
+      ],
+      "bar": "rehearsal",
+      "done": false,
+      "detail": [
+        "0 take(s)",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "B4",
+      "group": "B",
+      "statement": "Explain **how I tested** each project",
+      "owners": [
+        "M0",
+        "P",
+        "R"
+      ],
+      "mechanisms": [
+        "rehearsal",
+        "HIL project",
+        "Mimic"
+      ],
+      "bar": "rehearsal",
+      "done": false,
+      "detail": [
+        "0 take(s)",
+        "evidence lives in the harness repo",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "B5",
+      "group": "B",
+      "statement": "Tell a struggle-and-recovery story",
+      "owners": [
+        "M0",
+        "R"
+      ],
+      "mechanisms": [
+        "rehearsal",
+        "Mimic"
+      ],
+      "bar": "rehearsal",
+      "done": false,
+      "detail": [
+        "0 take(s)",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "B6",
+      "group": "B",
+      "statement": "Tell a conflict-with-a-coworker story",
+      "owners": [
+        "M0",
+        "R"
+      ],
+      "mechanisms": [
+        "rehearsal",
+        "Mimic"
+      ],
+      "bar": "rehearsal",
+      "done": false,
+      "detail": [
+        "0 take(s)",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "B7",
+      "group": "B",
+      "statement": "Tell a pushed-back-on-skipping-a-test story",
+      "owners": [
+        "M0",
+        "R"
+      ],
+      "mechanisms": [
+        "rehearsal",
+        "Mimic"
+      ],
+      "bar": "rehearsal",
+      "done": false,
+      "detail": [
+        "0 take(s)",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "B8",
+      "group": "B",
+      "statement": "Tell a \"my tests caught a bug I'd have missed\" story",
+      "owners": [
+        "M0",
+        "R"
+      ],
+      "mechanisms": [
+        "rehearsal",
+        "Mimic"
+      ],
+      "bar": "rehearsal",
+      "done": false,
+      "detail": [
+        "0 take(s)",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "B9",
+      "group": "B",
+      "statement": "Tell a \"I was wrong about a root cause\" story",
+      "owners": [
+        "M0",
+        "R"
+      ],
+      "mechanisms": [
+        "rehearsal",
+        "Mimic"
+      ],
+      "bar": "rehearsal",
+      "done": false,
+      "detail": [
+        "0 take(s)",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "B10",
+      "group": "B",
+      "statement": "Present a project in 10 minutes to a panel",
+      "owners": [
+        "R"
+      ],
+      "mechanisms": [
+        "rehearsal"
+      ],
+      "bar": "rehearsal",
+      "done": false,
+      "detail": [
+        "0 take(s)"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "C1",
+      "group": "C",
+      "statement": "Write C from a blank editor without stalling on syntax",
+      "owners": [
+        "K"
+      ],
+      "mechanisms": [
+        "kata"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [],
+      "cards": 0
+    },
+    {
+      "id": "C2",
+      "group": "C",
+      "statement": "Declare and reason about pointers, pointer-to-pointer, arrays decaying, function pointers",
+      "owners": [
+        "K"
+      ],
+      "mechanisms": [
+        "kata"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [],
+      "cards": 0
+    },
+    {
+      "id": "C3",
+      "group": "C",
+      "statement": "Write `strlen`, `strcpy`, `strncpy`, `strcmp` correctly at every boundary",
+      "owners": [
+        "K"
+      ],
+      "mechanisms": [
+        "kata (mem_primitives)"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [
+        "mem_primitives: 0 rep(s)"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "C4",
+      "group": "C",
+      "statement": "Write `memset`, `memcpy`, `memmove`, and say why `memmove` exists",
+      "owners": [
+        "K"
+      ],
+      "mechanisms": [
+        "kata (mem_primitives)"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [
+        "mem_primitives: 0 rep(s)"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "C5",
+      "group": "C",
+      "statement": "Write a ring buffer, any variant, in under 15 minutes",
+      "owners": [
+        "K"
+      ],
+      "mechanisms": [
+        "kata (ring_buffer)"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [
+        "ring_buffer: 0 rep(s)"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "C6",
+      "group": "C",
+      "statement": "Do bit manipulation cold: set/clear/toggle/test, count bits, extract fields, build masks",
+      "owners": [
+        "K",
+        "M0"
+      ],
+      "mechanisms": [
+        "kata (bitops)",
+        "Mimic"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [
+        "bitops: 0 rep(s)",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 2
+    },
+    {
+      "id": "C7",
+      "group": "C",
+      "statement": "Byte-swap and read big-endian values out of a buffer portably",
+      "owners": [
+        "K"
+      ],
+      "mechanisms": [
+        "kata (bitops)"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [
+        "bitops: 0 rep(s)"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "C8",
+      "group": "C",
+      "statement": "Predict `sizeof` for a struct and reorder members to shrink it",
+      "owners": [
+        "K"
+      ],
+      "mechanisms": [
+        "kata (register_map)"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [
+        "register_map: 0 rep(s)"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "C9",
+      "group": "C",
+      "statement": "Write a fixed-block pool allocator with the free list threaded through free blocks",
+      "owners": [
+        "K"
+      ],
+      "mechanisms": [
+        "kata (pool_allocator)"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [
+        "pool_allocator: 0 rep(s)"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "C10",
+      "group": "C",
+      "statement": "Do fixed-point arithmetic: Q notation, multiply, divide, rounding, overflow",
+      "owners": [
+        "K"
+      ],
+      "mechanisms": [
+        "kata (fixed_point_pid)"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [
+        "fixed_point_pid: 0 rep(s)"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "C11",
+      "group": "C",
+      "statement": "Handle unsigned timer rollover correctly",
+      "owners": [
+        "K",
+        "M0"
+      ],
+      "mechanisms": [
+        "kata (rollover_timer)",
+        "Mimic"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [
+        "rollover_timer: 0 rep(s)",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "C12",
+      "group": "C",
+      "statement": "Write the ten linked-list and array problems that recur in embedded screens",
+      "owners": [
+        "DEFER"
+      ],
+      "mechanisms": [
+        "deferred"
+      ],
+      "bar": "deferred",
+      "done": null,
+      "detail": [
+        "out of scope by decision \u2014 see plan/COVERAGE.md"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "E1",
+      "group": "E",
+      "statement": "`volatile`: what it does and that it is **not** atomicity",
+      "owners": [
+        "D",
+        "K"
+      ],
+      "mechanisms": [
+        "kata (register_map)",
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "register_map: 0 rep(s)",
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E2",
+      "group": "E",
+      "statement": "`static`: lifetime vs linkage, and that static locals are in `.data`/`.bss` not the stack",
+      "owners": [
+        "D",
+        "K"
+      ],
+      "mechanisms": [
+        "kata (register_map)",
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "register_map: 0 rep(s)",
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E3",
+      "group": "E",
+      "statement": "`const`, `const volatile`, and all four const/volatile pointer combinations",
+      "owners": [
+        "D",
+        "K"
+      ],
+      "mechanisms": [
+        "kata (register_map)",
+        "deck (2 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "register_map: 0 rep(s)",
+        "boxes 0,0"
+      ],
+      "cards": 2
+    },
+    {
+      "id": "E4",
+      "group": "E",
+      "statement": "Where a `const` table lives on an MCU and why that matters",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E5",
+      "group": "E",
+      "statement": "Stack vs heap in constrained memory, and why `malloc` is avoided",
+      "owners": [
+        "D",
+        "K"
+      ],
+      "mechanisms": [
+        "kata (pool_allocator)",
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "pool_allocator: 0 rep(s)",
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E6",
+      "group": "E",
+      "statement": "Stack direction, stack sizing, and high-water-mark measurement",
+      "owners": [
+        "D",
+        "M1"
+      ],
+      "mechanisms": [
+        "deck (2 card(s))",
+        "Mimic"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0,0",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 2
+    },
+    {
+      "id": "E7",
+      "group": "E",
+      "statement": "What runs before `main()`",
+      "owners": [
+        "D",
+        "M1"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))",
+        "Mimic"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E8",
+      "group": "E",
+      "statement": "Struct padding and alignment, and `#pragma pack` trade-offs",
+      "owners": [
+        "D",
+        "K"
+      ],
+      "mechanisms": [
+        "kata",
+        "deck (2 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0,0"
+      ],
+      "cards": 2
+    },
+    {
+      "id": "E9",
+      "group": "E",
+      "statement": "What you must never do in an ISR, **and why**",
+      "owners": [
+        "D",
+        "M0"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))",
+        "Mimic"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E10",
+      "group": "E",
+      "statement": "ISR-to-main data sharing, and where `volatile` alone is insufficient",
+      "owners": [
+        "D",
+        "M0"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))",
+        "Mimic"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E11",
+      "group": "E",
+      "statement": "Interrupt latency, what worsens it, and nested interrupts",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (2 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0,0"
+      ],
+      "cards": 2
+    },
+    {
+      "id": "E12",
+      "group": "E",
+      "statement": "Mutex vs semaphore \u2014 ownership, priority inheritance, ISR usage",
+      "owners": [
+        "D",
+        "K"
+      ],
+      "mechanisms": [
+        "kata (concurrency_sim)",
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "concurrency_sim: 0 rep(s)",
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E13",
+      "group": "E",
+      "statement": "Priority inversion with a concrete three-task example, and both fixes",
+      "owners": [
+        "K"
+      ],
+      "mechanisms": [
+        "kata (concurrency_sim)"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [
+        "concurrency_sim: 0 rep(s)"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E14",
+      "group": "E",
+      "statement": "The four deadlock conditions and how to break one",
+      "owners": [
+        "K"
+      ],
+      "mechanisms": [
+        "kata (concurrency_sim)"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [
+        "concurrency_sim: 0 rep(s)"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E15",
+      "group": "E",
+      "statement": "Race condition vs data race",
+      "owners": [
+        "D",
+        "K"
+      ],
+      "mechanisms": [
+        "kata",
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E16",
+      "group": "E",
+      "statement": "Why `volatile` doesn't fix a shared counter",
+      "owners": [
+        "D",
+        "K"
+      ],
+      "mechanisms": [
+        "kata",
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E17",
+      "group": "E",
+      "statement": "Preemptive vs cooperative scheduling, tasks, ticks",
+      "owners": [
+        "D",
+        "M1"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))",
+        "Mimic"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E18",
+      "group": "E",
+      "statement": "UART vs SPI vs I2C vs CAN \u2014 wires, duplex, addressing, topology, speed",
+      "owners": [
+        "D",
+        "M0",
+        "M1"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))",
+        "Mimic"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E19",
+      "group": "E",
+      "statement": "I2C pull-ups, open-drain, clock stretching",
+      "owners": [
+        "D",
+        "M0"
+      ],
+      "mechanisms": [
+        "deck (2 card(s))",
+        "Mimic"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0,0",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 2
+    },
+    {
+      "id": "E20",
+      "group": "E",
+      "statement": "SPI modes, CPOL and CPHA",
+      "owners": [
+        "D",
+        "M0"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))",
+        "Mimic"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E21",
+      "group": "E",
+      "statement": "CRC: what it catches, what it isn't",
+      "owners": [
+        "D",
+        "K"
+      ],
+      "mechanisms": [
+        "kata (protocol_parser)",
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "protocol_parser: 0 rep(s)",
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E22",
+      "group": "E",
+      "statement": "DMA and its failure modes",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E23",
+      "group": "E",
+      "statement": "State machine patterns: switch, table-driven, function-pointer, and when each",
+      "owners": [
+        "K",
+        "M0"
+      ],
+      "mechanisms": [
+        "kata (fsm)",
+        "Mimic"
+      ],
+      "bar": "Mimic",
+      "done": null,
+      "detail": [
+        "fsm: 0 rep(s)",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E24",
+      "group": "E",
+      "statement": "Debouncing approaches and non-blocking timing",
+      "owners": [
+        "K",
+        "M0"
+      ],
+      "mechanisms": [
+        "kata (debouncer)",
+        "Mimic"
+      ],
+      "bar": "Mimic",
+      "done": null,
+      "detail": [
+        "debouncer: 0 rep(s)",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "E25",
+      "group": "E",
+      "statement": "Watchdog design done correctly",
+      "owners": [
+        "D",
+        "M1"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))",
+        "Mimic"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "H1",
+      "group": "H",
+      "statement": "Debug intermittent comms methodically, starting with power and clocks",
+      "owners": [
+        "M0",
+        "M1"
+      ],
+      "mechanisms": [
+        "Mimic"
+      ],
+      "bar": "Mimic",
+      "done": null,
+      "detail": [
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "H2",
+      "group": "H",
+      "statement": "Choose scope vs logic analyzer and say why",
+      "owners": [
+        "D",
+        "M0"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))",
+        "Mimic"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "H3",
+      "group": "H",
+      "statement": "Read and interpret a captured waveform against datasheet timing",
+      "owners": [
+        "M0"
+      ],
+      "mechanisms": [
+        "Mimic"
+      ],
+      "bar": "Mimic",
+      "done": null,
+      "detail": [
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "H4",
+      "group": "H",
+      "statement": "Read a schematic: components, symbols, pull-ups, logic levels",
+      "owners": [
+        "M0"
+      ],
+      "mechanisms": [
+        "Mimic"
+      ],
+      "bar": "Mimic",
+      "done": null,
+      "detail": [
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "H5",
+      "group": "H",
+      "statement": "Find an answer in a datasheet under time pressure",
+      "owners": [
+        "M0",
+        "M1"
+      ],
+      "mechanisms": [
+        "Mimic"
+      ],
+      "bar": "Mimic",
+      "done": null,
+      "detail": [
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "H6",
+      "group": "H",
+      "statement": "Apply Ohm's law and basic power/current reasoning",
+      "owners": [
+        "M0"
+      ],
+      "mechanisms": [
+        "Mimic"
+      ],
+      "bar": "Mimic",
+      "done": null,
+      "detail": [
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "H7",
+      "group": "H",
+      "statement": "Explain Nyquist, aliasing, and anti-alias filtering",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "H8",
+      "group": "H",
+      "statement": "Explain what a pull-up resistor does and what floating causes",
+      "owners": [
+        "D",
+        "M0"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))",
+        "Mimic"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "H9",
+      "group": "H",
+      "statement": "Explain JTAG vs SWD and what a debugger actually does",
+      "owners": [
+        "D",
+        "M1"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))",
+        "Mimic"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "H10",
+      "group": "H",
+      "statement": "Use a multimeter and a logic analyzer competently at a bench",
+      "owners": [
+        "M0"
+      ],
+      "mechanisms": [
+        "Mimic"
+      ],
+      "bar": "Mimic",
+      "done": null,
+      "detail": [
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "T1",
+      "group": "T",
+      "statement": "Generate 25+ test cases across 8 categories for an unfamiliar object in 10 minutes",
+      "owners": [
+        "PROMPT"
+      ],
+      "mechanisms": [
+        "design prompts (0 written)"
+      ],
+      "bar": "design prompts",
+      "done": false,
+      "detail": [],
+      "cards": 2
+    },
+    {
+      "id": "T2",
+      "group": "T",
+      "statement": "Distinguish verification from validation without blurring them",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "T3",
+      "group": "T",
+      "statement": "Explain requirements traceability and why auditors want it",
+      "owners": [
+        "D",
+        "P"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))",
+        "HIL project"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0",
+        "evidence lives in the harness repo"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "T4",
+      "group": "T",
+      "statement": "State IEC 62304 classes A/B/C and the default",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "T5",
+      "group": "T",
+      "statement": "Walk the test lifecycle from requirements to coverage report",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "T6",
+      "group": "T",
+      "statement": "Do impact analysis on a mid-project change request",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "T7",
+      "group": "T",
+      "statement": "Distinguish smoke, sanity, regression, acceptance",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "T8",
+      "group": "T",
+      "statement": "Write a defect report with severity separate from priority",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "T9",
+      "group": "T",
+      "statement": "Debug a \"some sites fail, others don't\" problem by isolating differences",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "T10",
+      "group": "T",
+      "statement": "Distinguish fixture, harness, and HIL rig",
+      "owners": [
+        "D",
+        "P"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))",
+        "HIL project"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0",
+        "evidence lives in the harness repo"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "T11",
+      "group": "T",
+      "statement": "Explain test flakiness causes and fixes",
+      "owners": [
+        "D",
+        "P"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))",
+        "HIL project"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0",
+        "evidence lives in the harness repo"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "T12",
+      "group": "T",
+      "statement": "Say when **not** to automate",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (1 card(s))"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "T13",
+      "group": "T",
+      "statement": "Write pytest: discovery, assertions, exit codes",
+      "owners": [
+        "K"
+      ],
+      "mechanisms": [
+        "kata (test_harness_py)"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [
+        "test_harness_py: 0 rep(s)"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "T14",
+      "group": "T",
+      "statement": "Use fixtures with correct scope and teardown that survives failure",
+      "owners": [
+        "K"
+      ],
+      "mechanisms": [
+        "kata (test_harness_py)"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [
+        "test_harness_py: 0 rep(s)"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "T15",
+      "group": "T",
+      "statement": "Use `parametrize` and explain why it beats copies",
+      "owners": [
+        "K"
+      ],
+      "mechanisms": [
+        "kata (test_harness_py)"
+      ],
+      "bar": "kata",
+      "done": false,
+      "detail": [
+        "test_harness_py: 0 rep(s)"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "T16",
+      "group": "T",
+      "statement": "Build a device abstraction testable against both a fake and real hardware",
+      "owners": [
+        "P"
+      ],
+      "mechanisms": [
+        "HIL project"
+      ],
+      "bar": "HIL project",
+      "done": null,
+      "detail": [
+        "evidence lives in the harness repo"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "T17",
+      "group": "T",
+      "statement": "Drive real hardware over serial: pyserial, timeouts, framing, port discovery",
+      "owners": [
+        "P"
+      ],
+      "mechanisms": [
+        "HIL project"
+      ],
+      "bar": "HIL project",
+      "done": null,
+      "detail": [
+        "evidence lives in the harness repo"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "T18",
+      "group": "T",
+      "statement": "Inject faults: truncated frames, bad CRC, impossible lengths, and assert recovery",
+      "owners": [
+        "P"
+      ],
+      "mechanisms": [
+        "HIL project"
+      ],
+      "bar": "HIL project",
+      "done": null,
+      "detail": [
+        "evidence lives in the harness repo"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "T19",
+      "group": "T",
+      "statement": "Run tests against real hardware in CI",
+      "owners": [
+        "P"
+      ],
+      "mechanisms": [
+        "HIL project"
+      ],
+      "bar": "HIL project",
+      "done": null,
+      "detail": [
+        "evidence lives in the harness repo"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "T20",
+      "group": "T",
+      "statement": "Write Bash for test scripting and device wrangling",
+      "owners": [
+        "P"
+      ],
+      "mechanisms": [
+        "HIL project"
+      ],
+      "bar": "HIL project",
+      "done": null,
+      "detail": [
+        "evidence lives in the harness repo"
+      ],
+      "cards": 0
+    },
+    {
+      "id": "T21",
+      "group": "T",
+      "statement": "Trace each test to a requirement",
+      "owners": [
+        "P"
+      ],
+      "mechanisms": [
+        "HIL project"
+      ],
+      "bar": "HIL project",
+      "done": null,
+      "detail": [
+        "evidence lives in the harness repo"
+      ],
+      "cards": 0
+    }
+  ]
+}
