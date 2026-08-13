@@ -13,12 +13,12 @@ the calendar and the daily prompt cannot disagree.
 
 ## Hours
 
-**About 12.6 hours a week once the build sessions are done.** Three weekdays at 115 minutes
+**About 12.8 hours a week once the build sessions are done.** Three weekdays at 115 minutes
 and two at 90, a Saturday of about two and a quarter hours, and a Sunday of about an hour
 and a half. The weekdays differ because Monday, Wednesday and Friday carry a Python rep
 alongside the C one.
 
-**Weeks 1–3 are heavier** — roughly 15, 15 and 15 hours — because they carry the kata build
+**Weeks 1–3 are heavier** — roughly 15 hours each — because they carry the kata build
 sessions. That is deliberate: building one kata a week for five weeks is a running
 dependency, and a single missed Sunday leaves the following week's rotation with nothing to
 draw from. Three front-loaded weekends, then it is over and there is nothing left to build.

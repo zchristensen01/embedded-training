@@ -31,8 +31,11 @@ plan/INTERVIEW_REQUIREMENTS.md      the capability list        THE SPECIFICATION
         │     ├── design-prompts/    SUBJECTS (test it) · ARCHITECTURE (design it)
         │     └── rehearsal/         the behavioural stories
         │
-        └── logs/                    what actually happened
-                └── PROGRESS.md      the score, generated from the logs
+        ├── logs/                    what actually happened
+        │     └── PROGRESS.md        the score, generated from the logs
+        │
+        └── research/                the interview research the spec is built on,
+                                     with sources, dates and confidence ratings
 ```
 
 ## The seven mechanisms
@@ -111,7 +114,7 @@ make today          what to do right now
 make drill          start a rep — wipes src/, starts the clock
     make lap        at each transition: design -> write -> compile -> debug
                     (a Python rep reads design -> write -> run -> debug)
-make test           build and run the frozen suite under sanitizers
+make test           run the frozen suite — sanitizers for C, pytest for Python
 make done           stop the clock, log the rep
 make review         deck pass — ANSWER OUT LOUD
 ```
@@ -148,10 +151,12 @@ Four numbers matter, and all four come from the logs rather than from self-asses
   week 4, 55% by week 6, 70% by week 10. Python reps are excluded from it and reported
   separately: a Python kata has no compile step, so "clean" there is a different claim
   about a different skill, and one number covering both would measure neither.
-- **`write` + `compile` as a share of total rep time** — syntax fluency in one number.
-  Under 40% by week 10.
-- **Reps per week** — consistency beats intensity. The calendar schedules ten: seven C and
-  three Python. Nine is the target, because one missed day is real life and two is a drift.
+- **`write` + `compile` as a share of total rep time** — syntax fluency in one number, and
+  `write` + `run` for a Python rep. Under 40% by week 10. `make report` prints the two apart.
+- **Reps per week** — consistency beats intensity. The calendar schedules ten a week: seven C
+  and three Python for most of the plan, shifting to six and four in weeks 7, 8 and 10 when
+  `test_harness_py` comes into the rotation. Nine is the target, because one missed day is real
+  life and two is a drift.
 - **Capabilities met** — `make progress`. Should climb steadily, not in a rush at the end.
 
 If all four are flat and you feel like you are improving, you are not. That is what

@@ -55,9 +55,15 @@ make check-calendar     # prints the whole build plan, then verifies it
 
 Scaffold each one with `make newkata NAME=<module>`, then, in this order:
 
-1. **Write `practice/katas/<name>/include/<name>.h`.** The contract. Deliberately — you live with it for weeks.
+1. **Write the contract, deliberately** — you live with it for weeks.
+   - **C module:** `practice/katas/<name>/include/<name>.h`.
+   - **Python module** (`<name>_py`): there is no header and no `include/`. The contract is the
+     API written out in `BRIEF.md`, and the frozen suite is what enforces it. The day-0 build
+     includes two of these, so this is not a footnote.
 2. **List the cases** in `BRIEF.md` under "What to test," before writing any of them.
 3. **Write the cases** in `tests/`. Yourself.
+4. **Check it took.** `make drill KATA=<name>` refuses a module whose suite is still the
+   scaffolded placeholder, so if it refuses, step 3 is not finished.
 
 About an hour each; `ring_buffer`, `protocol_parser` and `concurrency_sim` are budgeted at
 ninety minutes, and the printed plan says so per session.

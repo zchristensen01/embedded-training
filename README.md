@@ -97,9 +97,10 @@ finding it. `make help` lists everything and [DAILY.md](DAILY.md) explains what 
 | Mon, Wed, Fri | C kata · **25 Python kata** · main · 12 deck · 8 log | 115 min |
 | Tue, Thu | 15 C kata · 55 main · 12 deck · 8 log | 90 min |
 | Sat | 28 kata (adaptive, either language) · 100 main · 10 rehearsal | 138 min |
-| Sun | 28 kata · 20 review · 15 deck · 10 prompt · 20 rehearsal | 93 min |
+| Sun | 28 kata · 20 review · 15 deck · 10 prompt · 30 rehearsal | 103 min |
 
-About 12.6 hours a week; weeks 1–3 are heavier because they carry the kata build sessions.
+About 12.8 hours a week; weeks 1–3 are heavier — around 15 — because they carry the kata
+build sessions. 135 hours over the ten weeks.
 The generated calendar prints the real figures. Every kata block is at least as long as that
 kata's target time, and CI fails if that stops being true.
 

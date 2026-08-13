@@ -136,7 +136,7 @@ the calendar, so they live in exactly one place and are not repeated here.
 | **Tue, Thu** | kata (sprint, assigned) → main → deck → log and commit | C only. The two short days |
 | **Wed** | kata (**long**) → **Python kata** → main → deck → log and commit | The modules that need real time |
 | **Sat** | kata (**adaptive**, no argument) → main → rehearsal *(from week 3)* | **No deck.** The only day with no assigned module |
-| **Sun** | kata (long, assigned) → weekly review → full deck pass → **then see below** | The lightest day, except during a build session |
+| **Sun** | kata (long, assigned) → weekly review → full deck pass → **then see below** | Light, except during a build session. Tuesday and Thursday are the two shortest days |
 
 Saturday's rep has no assigned module on purpose. `make drill` with no arguments picks by
 worst recent time, then longest since the last rep, then never attempted — so one day a week
