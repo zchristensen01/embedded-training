@@ -1,13 +1,13 @@
 # Setup
 
-**Do not build all twelve katas before you start.** Build four, start on day 1, and take the rest
-in two sessions across the first two weeks.
+**Do not build all twelve katas before you start.** Build the ones week 1 needs, start on day 1,
+and take the rest in three sessions across the first three weeks.
 
 Twelve katas, each needing a compiling header and a real test suite, is around twelve hours.
 Spent up front that is two weeks of building the gym before lifting anything, which is the most
 common way a plan like this dies. Spread one-per-week instead and you get the opposite problem: a
-running dependency where one missed Sunday leaves the next week with nothing to drill. Four now,
-then two batches, then never again.
+running dependency where one missed Sunday leaves the next week with nothing to drill. A batch
+now, three more batches, then never again.
 
 ---
 
@@ -17,43 +17,49 @@ The repo is set up and the tooling works. What is left is picking a start date:
 
 ```bash
 date +%F > logs/.start_date        # use the Monday you're starting
-make calendar                      # stamps CALENDAR.md with real dates
+make dates                         # plan/CALENDAR.dated.md — 70 days, real dates
 make today                         # should now print week 1
 ```
 
-One dependency, needed from week 6 when `test_harness_py` starts:
+Two calendars, on purpose. `plan/CALENDAR.md` is committed and carries relative labels
+(`Day 1 · Mon`); the start date is gitignored, so stamping it into a committed file would
+mean `make check-generated` failing on every machine but yours. `make dates` writes the
+dated view to a gitignored file beside it. `make calendar` regenerates the committed one
+and you only need it after editing `tools/schedule.py`.
+
+One dependency, needed from week 7 when `test_harness_py` starts:
 
 ```bash
 python3 -m pip install pytest      # or: sudo apt install python3-pytest
 ```
 
-Then check the machine is ready. Both of these should pass on a clean tree:
+Then check the machine is ready. This should pass on a clean tree, and it is the same set CI
+runs:
 
 ```bash
-make check-frozen                  # every frozen header and suite still compiles
-make check-log                     # the practice log is well formed
+make check                         # all six checks
 ```
 
 ---
 
-## Day 0 weekend — about four hours
+## Day 0 weekend
 
-Scaffold and fill in the four katas week 1 calls for:
+Build the katas week 1 calls for. **Which ones is not written down here on purpose** — it is
+derived from the rotation and printed by the command below, along with how long the session
+should take:
 
 ```bash
-make newkata NAME=bitops
-make newkata NAME=mem_primitives
-make newkata NAME=ring_buffer
-make newkata NAME=fsm
+make check-calendar     # prints the whole build plan, then verifies it
 ```
 
-For each, in this order:
+Scaffold each one with `make newkata NAME=<module>`, then, in this order:
 
 1. **Write `practice/katas/<name>/include/<name>.h`.** The contract. Deliberately — you live with it for weeks.
 2. **List the cases** in `BRIEF.md` under "What to test," before writing any of them.
 3. **Write the cases** in `tests/`. Yourself.
 
-An hour each. `ring_buffer` will take longer; it's the most important one you own.
+About an hour each; `ring_buffer`, `protocol_parser` and `concurrency_sim` are budgeted at
+ninety minutes, and the printed plan says so per session.
 
 > **This is not setup overhead.** Writing the API and the test suite before the implementation is
 > the single most-interviewed skill in both tracks. You are doing rep zero of "how would you test
@@ -65,7 +71,7 @@ test case. If it does, you have outsourced the exact thing you are selling.
 
 ---
 
-## The rest of the builds — two sessions, weeks 1 and 2
+## The rest of the builds — three Sunday sessions, weeks 1 to 3
 
 **The build order is not written down here, on purpose.** It is derived from the calendar's
 kata rotation and printed in the **Build plan** section at the top of
@@ -78,13 +84,15 @@ make check-calendar     # proves the schedule and the build plan agree. CI runs 
 ```
 
 That command prints the whole plan and then verifies it: nothing scheduled that is never built,
-nothing built that is never scheduled, no variant named that does not exist, and no session so
-long it will not actually happen.
+nothing built that is never scheduled, no variant named that does not exist, no Sunday so long
+it will not realistically happen, no kata whose target time is longer than the block it is
+scheduled into, and no kata that owns a capability's evidence bar without enough slots to reach
+it.
 
-Two sessions rather than one a week. A weekly build slot is a running dependency — miss one
-Sunday and the next week's rotation has nothing to draw from. Weeks 1 and 2 are the two heavy
-weeks of the ten (about 15 and 14 hours against a normal 10.7), and after week 2 there is
-nothing left to build.
+Several sessions rather than one a week. A weekly build slot is a running dependency — miss one
+Sunday and the next week's rotation has nothing to draw from. Weeks 1 to 3 are the heavy weeks
+of the ten, and after week 3 there is nothing left to build. The generated calendar prints the
+real hours per week; don't trust a number typed into a document, including this one.
 
 **Every kata ships with a written `BRIEF.md` and `VARIANTS.md`.** For all twelve you owe exactly
 two things: the header and the tests. Read the BRIEF's "What to test" section — it lists the
@@ -98,17 +106,29 @@ Two katas do not follow the standard build:
 - **`test_harness_py`** has no build session at all. Week 7's main block is five consecutive
   days of pytest from zero, and this kata is the artifact those days produce — giving it a
   separate slot would mean writing the same suite twice. It is the one module whose build *is*
-  the main work. `make check-calendar` still checks it, so if week 7 ever moves later than the
-  kata's first rep you will be told.
+  the main work. `make check-calendar` still checks it, and at day resolution rather than week
+  resolution: the exemption fails if the kata is ever scheduled on or before the Friday its
+  build finishes.
 
-If a week's build slips, `make drill` with no arguments falls back to whatever katas exist. You
-lose the calendar's rotation, not the day.
+If a build session slips, `make drill` with no arguments falls back to whatever katas are
+actually built — it will not hand you a module whose header and tests do not exist yet. You lose
+the calendar's rotation, not the day.
+
+## One thing to write before week 3
+
+`practice/rehearsal/STORIES.md` ships as a skeleton and **the stories have to be yours.** The
+weekly rehearsal slots start on week 3's Saturday, so the file needs filling in before then —
+week 2's weekend block says so. An unwritten story wanders, and the B group is where the
+research says test-and-integration candidates fail most.
 
 ---
 
 ## Day 1
 
-`make today`. Then `make drill`. Then the main block on Mimic S0.
+Read [DAILY.md](DAILY.md) once — it explains what a calendar line like `make drill
+KATA=bitops VARIANT=v1` actually does, and what you owe the log at each end of a session.
+
+Then `make today`. Then `make drill`. Then the main block on Mimic S0.
 
 Do not spend another evening on the repo. The plan is finished; the only thing left that matters
 is the first rep, and it should happen this week.

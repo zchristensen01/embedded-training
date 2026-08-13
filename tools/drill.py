@@ -16,7 +16,12 @@ The four phases, in order. Call `make lap` at each transition:
 The breakdown is the diagnosis. See `make report`.
 
 Selection with no arguments: worst recent time first, then longest since last rep, then
-never attempted. Will not repeat a kata within 3 days if alternatives exist.
+never attempted. Will not repeat a kata within 3 days if alternatives exist. Only katas
+that actually have a frozen header and test suite are eligible — see is_built().
+
+TARGETS below is the one copy of the per-kata target time. report.py, check_log.py,
+progress.py and schedule.py all import it from here, and schedule.py fails the build if
+any target is longer than the calendar block that kata is scheduled into.
 """
 import json
 import os
@@ -26,6 +31,8 @@ import subprocess
 import sys
 import time
 from datetime import date, datetime
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KATAS = os.path.join(ROOT, "practice", "katas")
@@ -65,6 +72,32 @@ def katas():
     )
 
 
+def is_built(kata):
+    """A kata is drillable once its frozen test suite exists — and, for C, a header.
+
+    Every kata directory ships with a BRIEF and VARIANTS from day zero, so "the
+    directory exists" is not the same as "you can do a rep against it". The adaptive
+    picker used to rank never-attempted katas first, which meant Saturday of week 1
+    would happily hand you a module whose header and tests you had not written yet.
+    """
+    tests = os.path.join(KATAS, kata, "tests")
+    if not os.path.isdir(tests) or not os.listdir(tests):
+        return False
+    if kata.endswith("_py"):
+        return any(f.endswith(".py") for f in os.listdir(tests))
+    inc = os.path.join(KATAS, kata, "include")
+    return (os.path.isdir(inc) and any(f.endswith(".h") for f in os.listdir(inc))
+            and any(f.endswith(".c") for f in os.listdir(tests)))
+
+
+def built_katas():
+    return [k for k in katas() if is_built(k)]
+
+
+def src_dir(kata):
+    return os.path.join(KATAS, kata, "src")
+
+
 def variants_for(kata):
     path = os.path.join(KATAS, kata, "VARIANTS.md")
     found = []
@@ -98,9 +131,13 @@ def read_log():
 
 
 def pick(rows):
-    available = [k for k in katas() if k in TARGETS or True]
+    available = built_katas()
     if not available:
-        sys.exit("No katas found under katas/.")
+        sys.exit(
+            "No kata has a header and a test suite yet, so there is nothing to drill\n"
+            "cold. Build the day-0 four first — see SETUP.md, then:\n"
+            "  make newkata NAME=bitops"
+        )
 
     today = date.today()
     recent = set()
@@ -126,12 +163,45 @@ def pick(rows):
             days = (today - datetime.strptime(last["date"], "%Y-%m-%d").date()).days
         except ValueError:
             days = 0
-        return (1, -(over + dirty + days / 14.0))
+        # A module one good rep away from meeting its bar is worth more than a module
+        # that is merely stale. Saturday is the only slack in the rotation, so this is
+        # where a nearly-there kata gets finished off.
+        close = 0.4 if near_bar(mine, target) else 0.0
+        return (1, -(over + dirty + close + days / 14.0))
 
     pool.sort(key=score)
     kata = pool[0]
-    variant, desc = random.choice(variants_for(kata))
+    variant, desc = pick_variant(kata, rows)
     return kata, variant, desc
+
+
+def near_bar(reps, target):
+    """True when two of the last three reps already clear the bar for this module.
+
+    The bar is three consecutive clean reps at target across three variants. Two out of
+    three means one more good rep finishes it, and the picker should notice.
+    """
+    tail = reps[-2:]
+    return (len(tail) == 2 and all(r["clean"] and r["minutes"] <= target for r in tail)
+            and len({r["variant"] for r in tail}) == 2)
+
+
+def pick_variant(kata, rows):
+    """The variant you have done least recently, not a coin flip.
+
+    `make drill KATA=x` used to pick uniformly at random, which meant free practice
+    drifted toward whatever came up twice and left three variants untouched for weeks.
+    Least-recently-used spreads it, and still varies because the *kata* choice varies.
+    """
+    vs = variants_for(kata)
+    seen = {}
+    for i, r in enumerate(rows):
+        if r["module"] == kata:
+            seen[r["variant"]] = i
+    unseen = [(v, d) for v, d in vs if v not in seen]
+    if unseen:
+        return random.choice(unseen)
+    return min(vs, key=lambda vd: seen.get(vd[0], -1))
 
 
 def stub_for(kata):
@@ -154,12 +224,22 @@ def cmd_start(argv):
         kata = argv[0]
         if kata not in katas():
             sys.exit(f"Unknown kata: {kata}. Have: {', '.join(katas())}")
+        if not is_built(kata):
+            sys.exit(
+                f"{kata} has no frozen contract yet — you owe it a header and a test\n"
+                f"suite before it can be drilled cold. A rep against an empty suite is\n"
+                f"not a rep.\n"
+                f"  make newkata NAME={kata}     then write include/ and tests/\n"
+                f"Built and ready: {', '.join(built_katas()) or 'none yet'}"
+            )
         vs = variants_for(kata)
         if len(argv) >= 2:
             variant = argv[1]
-            desc = dict(vs).get(variant, "")
+            if variant not in dict(vs):
+                sys.exit(f"{kata} has no {variant}. Have: {', '.join(v for v, _ in vs)}")
+            desc = dict(vs)[variant]
         else:
-            variant, desc = random.choice(vs)
+            variant, desc = pick_variant(kata, rows)
     else:
         kata, variant, desc = pick(rows)
 
@@ -269,6 +349,19 @@ def cmd_done():
 
     verdict = "under target" if minutes <= target else "over target"
     print(f"Logged. {verdict}.")
+
+    # Snapshot the implementation before it is deleted by the next rep. This is the only
+    # place a working solution is ever kept, and it is kept for exactly one purpose:
+    # `make hunt` mutates an old one so you get practice debugging code you did not write
+    # today. Gitignored, like src/ — the implementation is still disposable, this is just
+    # a slower bin. See tools/bughunt.py.
+    try:
+        import bughunt
+        snap = bughunt.save_snapshot(st["kata"], st["variant"], src_dir(st["kata"]))
+        if snap:
+            print(f"Snapshot kept for `make hunt` ({os.path.relpath(snap, ROOT)}).")
+    except Exception:
+        pass                         # a snapshot failure must never cost you the log
 
     # Ask here, before the state file goes, because this is the moment you are most
     # likely to have been surprised by something — and a card written now is worth

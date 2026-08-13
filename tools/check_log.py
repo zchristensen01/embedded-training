@@ -202,8 +202,10 @@ def summarise(rows):
                 tail = f"  (best clean: {min(cleans):g})" if cleans else "  (never clean yet)"
             print(f"  {variant:<6} {curve}{tail}")
 
-        # Retirement, per PRACTICE_SYSTEM.md: three consecutive clean reps at target
-        # across three different variants.
+        # The evidence bar, per PRACTICE_SYSTEM.md: three consecutive clean reps at
+        # target across three different variants. "Met" does not mean "stop" — the
+        # calendar keeps scheduling it and you should keep drilling it. It means the
+        # capability that rests on this module is now proved by the log.
         tail3 = mine[-3:]
         retired = (
             target is not None and len(tail3) == 3
@@ -211,12 +213,12 @@ def summarise(rows):
             and len({r["variant"] for r in tail3}) == 3
         )
         at_target += retired
-        print(f"  {'RETIRED — maintenance rotation' if retired else 'in progress'}\n")
+        print(f"  {'BAR MET — three clean at target, three variants' if retired else 'in progress'}\n")
 
     clean_rate = 100 * sum(r["clean"] for r in kata_rows) / len(kata_rows) if kata_rows else 0
     other = [r for r in rows if r["module"] in FREEFORM_MODULES]
     print(f"{len(kata_rows)} kata rep(s), {rows[0]['date']} to {rows[-1]['date']}   "
-          f"clean-first-compile {clean_rate:.0f}%   retired {at_target}")
+          f"clean-first-compile {clean_rate:.0f}%   bar met on {at_target}")
     if other:
         hours = sum(r["minutes"] for r in other) / 60
         print(f"{len(other)} hand-logged session(s) ({hours:.1f} hr) "

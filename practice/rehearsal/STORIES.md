@@ -11,10 +11,9 @@ differently.
 ## B1 · Why hardware, coming from web?
 **Target: 60 seconds. Asked in every interview. This is the objection in their head.**
 
-Strong contains: a real reason rooted in what you do, not what you dislike. The working
-conditions point (alone, AI writing the code, never seeing it run) is honest but lands better as
-one clause than as the whole answer. Land on the kinesiology and movement thread, and on the
-robot you actually built.
+Strong contains: a real reason rooted in what you want to do, not what you want to leave. Any
+dissatisfaction with current work is honest but lands better as one clause than as the whole
+answer. Land on what you actually built and why the physical layer is the part you want.
 
 Fails: "I want a new challenge." Also fails: bagging on web work, which reads as running away
 rather than toward.
@@ -28,9 +27,10 @@ rather than toward.
 ## B2 · Why this domain — space / subsea / medical?
 **Target: 45 seconds. Tailor per application.**
 
-Strong contains: something specific about *their* product, and a genuine connection. For medical,
-the kinesiology background is a real differentiator — say you understand the human system the
-device attaches to or measures.
+Strong contains: something specific about *their* product, and a genuine connection. Any
+background in the domain the device serves is worth naming — being able to reason about the
+system a device attaches to or measures is a real differentiator, and for medical devices it is
+a regulated activity in its own right.
 
 Fails: a generic "meaningful work" answer that would fit any of the four domains.
 

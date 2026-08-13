@@ -5,6 +5,14 @@ position wraps back to the start when it reaches the end.
 
 ---
 
+> **Before your first rep you owe this module two files:** `include/ring_buffer.h` — the API
+> contract — and the suite in `tests/`. Write the header first, then list the cases under
+> **What to test** below in your own words, then write every one of them yourself. AI writes
+> neither. `make drill` refuses a module whose header and tests do not exist, because a rep
+> against an empty suite is not a rep. Both are frozen once written: you do not edit them
+> during a rep, only your `src/`, which is deleted each time. See
+> [DAILY.md](../../../DAILY.md#build-sessions).
+
 ## The problem, in plain language
 
 You have a fast producer and a slow consumer, and no way to pause the producer.
@@ -215,7 +223,7 @@ is where "the real cost of division" stops being an abstraction.
 
 ---
 
-> **Variants:** `naive` → `lockfree` → `bitmask` — written up in [VARIANTS.md](VARIANTS.md).
+> **Variants:** seven, `v1` through `v7`, written up in [VARIANTS.md](VARIANTS.md).
 > `make drill` picks one and `make done` logs the rep to
 > [logs/log.tsv](../../../logs/log.tsv). Time is only comparable within a variant.
 

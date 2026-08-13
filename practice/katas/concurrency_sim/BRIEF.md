@@ -1,13 +1,22 @@
 # Kata 10 — concurrency_sim
 
+> **Before your first rep you owe this module two files:** `include/concurrency_sim.h` — the API
+> contract — and the suite in `tests/`. Write the header first, then list the cases under
+> **What to test** below in your own words, then write every one of them yourself. AI writes
+> neither. `make drill` refuses a module whose header and tests do not exist, because a rep
+> against an empty suite is not a rep. Both are frozen once written: you do not edit them
+> during a rep, only your `src/`, which is deleted each time. See
+> [DAILY.md](../../../DAILY.md#build-sessions).
+
 ## What it is
 Concurrency primitives and failure modes, built and observed on host pthreads so you can
 practise without RTOS hardware. You construct the bugs deliberately, watch them happen, then fix
 them.
 
 ## Why firmware needs it
-Mutex vs. semaphore and priority inversion are the questions roughly half of candidates claiming
-RTOS experience get wrong. You cannot bluff this and you cannot learn it from reading. Building
+Mutex vs. semaphore and priority inversion are the two questions candidates claiming RTOS
+experience most reliably get wrong — Barr Group's write-up on the pair exists precisely because
+the confusion is so common. You cannot bluff this and you cannot learn it from reading. Building
 a priority inversion and watching the high-priority thread starve is worth ten articles.
 
 ## The API you implement
@@ -43,8 +52,8 @@ void inversion_demo(bool with_inheritance, results_t *out);
   synchronised version is always right.
 
 ## Note on toolchain
-Build this variant with `-fsanitize=thread` instead of address+undefined. TSan and ASan don't
-coexist. Add a separate make target.
+This module builds with `-fsanitize=thread` instead of address+undefined, because TSan and ASan
+cannot coexist in one binary. `make test` already selects it per module — nothing to do.
 
 ## Interview questions this lets you answer from experience
 Mutex vs. semaphore, including the trap · priority inversion with a concrete example · priority

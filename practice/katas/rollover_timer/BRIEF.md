@@ -1,5 +1,13 @@
 # Kata 12 — rollover_timer
 
+> **Before your first rep you owe this module two files:** `include/rollover_timer.h` — the API
+> contract — and the suite in `tests/`. Write the header first, then list the cases under
+> **What to test** below in your own words, then write every one of them yourself. AI writes
+> neither. `make drill` refuses a module whose header and tests do not exist, because a rep
+> against an empty suite is not a rep. Both are frozen once written: you do not edit them
+> during a rep, only your `src/`, which is deleted each time. See
+> [DAILY.md](../../../DAILY.md#build-sessions).
+
 ## What it is
 A millisecond counter that increments forever in a timer interrupt, plus a small set of
 software timers that fire when their deadline arrives. It is how a superloop firmware project
@@ -43,8 +51,14 @@ void     scheduler_run(void);                           /* superloop: run whatev
   wrap; `now >= deadline` is not. Unsigned subtraction wraps cleanly, and the signed cast turns
   the result into a *relative distance* rather than an absolute position. Be able to say that
   sentence out loud — it is a genuinely good interview answer.
-- That comparison only works while the real interval is under half the counter range. Write
-  that limit down in the header; it is the constraint an interviewer will ask about next.
+- That comparison only works while the real interval is under half the counter range —
+  2^31 ms, about 24.9 days, for a 32-bit millisecond tick. Write that limit down in the
+  header; it is the constraint an interviewer will ask about next.
+- Pedantically, converting an out-of-range `uint32_t` to `int32_t` is *implementation-defined*
+  in C11 rather than guaranteed two's-complement wraparound; C23 finally guarantees it, and
+  every compiler you will meet already did. The fully portable spelling is
+  `(now - deadline) < 0x80000000u`, which is the same test written in unsigned arithmetic.
+  Know both, and know why they are the same test.
 - The tick counter is written by an ISR and read by the main loop. It must be `volatile`, and
   on an 8- or 16-bit machine a 32-bit read is not atomic — say what you'd do about that even
   though the host build hides it.
@@ -74,6 +88,6 @@ what limits the maximum representable interval.
 
 ---
 
-> **Variants:** `naive` → `rollover` → `scheduler` — written up in [VARIANTS.md](VARIANTS.md).
+> **Variants:** seven, `v1` through `v7`, written up in [VARIANTS.md](VARIANTS.md).
 > `make drill` picks one and `make done` logs the rep to
 > [logs/log.tsv](../../../logs/log.tsv). Time is only comparable within a variant.

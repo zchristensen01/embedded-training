@@ -1,9 +1,11 @@
 {
-  "generated": "2026-08-12",
+  "generated": "2026-08-13",
   "totals": {
-    "all": 78,
-    "scorable": 63,
-    "met": 0
+    "all": 83,
+    "scorable": 72,
+    "met": 0,
+    "deferred": 1,
+    "tracked_elsewhere": 10
   },
   "capabilities": [
     {
@@ -208,11 +210,14 @@
         "K"
       ],
       "mechanisms": [
-        "kata"
+        "kata",
+        "the kata log"
       ],
-      "bar": "kata",
+      "bar": "clean rate",
       "done": false,
-      "detail": [],
+      "detail": [
+        "0% clean over 0 rep(s); bar is 70% over 20"
+      ],
       "cards": 0
     },
     {
@@ -223,11 +228,15 @@
         "K"
       ],
       "mechanisms": [
-        "kata"
+        "kata (mem_primitives, pool_allocator, fsm)"
       ],
       "bar": "kata",
       "done": false,
-      "detail": [],
+      "detail": [
+        "mem_primitives: 0 rep(s)",
+        "pool_allocator: 0 rep(s)",
+        "fsm: 0 rep(s)"
+      ],
       "cards": 0
     },
     {
@@ -255,7 +264,8 @@
         "K"
       ],
       "mechanisms": [
-        "kata (mem_primitives)"
+        "kata (mem_primitives)",
+        "deck (1 card, reinforcement)"
       ],
       "bar": "kata",
       "done": false,
@@ -291,6 +301,7 @@
       ],
       "mechanisms": [
         "kata (bitops)",
+        "deck (2 cards, reinforcement)",
         "Mimic"
       ],
       "bar": "kata",
@@ -309,7 +320,8 @@
         "K"
       ],
       "mechanisms": [
-        "kata (bitops)"
+        "kata (bitops)",
+        "deck (1 card, reinforcement)"
       ],
       "bar": "kata",
       "done": false,
@@ -326,7 +338,8 @@
         "K"
       ],
       "mechanisms": [
-        "kata (register_map)"
+        "kata (register_map)",
+        "deck (1 card, reinforcement)"
       ],
       "bar": "kata",
       "done": false,
@@ -379,6 +392,7 @@
       ],
       "mechanisms": [
         "kata (rollover_timer)",
+        "deck (1 card, reinforcement)",
         "Mimic"
       ],
       "bar": "kata",
@@ -416,15 +430,15 @@
       ],
       "mechanisms": [
         "kata (register_map)",
-        "deck (1 card(s))"
+        "deck (2 cards)"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
         "register_map: 0 rep(s)",
-        "boxes 0"
+        "boxes 0,0"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "E2",
@@ -436,15 +450,15 @@
       ],
       "mechanisms": [
         "kata (register_map)",
-        "deck (1 card(s))"
+        "deck (2 cards)"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
         "register_map: 0 rep(s)",
-        "boxes 0"
+        "boxes 0,0"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "E3",
@@ -456,7 +470,7 @@
       ],
       "mechanisms": [
         "kata (register_map)",
-        "deck (2 card(s))"
+        "deck (2 cards)"
       ],
       "bar": "deck",
       "done": false,
@@ -474,7 +488,7 @@
         "D"
       ],
       "mechanisms": [
-        "deck (1 card(s))"
+        "deck (1 card)"
       ],
       "bar": "deck",
       "done": false,
@@ -493,15 +507,15 @@
       ],
       "mechanisms": [
         "kata (pool_allocator)",
-        "deck (1 card(s))"
+        "deck (2 cards)"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
         "pool_allocator: 0 rep(s)",
-        "boxes 0"
+        "boxes 0,0"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "E6",
@@ -512,7 +526,7 @@
         "M1"
       ],
       "mechanisms": [
-        "deck (2 card(s))",
+        "deck (2 cards)",
         "Mimic"
       ],
       "bar": "deck",
@@ -532,16 +546,16 @@
         "M1"
       ],
       "mechanisms": [
-        "deck (1 card(s))",
+        "deck (2 cards)",
         "Mimic"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
-        "boxes 0",
+        "boxes 0,0",
         "bench evidence lives in Mimic, not here"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "E8",
@@ -553,7 +567,7 @@
       ],
       "mechanisms": [
         "kata",
-        "deck (2 card(s))"
+        "deck (2 cards)"
       ],
       "bar": "deck",
       "done": false,
@@ -571,16 +585,16 @@
         "M0"
       ],
       "mechanisms": [
-        "deck (1 card(s))",
+        "deck (2 cards)",
         "Mimic"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
-        "boxes 0",
+        "boxes 0,0",
         "bench evidence lives in Mimic, not here"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "E10",
@@ -591,16 +605,16 @@
         "M0"
       ],
       "mechanisms": [
-        "deck (1 card(s))",
+        "deck (2 cards)",
         "Mimic"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
-        "boxes 0",
+        "boxes 0,0",
         "bench evidence lives in Mimic, not here"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "E11",
@@ -610,7 +624,7 @@
         "D"
       ],
       "mechanisms": [
-        "deck (2 card(s))"
+        "deck (2 cards)"
       ],
       "bar": "deck",
       "done": false,
@@ -629,7 +643,27 @@
       ],
       "mechanisms": [
         "kata (concurrency_sim)",
-        "deck (1 card(s))"
+        "deck (2 cards)"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "concurrency_sim: 0 rep(s)",
+        "boxes 0,0"
+      ],
+      "cards": 2
+    },
+    {
+      "id": "E13",
+      "group": "E",
+      "statement": "Priority inversion with a concrete three-task example, and both fixes",
+      "owners": [
+        "D",
+        "K"
+      ],
+      "mechanisms": [
+        "kata (concurrency_sim)",
+        "deck (1 card)"
       ],
       "bar": "deck",
       "done": false,
@@ -640,36 +674,22 @@
       "cards": 1
     },
     {
-      "id": "E13",
-      "group": "E",
-      "statement": "Priority inversion with a concrete three-task example, and both fixes",
-      "owners": [
-        "K"
-      ],
-      "mechanisms": [
-        "kata (concurrency_sim)"
-      ],
-      "bar": "kata",
-      "done": false,
-      "detail": [
-        "concurrency_sim: 0 rep(s)"
-      ],
-      "cards": 1
-    },
-    {
       "id": "E14",
       "group": "E",
       "statement": "The four deadlock conditions and how to break one",
       "owners": [
+        "D",
         "K"
       ],
       "mechanisms": [
-        "kata (concurrency_sim)"
+        "kata (concurrency_sim)",
+        "deck (1 card)"
       ],
-      "bar": "kata",
+      "bar": "deck",
       "done": false,
       "detail": [
-        "concurrency_sim: 0 rep(s)"
+        "concurrency_sim: 0 rep(s)",
+        "boxes 0"
       ],
       "cards": 1
     },
@@ -683,14 +703,14 @@
       ],
       "mechanisms": [
         "kata",
-        "deck (1 card(s))"
+        "deck (2 cards)"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
-        "boxes 0"
+        "boxes 0,0"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "E16",
@@ -702,14 +722,14 @@
       ],
       "mechanisms": [
         "kata",
-        "deck (1 card(s))"
+        "deck (2 cards)"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
-        "boxes 0"
+        "boxes 0,0"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "E17",
@@ -720,16 +740,16 @@
         "M1"
       ],
       "mechanisms": [
-        "deck (1 card(s))",
+        "deck (2 cards)",
         "Mimic"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
-        "boxes 0",
+        "boxes 0,0",
         "bench evidence lives in Mimic, not here"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "E18",
@@ -741,16 +761,16 @@
         "M1"
       ],
       "mechanisms": [
-        "deck (1 card(s))",
+        "deck (3 cards)",
         "Mimic"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
-        "boxes 0",
+        "boxes 0,0,0",
         "bench evidence lives in Mimic, not here"
       ],
-      "cards": 1
+      "cards": 3
     },
     {
       "id": "E19",
@@ -761,7 +781,7 @@
         "M0"
       ],
       "mechanisms": [
-        "deck (2 card(s))",
+        "deck (2 cards)",
         "Mimic"
       ],
       "bar": "deck",
@@ -781,7 +801,7 @@
         "M0"
       ],
       "mechanisms": [
-        "deck (1 card(s))",
+        "deck (1 card)",
         "Mimic"
       ],
       "bar": "deck",
@@ -802,15 +822,15 @@
       ],
       "mechanisms": [
         "kata (protocol_parser)",
-        "deck (1 card(s))"
+        "deck (2 cards)"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
         "protocol_parser: 0 rep(s)",
-        "boxes 0"
+        "boxes 0,0"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "E22",
@@ -820,54 +840,60 @@
         "D"
       ],
       "mechanisms": [
-        "deck (1 card(s))"
+        "deck (2 cards)"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
-        "boxes 0"
+        "boxes 0,0"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "E23",
       "group": "E",
       "statement": "State machine patterns: switch, table-driven, function-pointer, and when each",
       "owners": [
+        "D",
         "K",
         "M0"
       ],
       "mechanisms": [
         "kata (fsm)",
+        "deck (2 cards)",
         "Mimic"
       ],
-      "bar": "Mimic",
-      "done": null,
+      "bar": "deck",
+      "done": false,
       "detail": [
         "fsm: 0 rep(s)",
+        "boxes 0,0",
         "bench evidence lives in Mimic, not here"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "E24",
       "group": "E",
       "statement": "Debouncing approaches and non-blocking timing",
       "owners": [
+        "D",
         "K",
         "M0"
       ],
       "mechanisms": [
         "kata (debouncer)",
+        "deck (2 cards)",
         "Mimic"
       ],
-      "bar": "Mimic",
-      "done": null,
+      "bar": "deck",
+      "done": false,
       "detail": [
         "debouncer: 0 rep(s)",
+        "boxes 0,0",
         "bench evidence lives in Mimic, not here"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "E25",
@@ -878,34 +904,91 @@
         "M1"
       ],
       "mechanisms": [
-        "deck (1 card(s))",
+        "deck (2 cards)",
         "Mimic"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
-        "boxes 0",
+        "boxes 0,0",
         "bench evidence lives in Mimic, not here"
       ],
+      "cards": 2
+    },
+    {
+      "id": "E26",
+      "group": "E",
+      "statement": "What a linker script does, and read a `.map` file to see where code and data landed",
+      "owners": [
+        "D",
+        "M1"
+      ],
+      "mechanisms": [
+        "deck (2 cards)",
+        "Mimic"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0,0",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 2
+    },
+    {
+      "id": "E27",
+      "group": "E",
+      "statement": "Field firmware update: A/B partitions, integrity check, rollback",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (1 card)"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
       "cards": 1
+    },
+    {
+      "id": "E28",
+      "group": "E",
+      "statement": "MCU low-power modes, wake sources, and how you'd measure real current draw",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (2 cards)"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0,0"
+      ],
+      "cards": 2
     },
     {
       "id": "H1",
       "group": "H",
       "statement": "Debug intermittent comms methodically, starting with power and clocks",
       "owners": [
+        "D",
         "M0",
         "M1"
       ],
       "mechanisms": [
+        "deck (2 cards)",
         "Mimic"
       ],
-      "bar": "Mimic",
-      "done": null,
+      "bar": "deck",
+      "done": false,
       "detail": [
+        "boxes 0,0",
         "bench evidence lives in Mimic, not here"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "H2",
@@ -916,7 +999,7 @@
         "M0"
       ],
       "mechanisms": [
-        "deck (1 card(s))",
+        "deck (1 card)",
         "Mimic"
       ],
       "bar": "deck",
@@ -984,14 +1067,17 @@
       "group": "H",
       "statement": "Apply Ohm's law and basic power/current reasoning",
       "owners": [
+        "D",
         "M0"
       ],
       "mechanisms": [
+        "deck (1 card)",
         "Mimic"
       ],
-      "bar": "Mimic",
-      "done": null,
+      "bar": "deck",
+      "done": false,
       "detail": [
+        "boxes 0",
         "bench evidence lives in Mimic, not here"
       ],
       "cards": 1
@@ -1004,7 +1090,7 @@
         "D"
       ],
       "mechanisms": [
-        "deck (1 card(s))"
+        "deck (1 card)"
       ],
       "bar": "deck",
       "done": false,
@@ -1022,7 +1108,7 @@
         "M0"
       ],
       "mechanisms": [
-        "deck (1 card(s))",
+        "deck (1 card)",
         "Mimic"
       ],
       "bar": "deck",
@@ -1042,7 +1128,7 @@
         "M1"
       ],
       "mechanisms": [
-        "deck (1 card(s))",
+        "deck (1 card)",
         "Mimic"
       ],
       "bar": "deck",
@@ -1078,12 +1164,15 @@
         "PROMPT"
       ],
       "mechanisms": [
+        "deck (3 cards, reinforcement)",
         "design prompts (0 written)"
       ],
       "bar": "design prompts",
       "done": false,
-      "detail": [],
-      "cards": 2
+      "detail": [
+        "0 scored, bar is the last 3 at 12+/16"
+      ],
+      "cards": 3
     },
     {
       "id": "T2",
@@ -1093,14 +1182,14 @@
         "D"
       ],
       "mechanisms": [
-        "deck (1 card(s))"
+        "deck (2 cards)"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
-        "boxes 0"
+        "boxes 0,0"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "T3",
@@ -1111,16 +1200,16 @@
         "P"
       ],
       "mechanisms": [
-        "deck (1 card(s))",
+        "deck (2 cards)",
         "HIL project"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
-        "boxes 0",
+        "boxes 0,0",
         "evidence lives in the harness repo"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "T4",
@@ -1130,7 +1219,7 @@
         "D"
       ],
       "mechanisms": [
-        "deck (1 card(s))"
+        "deck (1 card)"
       ],
       "bar": "deck",
       "done": false,
@@ -1147,7 +1236,7 @@
         "D"
       ],
       "mechanisms": [
-        "deck (1 card(s))"
+        "deck (1 card)"
       ],
       "bar": "deck",
       "done": false,
@@ -1164,7 +1253,7 @@
         "D"
       ],
       "mechanisms": [
-        "deck (1 card(s))"
+        "deck (1 card)"
       ],
       "bar": "deck",
       "done": false,
@@ -1181,7 +1270,7 @@
         "D"
       ],
       "mechanisms": [
-        "deck (1 card(s))"
+        "deck (1 card)"
       ],
       "bar": "deck",
       "done": false,
@@ -1198,14 +1287,14 @@
         "D"
       ],
       "mechanisms": [
-        "deck (1 card(s))"
+        "deck (2 cards)"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
-        "boxes 0"
+        "boxes 0,0"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "T9",
@@ -1215,7 +1304,7 @@
         "D"
       ],
       "mechanisms": [
-        "deck (1 card(s))"
+        "deck (1 card)"
       ],
       "bar": "deck",
       "done": false,
@@ -1233,7 +1322,7 @@
         "P"
       ],
       "mechanisms": [
-        "deck (1 card(s))",
+        "deck (1 card)",
         "HIL project"
       ],
       "bar": "deck",
@@ -1253,16 +1342,16 @@
         "P"
       ],
       "mechanisms": [
-        "deck (1 card(s))",
+        "deck (2 cards)",
         "HIL project"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
-        "boxes 0",
+        "boxes 0,0",
         "evidence lives in the harness repo"
       ],
-      "cards": 1
+      "cards": 2
     },
     {
       "id": "T12",
@@ -1272,7 +1361,7 @@
         "D"
       ],
       "mechanisms": [
-        "deck (1 card(s))"
+        "deck (1 card)"
       ],
       "bar": "deck",
       "done": false,
@@ -1306,7 +1395,8 @@
         "K"
       ],
       "mechanisms": [
-        "kata (test_harness_py)"
+        "kata (test_harness_py)",
+        "deck (1 card, reinforcement)"
       ],
       "bar": "kata",
       "done": false,
@@ -1323,7 +1413,8 @@
         "K"
       ],
       "mechanisms": [
-        "kata (test_harness_py)"
+        "kata (test_harness_py)",
+        "deck (1 card, reinforcement)"
       ],
       "bar": "kata",
       "done": false,
@@ -1433,6 +1524,43 @@
         "evidence lives in the harness repo"
       ],
       "cards": 0
+    },
+    {
+      "id": "T22",
+      "group": "T",
+      "statement": "Test firmware C on the host: build the logic without hardware and fake what it talks to",
+      "owners": [
+        "D",
+        "M0"
+      ],
+      "mechanisms": [
+        "deck (1 card)",
+        "Mimic"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0",
+        "bench evidence lives in Mimic, not here"
+      ],
+      "cards": 1
+    },
+    {
+      "id": "T23",
+      "group": "T",
+      "statement": "Explain static analysis and coding standards (MISRA-C): what they catch and what they don't",
+      "owners": [
+        "D"
+      ],
+      "mechanisms": [
+        "deck (1 card)"
+      ],
+      "bar": "deck",
+      "done": false,
+      "detail": [
+        "boxes 0"
+      ],
+      "cards": 1
     }
   ]
 }

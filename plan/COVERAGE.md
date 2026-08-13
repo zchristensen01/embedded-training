@@ -20,15 +20,25 @@ watching. You can't. That's a separate skill and it only comes from reps.
 
 ## Where every capability actually lives
 
-78 capabilities, five mechanisms. Only the C group is katas.
+Five mechanisms. Only the C group is katas.
 
-| Group | n | Where it lives | The artifact |
+The counts below are the ones `make progress` prints; if they ever disagree with the table,
+`make progress` is right and this table is stale. `make check-coverage` proves every capability
+in the spec has exactly one row here, and vice versa.
+
+| Group | n | Where the evidence bar sits | The artifact |
 |---|---|---|---|
-| **C** — C fluency | 12 | Katas | `practice/katas/*/` — write it cold, timed, every rep |
-| **E** — embedded concepts | 25 | Deck, ~8 also a kata | `practice/decks/embedded.tsv` — spoken aloud with the trap |
-| **H** — hardware & debugging | 10 | Mimic Stage 0 mostly, 5 deck | The bench, plus captures in Mimic's `docs/` |
-| **T** — test & integration | 21 | 3 katas, 12 deck, 6 the HIL project | `practice/decks/test-integration.tsv`, `projects/hil-harness/BRIEF.md`, `practice/design-prompts/SUBJECTS.md` |
+| **C** — C fluency | 12 | 10 katas, 1 the log itself (C1), 1 deferred | `practice/katas/*/` — write it cold, timed, every rep |
+| **E** — embedded concepts | 28 | Deck for all 28; 13 also have a kata behind them | `practice/decks/embedded.tsv` — spoken aloud with the trap |
+| **H** — hardware & debugging | 10 | 6 deck, 4 the bench (Mimic) | The bench, plus captures in Mimic's `docs/` |
+| **T** — test & integration | 23 | 13 deck, 1 design prompts, 3 katas, 6 the HIL project | `practice/decks/test-integration.tsv`, `projects/hil-harness/BRIEF.md`, `practice/design-prompts/SUBJECTS.md` |
 | **B** — behavioural | 10 | Rehearsal | `practice/rehearsal/STORIES.md`, `make rehearse` |
+
+**A capability can have several mechanisms but only one bar.** E1 is a verbal question whose bar
+is "said aloud with the trap named", so its bar is the deck even though `register_map` also
+drills it; the kata is reinforcement. `tools/progress.py:bar_for()` is where that precedence
+lives, and it is the only place it lives. One rule matters: **a kata in this repo always outranks
+work tracked elsewhere.** Anything owned by a kata here is scored here.
 
 Every mechanism is repeatable and recorded, not just the katas:
 
@@ -72,8 +82,8 @@ Legend: **M0** = Mimic Stage 0 · **M1+** = Mimic Stage 1 or later · **K** = ka
 
 | ID | Owner | Notes |
 |---|---|---|
-| C1 syntax fluency | **K** | Mimic gives volume in **C++**, not C. The daily kata is the only thing producing C fluency |
-| C2 pointers | **K** | |
+| C1 syntax fluency | **K** | Scored on the clean-first-compile rate across every module, not on retiring one kata — it is the only capability the whole log measures at once. Mimic gives volume in **C++**, not C |
+| C2 pointers | **K** `mem_primitives`, `pool_allocator`, `fsm` | Pointer arithmetic and array decay in the first, the free list threaded through free blocks in the second, function pointers in the third. All three retired, because "no reference" means all of it |
 | C3 string primitives | **K** `mem_primitives` | Mimic never asks for these |
 | C4 memory primitives | **K** `mem_primitives` | |
 | C5 ring buffer | **K** `ring_buffer` | Mimic never forces you to write one cold. Highest-value kata you have |
@@ -101,8 +111,8 @@ Legend: **M0** = Mimic Stage 0 · **M1+** = Mimic Stage 1 or later · **K** = ka
 | E10 ISR data sharing | **D** + M0 S3 | |
 | E11 interrupt latency | **D** | |
 | E12 mutex vs semaphore | **D + K** `concurrency_sim` | **Mimic does not cover this.** S1.5 gives tasks and a queue, not ownership semantics |
-| E13 priority inversion | **K** `concurrency_sim` | Build it, watch it, fix it. Nothing in Mimic does |
-| E14 deadlock | **K** `concurrency_sim` | |
+| E13 priority inversion | **D + K** `concurrency_sim` | Build it, watch it, fix it. Nothing in Mimic does. The deck is the bar because the question is verbal; the kata is what makes the answer yours |
+| E14 deadlock | **D + K** `concurrency_sim` | |
 | E15 race vs data race | **D + K** | |
 | E16 volatile ≠ synchronisation | **D + K** | |
 | E17 scheduling | **D** + M1 S1.5 | |
@@ -111,20 +121,23 @@ Legend: **M0** = Mimic Stage 0 · **M1+** = Mimic Stage 1 or later · **K** = ka
 | E20 SPI modes | **D** + M0 | |
 | E21 CRC | **D + K** `protocol_parser` | |
 | E22 DMA | **D** | Not in Mimic Stage 0 |
-| E23 state machines | **K** `fsm` + M0 | |
-| E24 debouncing | **K** `debouncer` + M0 | **Kata retained.** Cheap reps, and it's asked |
+| E23 state machines | **D + K** `fsm` + M0 | |
+| E24 debouncing | **D + K** `debouncer` + M0 | **Kata retained.** Cheap reps, and it's asked |
 | E25 watchdog | **D** + M1 | |
+| E26 linker script and map file | **D** + M1 | Stage 1's CubeIDE project has a real linker script. Until then it's the deck |
+| E27 firmware update and rollback | **D** | Not in Mimic at all. Asked wherever a device ships to a customer |
+| E28 low-power modes | **D** | Not in Mimic — the arm is mains-powered and never sleeps |
 
 ### H — Hardware and debugging
 
 | ID | Owner | Notes |
 |---|---|---|
-| H1 methodical comms debugging | **M0/M1** | Mimic's "what will go wrong" sections are this, repeatedly |
+| H1 methodical comms debugging | **D** + M0/M1 | Verbal scenario, so the deck is the bar. Mimic's "what will go wrong" sections are the material |
 | H2 scope vs analyzer | **D + M0 S3** | S3 is your first capture |
 | H3 reading captures | **M0** | The exit gate requires a saved capture. Portfolio evidence |
 | H4 schematic reading | **M0 S2** | The power topology drawing |
 | H5 datasheet under pressure | **M0/M1** | "Look it up yourself" sessions are exactly this |
-| H6 Ohm's law, power | **M0 S1, S2** | The torque and supply math |
+| H6 Ohm's law, power | **D + M0 S1, S2** | Asked verbally as a two-line calculation, so the deck is the bar. The torque and supply math is where you do it for real |
 | H7 Nyquist | **D** | Not in Stage 0 |
 | H8 pull-ups / floating | **D + M0** | |
 | H9 JTAG/SWD, debuggers | **D + M1 S1.1** | The breakpoint that is the actual point |
@@ -155,9 +168,11 @@ where the robot earns its place in the plan.
 | T16 device abstraction | **P** | |
 | T17 real serial | **P** | |
 | T18 fault injection | **P** | |
-| T19 CI on hardware | **P** | The screenshot that goes in outreach |
+| T19 CI on hardware | **P** | A green run against real hardware, captured |
 | T20 Bash | **P** | |
 | T21 test-to-requirement tracing | **P** | |
+| T22 host-side testing of firmware C | **D** + M0 S12 | The deck is the bar. S12's host-side Unity tests on the PID and encoder table are the worked example, and the harness's fake transport is the same idea one layer up |
+| T23 static analysis and MISRA | **D** | `make analyze` puts `gcc -fanalyzer` in front of you daily, which is the habit. The card is the answer |
 | — | **M0 S12** partial credit | About an hour of host-side Unity tests on the PID and encoder table. Genuinely good, and more than most embedded portfolios have. Not remotely the whole column |
 
 **This repo owns almost all of T.** T&I is your faster job door, and Mimic covers roughly 5% of
@@ -199,10 +214,8 @@ contains them deliberately reads as maturity.
 Mimic Stage 4 says it itself: *start with the software, months early.* **M4.1 is EMG feature
 extraction on public datasets — Python, no hardware, no dependency on Stages 1 through 3.**
 
-Given the kinesiology background, an EMG classifier with a real evaluation writeup is the most
-differentiating artifact you could put in front of a medical-device employer, and it's available
-now rather than a year out. It also doubles as T&I practice, because a classifier with no
-evaluation methodology is not a result.
+It is available now rather than a year out, and it doubles as T&I practice, because a classifier
+with no evaluation methodology is not a result — the evaluation is the artifact, not the model.
 
 Slot it into weekend blocks from around Week 4. It is the only part of Mimic beyond Stage 0 worth
-touching before you apply.
+touching inside these ten weeks.

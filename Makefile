@@ -4,9 +4,11 @@
 # `make help` lists everything.
 PY := python3
 
-.PHONY: help today calendar newkata drill lap done status review stats prompt \
-        rehearse report card progress test debug analyze valgrind list log \
-        check-log check-frozen check-calendar check-coverage clean
+.PHONY: help today calendar dates newkata drill lap done status review stats prompt \
+        rehearse report card progress test debug analyze valgrind list log decks \
+        hunt hunt-done hunts snapshots \
+        check-log check-frozen check-calendar check-coverage check-decks \
+        check-generated check clean
 
 help:
 	@echo "  the daily loop"
@@ -18,13 +20,29 @@ help:
 	@echo "    make review   spaced-repetition deck pass, ANSWER OUT LOUD"
 	@echo "    make card     something surprised you? add a deck card, 20 seconds"
 	@echo ""
+	@echo "  free practice — none of this needs the calendar's permission"
+	@echo "    make drill KATA=fsm            any module, any time. Picks the variant"
+	@echo "                                   you have done least recently"
+	@echo "    make drill KATA=fsm VARIANT=v4 exactly that one"
+	@echo "    make hunt                      find a bug planted in your own old code"
+	@echo "    make review N=40               a bigger deck pass"
+	@echo "    make review N=\"--topic sync\"   just one topic"
+	@echo "    make prompt                    a 'how would you test X' subject"
+	@echo "    make rehearse                  a behavioural story, timed"
+	@echo ""
+	@echo "  where you stand"
+	@echo "    make report   time curve, clean-compile rate, phase split, what you avoid"
+	@echo "    make progress every capability scored against its evidence bar"
+	@echo "    make log      the per-module time curve and which have met their bar"
+	@echo "    make decks    what each deck card is doing, and what is thin"
+	@echo "    make hunts    bug-hunt history: which bug kinds catch you out"
+	@echo "    make stats    deck box distribution"
+	@echo ""
 	@echo "  occasional"
-	@echo "    make prompt   draw a 'how would you test X' design prompt"
-	@echo "    make rehearse draw a behavioural story, time the take, log it"
-	@echo "    make report   the progress measurements"
-	@echo "    make progress score the 78 capabilities, write logs/PROGRESS.md"
+	@echo "    make hunt-done  stop the hunt clock, reveal the mutation, log it"
 	@echo "    make newkata  NAME=x  scaffold a new kata module"
-	@echo "    make calendar regenerate plan/CALENDAR.md with real dates"
+	@echo "    make calendar regenerate plan/CALENDAR.md (committed, relative days)"
+	@echo "    make dates    write plan/CALENDAR.dated.md with your real dates"
 	@echo ""
 	@echo "  the build, and second opinions on it"
 	@echo "    make test MODULE=ring_buffer   ... just one kata"
@@ -33,16 +51,23 @@ help:
 	@echo "    make analyze                   gcc -fanalyzer, finds bugs without running"
 	@echo "    make valgrind MODULE=fsm       second opinion on memory (no sanitizers)"
 	@echo "    make list                      which katas have an implementation"
-	@echo "    make check-frozen              the headers and suites still compile (CI runs this)"
-	@echo "    make check-calendar            schedule and build plan agree (CI runs this)"
-	@echo "    make check-coverage            every capability has a mechanism (CI runs this)"
-	@echo "    make check-log                 validate logs/log.tsv (CI runs this)"
 	@echo "    make clean                     remove build/"
+	@echo ""
+	@echo "  the checks. CI runs all six on every push; 'make check' runs them here"
+	@echo "    make check-frozen              the headers and suites still compile"
+	@echo "    make check-log                 validate logs/log.tsv"
+	@echo "    make check-calendar            schedule, build plan and timer blocks agree"
+	@echo "    make check-coverage            spec and coverage map describe the same set"
+	@echo "    make check-decks               every card tag names a real capability"
+	@echo "    make check-generated           the generated files match their generators"
+	@echo ""
+	@echo "  DAILY.md explains what a calendar line means and how to practise off-plan."
 
 # ---------------------------------------------------------------- practice ---
 
 today:    ; @$(PY) tools/today.py
 calendar: ; @$(PY) tools/schedule.py --write
+dates:    ; @$(PY) tools/schedule.py --dates
 newkata:  ; @$(PY) tools/newkata.py $(NAME)
 drill:    ; @$(PY) tools/drill.py start $(KATA) $(VARIANT)
 lap:      ; @$(PY) tools/drill.py lap $(P)
@@ -56,9 +81,20 @@ report:   ; @$(PY) tools/report.py
 card:     ; @$(PY) tools/card.py $(ARGS)
 progress: ; @$(PY) tools/progress.py --write
 log:      ; @$(PY) tools/check_log.py --summary
+hunt:     ; @$(PY) tools/bughunt.py start $(KATA)
+hunt-done:; @$(PY) tools/bughunt.py done
+hunts:    ; @$(PY) tools/bughunt.py --stats
+snapshots:; @$(PY) tools/bughunt.py --list
+decks:    ; @$(PY) tools/check_decks.py --summary
 check-log:; @$(PY) tools/check_log.py
-check-calendar: ; @$(PY) tools/schedule.py --check
-check-coverage: ; @$(PY) tools/progress.py --check
+check-calendar:  ; @$(PY) tools/schedule.py --check
+check-coverage:  ; @$(PY) tools/progress.py --check
+check-decks:     ; @$(PY) tools/check_decks.py
+check-generated: ; @$(PY) tools/check_generated.py
+
+# Everything CI runs, in one command. Run it before you push.
+check: check-frozen check-log check-calendar check-coverage check-decks check-generated
+	@echo "all checks pass"
 
 # ------------------------------------------------------------------- build ---
 

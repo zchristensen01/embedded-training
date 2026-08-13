@@ -19,6 +19,14 @@ KATAS = os.path.join(ROOT, "practice", "katas")
 
 BRIEF = """# {name}
 
+> **Before your first rep you owe this module two files:** `include/{name}.h` — the API
+> contract — and the suite in `tests/`. Write the header first, then list the cases under
+> **What to test** below in your own words, then write every one of them yourself. AI writes
+> neither. `make drill` refuses a module whose header and tests do not exist, because a rep
+> against an empty suite is not a rep. Both are frozen once written: you do not edit them
+> during a rep, only your `src/`, which is deleted each time. See
+> [DAILY.md](../../../DAILY.md#build-sessions).
+
 ## What it is
 TODO: one paragraph. What are you building, in plain terms?
 
@@ -45,8 +53,9 @@ question-bank/embedded-concepts.md. If none map, ask why you're building this.
 
 VARIANTS = """# {name} — variants
 
-Each variant changes a real constraint, not just a parameter. Four is enough to start;
-add more as you find the edges.
+Each variant changes a real constraint, not just a parameter. Every shipped module has seven,
+and `make check-calendar` fails if the rotation names one that is not written here. Four is
+enough to start drilling; add the rest as you find the edges.
 
 v1  TODO: the simplest correct version.
 v2  TODO: change the data structure or the full/empty scheme.

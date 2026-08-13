@@ -4,10 +4,12 @@
   python3 tools/report.py
 
 1. Time curve per kata. Should fall, then flatten.
-2. Clean-first-compile rate. Best single proxy for syntax fluency. Target 70%+ by week 6.
+2. Clean-first-compile rate. Best single proxy for syntax fluency.
+   40% by week 4, 55% by week 6, 70% by week 10.
 3. Where the time goes. design / write / compile / debug. This is the diagnosis.
 4. Reps per week and coverage. What you're avoiding.
 """
+import importlib.util
 import os
 from collections import defaultdict
 from datetime import date, datetime, timedelta
@@ -17,11 +19,19 @@ LOG = os.path.join(ROOT, "logs", "log.tsv")
 SPLITS = os.path.join(ROOT, "logs", "splits.tsv")
 KATAS = os.path.join(ROOT, "practice", "katas")
 
-TARGETS = {
-    "bitops": 8, "mem_primitives": 10, "register_map": 12, "debouncer": 12,
-    "ring_buffer": 15, "fsm": 15, "pool_allocator": 20, "protocol_parser": 20,
-    "fixed_point_pid": 20, "concurrency_sim": 25, "test_harness_py": 25,
-}
+
+def _targets():
+    """Read the targets from drill.py. This file used to keep its own copy, and the
+    copy silently fell a kata behind — rollover_timer was measured against the 15-min
+    default for as long as the second dict existed. One dict, imported."""
+    spec = importlib.util.spec_from_file_location(
+        "_drill", os.path.join(ROOT, "tools", "drill.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.TARGETS
+
+
+TARGETS = _targets()
 
 
 def read_log():
@@ -151,7 +161,8 @@ def main():
               f"first {mins[0]:>5.1f}  last {mins[-1]:>5.1f}  target {target:>2}  n={len(mins)}")
 
     print("\n" + "=" * 70)
-    print("  CLEAN FIRST COMPILE — the syntax-fluency proxy. Target 70%+ by week 6.")
+    print("  CLEAN FIRST COMPILE — the syntax-fluency proxy.")
+    print("  40% by week 4, 55% by week 6, 70% by week 10.")
     print("=" * 70)
     weeks = defaultdict(list)
     for r in rows:

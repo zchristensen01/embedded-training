@@ -4,10 +4,12 @@ A measured training system for embedded and test-and-integration engineering —
 from interview research, run as a daily practice, and scored against evidence rather
 than against how much I feel I have learned.
 
-Ten weeks. Twelve C katas, a 56-card spoken deck, design prompts, behavioural
-rehearsal, and one hardware-in-the-loop project. Everything is timed and logged.
+Ten weeks. Twelve C katas, a spoken deck, design prompts, behavioural rehearsal, and one
+hardware-in-the-loop project. Everything is timed and logged.
 
 **[START_HERE.md](START_HERE.md)** explains how it fits together in five minutes.
+**[DAILY.md](DAILY.md)** is the daily checklist: how to read a calendar line, and what
+gets recorded at each end of a session.
 **[reference/COMMANDS.md](reference/COMMANDS.md)** documents every command.
 **[logs/PROGRESS.md](logs/PROGRESS.md)** is the current score.
 
@@ -15,10 +17,11 @@ rehearsal, and one hardware-in-the-loop project. Everything is timed and logged.
 
 ## Why it is built this way
 
-Interview research produced **78 numbered capabilities** — concrete things you have to
-be able to do, each with a stated bar for what counts as proof. They are written down
-in [plan/INTERVIEW_REQUIREMENTS.md](plan/INTERVIEW_REQUIREMENTS.md), and every other
-file here exists to satisfy some part of that list.
+Interview research produced a list of **numbered capabilities** — concrete things you have to
+be able to do, each with a stated bar for what counts as proof. They are written down in
+[plan/INTERVIEW_REQUIREMENTS.md](plan/INTERVIEW_REQUIREMENTS.md), and every other file here
+exists to satisfy some part of that list. `make progress` reports the current count and score;
+no document restates the number, because a number in prose is a number that goes stale.
 
 Two findings shaped the design:
 
@@ -30,8 +33,8 @@ Two findings shaped the design:
   rounds more often than the technical one.** So concepts are rehearsed *out loud*,
   and "how would you test this" is its own repeating exercise with a fixed rubric.
 
-Only 12 of the 78 capabilities are katas. Drilling code and then failing the verbal
-round is the failure mode this is built to avoid.
+Only twelve capabilities are katas. Drilling code and then failing the verbal round is the
+failure mode this is built to avoid.
 
 ## Layout
 
@@ -46,8 +49,8 @@ logs/          the record — the only place that decides whether this is workin
 
 | Directory | What is in it |
 |---|---|
-| **`plan/`** | `INTERVIEW_REQUIREMENTS.md` is the specification: the research plus all 78 capabilities. `COVERAGE.md` maps each one to the mechanism that owns it. `CALENDAR.md` is all 70 days, generated. `CURRICULUM.md` is the week-by-week shape. `REPOS.md` is the disk layout. |
-| **`practice/`** | `PRACTICE_SYSTEM.md` explains the four repeatable formats and the rules for using AI. `katas/` holds twelve C modules. `decks/` holds 56 cards as TSV. `design-prompts/` holds 40 subjects and the fixed rubric. `rehearsal/` holds the ten behavioural stories. |
+| **`plan/`** | `INTERVIEW_REQUIREMENTS.md` is the specification: the research plus every capability. `COVERAGE.md` maps each one to the mechanism that owns it. `CALENDAR.md` is all 70 days, generated. `CURRICULUM.md` is why the ten weeks are shaped as they are. `REPOS.md` is the disk layout. |
+| **`practice/`** | `PRACTICE_SYSTEM.md` explains the five formats and the rules for using AI. `katas/` holds twelve C modules. `decks/` holds the spoken deck as TSV. `design-prompts/` holds 40 subjects and the fixed rubric. `rehearsal/` holds the ten behavioural stories. |
 | **`reference/`** | `COMMANDS.md` documents every command. `ARCHITECTURE.md` covers repo internals. `question-bank/` holds 76 coding exercises, the verbal set with trap answers, and the T&I track. |
 | **`projects/`** | `hil-harness/BRIEF.md` — the week 8 flagship spec. The project itself lives in its own public repo. |
 | **`logs/`** | Every rep, every phase split, every story take, every AI use, and the generated progress report. |
@@ -59,7 +62,7 @@ The unusual part, and the reason a solved kata stays practisable:
 ```
 practice/katas/ring_buffer/
 ├── BRIEF.md      committed   what it is, the API, how to think about it, what to test
-├── VARIANTS.md   committed   seven variants the drill draws from
+├── VARIANTS.md   committed   the seven variants the drill draws from
 ├── NOTES.md      committed   one decision or bug per rep
 ├── include/      committed   the API contract.  FROZEN during a rep
 ├── tests/        committed   the test suite.    FROZEN during a rep
@@ -84,31 +87,38 @@ make done             # stop the clock, log the rep
 make review           # deck pass, ANSWER OUT LOUD
 ```
 
+None of it is gated by the calendar. `make drill KATA=fsm` runs that module now, whatever the
+day says; `make hunt` plants a single-token bug in one of your own older solutions and times you
+finding it. `make help` lists everything and [DAILY.md](DAILY.md) explains what each line means.
+
 | Day | Shape | Total |
 |---|---|---|
-| Mon, Tue, Thu, Fri | 10 kata (short) · 60 main · 12 deck · 8 log | 90 min |
-| Wed | 25 kata (long) · 45 main · 12 deck · 8 log | 90 min |
-| Sat | 10 kata (adaptive) · 120 main | 130 min |
-| Sun | 25 kata · 20 review · 15 deck · 10 prompt · 10 rehearsal | 80 min |
+| Mon, Tue, Thu, Fri | 15 kata (short) · 55 main · 12 deck · 8 log | 90 min |
+| Wed | 28 kata (long) · 42 main · 12 deck · 8 log | 90 min |
+| Sat | 28 kata (adaptive) · 100 main · 10 rehearsal | 138 min |
+| Sun | 28 kata · 20 review · 15 deck · 10 prompt · 20 rehearsal | 93 min |
 
-About 11 hours a week. Saturday's rep is the only one with no assigned module —
-`make drill` with no arguments picks the worst recent time, so one day a week catches
-whatever is being avoided.
+Just over 11 hours a week; weeks 1–3 are heavier because they carry the kata build sessions.
+The generated calendar prints the real figures. Every kata block is at least as long as that
+kata's target time, and CI fails if that stops being true.
+
+Saturday's rep is the only one with no assigned module — `make drill` with no arguments picks
+the worst recent time, so one day a week catches whatever is being avoided. It is also the only
+slack in the rotation.
 
 ## How progress is measured
 
-`make progress` scores all 78 capabilities and writes
-[logs/PROGRESS.md](logs/PROGRESS.md) plus a machine-readable `logs/progress.json`.
-Nothing in it is self-assessed. A capability is met when its evidence bar is met and
-logged:
+`make progress` scores every capability and writes [logs/PROGRESS.md](logs/PROGRESS.md) plus a
+machine-readable `logs/progress.json`. Nothing in it is self-assessed. A capability is met when
+its evidence bar is met and logged:
 
 | Group | Bar |
 |---|---|
-| **C** — C fluency | Three clean reps at or under target time, across three different variants |
+| **C** — C fluency | Three consecutive clean reps at or under target, across three variants. C1 is the clean-first-compile rate itself, over 20+ reps |
 | **E** — concepts | Every tagged deck card in Leitner box 4 or higher, said aloud with the trap |
-| **T** — test & integration | Deck boxes, or artifacts in the harness repo |
-| **B** — behavioural | Three rated takes of that story |
-| **H** — hardware | Bench evidence, reported as proved outside this repo |
+| **T** — test & integration | Deck boxes, the design-prompt rubric for T1, or artifacts in the harness repo |
+| **B** — behavioural | Three takes rated strong, on three different days |
+| **H** — hardware | Deck boxes, or bench evidence — reported as tracked outside this repo, which is not the same as done |
 
 ## Verification
 
@@ -117,14 +127,16 @@ logged:
 exiting 0), on both gcc and clang. `concurrency_sim` builds under ThreadSanitizer
 instead, since the two cannot coexist.
 
-Four checks run in CI on every push:
+Six checks run in CI on every push, and `make check` runs all of them locally:
 
 | Check | Proves |
 |---|---|
 | `make check-frozen` | Every frozen header and test suite still compiles, gcc and clang |
 | `make check-log` | The practice log is well formed |
-| `make check-calendar` | The schedule and the derived build plan agree |
-| `make check-coverage` | Every one of the 78 capabilities has a mechanism |
+| `make check-calendar` | Schedule, derived build plan, timer blocks and retirement feasibility agree |
+| `make check-coverage` | The spec and the coverage map describe exactly the same capabilities |
+| `make check-decks` | Every deck tag names a real capability, and nothing scored by the deck lacks a card |
+| `make check-generated` | The generated files still match their generators |
 
 CI deliberately does not run the katas. `src/` is gitignored and deleted every rep, so
 there is nothing to link — what CI protects is the artifacts that are meant to be

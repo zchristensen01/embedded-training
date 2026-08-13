@@ -8,9 +8,10 @@
   python3 tools/card.py --last 5                  show the most recent cards
   python3 tools/card.py -t interrupts -q "..." -a "..." -x "..."     non-interactive
 
-The 56 cards that ship here cover roughly the E group plus most of T. They do not
-cover all 78 capabilities and are not meant to: C is katas, B is rehearsal, and most
-of H is Mimic's bench work.
+The deck is the evidence bar for the whole E group and most of T. It does not cover
+every capability and is not meant to: C is katas, B is rehearsal, and part of H is
+bench work. `make check-decks` fails on a tag that names no capability, and
+`make decks` shows which capabilities are resting on a single card.
 
 What makes the deck grow correctly is this: every time a rep or a Mimic session
 surprises you — something you half-knew, something you got wrong out loud — you add

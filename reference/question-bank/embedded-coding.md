@@ -137,8 +137,8 @@ and forgetting `unsigned` on the literal. Use `1u`. Every time.
 
 ## Algorithms — the small subset worth doing
 
-The research found LeetCode largely absent at your target companies. Do these ten only, in C,
-because they're the ones that actually recur in embedded screens:
+The research found LeetCode-style DSA largely absent outside FAANG-scale embedded teams. Do
+these ten only, in C, because they're the ones that actually recur in embedded screens:
 
 67. Reverse a singly linked list, iteratively.
 68. Detect a cycle in a linked list.

@@ -5,6 +5,14 @@ mechanical switch into clean, single, trustworthy edges.
 
 ---
 
+> **Before your first rep you owe this module two files:** `include/debouncer.h` — the API
+> contract — and the suite in `tests/`. Write the header first, then list the cases under
+> **What to test** below in your own words, then write every one of them yourself. AI writes
+> neither. `make drill` refuses a module whose header and tests do not exist, because a rep
+> against an empty suite is not a rep. Both are frozen once written: you do not edit them
+> during a rep, only your `src/`, which is deleted each time. See
+> [DAILY.md](../../../DAILY.md#build-sessions).
+
 ## The problem, in plain language
 
 **Hardware lies.** This kata is usually where that lands for the first time.
@@ -188,7 +196,7 @@ thing to arrive at.
 
 ---
 
-> **Variants:** `counter` → `integrator` → `shiftreg` — written up in [VARIANTS.md](VARIANTS.md).
+> **Variants:** seven, `v1` through `v7`, written up in [VARIANTS.md](VARIANTS.md).
 > `make drill` picks one and `make done` logs the rep to
 > [logs/log.tsv](../../../logs/log.tsv). Time is only comparable within a variant.
 

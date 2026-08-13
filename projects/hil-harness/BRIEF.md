@@ -20,10 +20,10 @@ A Python program on your PC that tests the Mimic Stage 0 firmware automatically.
 
 ## Why it's the flagship
 
-Kepler Communications' embedded test automation posting asks for Python and Bash test
-development, pytest, GitLab CI/CD, and hardware-in-the-loop testing with custom test rigs. You
-already have four of those five from backend work. This is the fifth, and it converts a web
-resume into an embedded credential.
+A representative embedded test-automation posting asks for Python and Bash test development,
+pytest, CI/CD, and hardware-in-the-loop testing with custom test rigs. Four of those five are
+ordinary backend skills wearing different vocabulary. This project is the fifth, and it is the
+one that cannot be claimed without having built it.
 
 It also collapses two portfolio pieces into one story: **you wrote the firmware, then you built
 the rig that regression-tests it on every commit.**
@@ -32,7 +32,8 @@ the rig that regression-tests it on every commit.**
 
 ## Acceptance criteria
 
-Each maps to a capability. The project is done when all six are true and demonstrable.
+Seven criteria covering the six capabilities. The project is done when all seven are true and
+demonstrable.
 
 | # | Criterion | Capability | Evidence |
 |---|---|---|---|
@@ -44,8 +45,8 @@ Each maps to a capability. The project is done when all six are true and demonst
 | 6 | Every test names the Stage 0 requirement it verifies | T21 | Requirement IDs in test names or markers |
 | 7 | Bash script handles device wrangling — find, reset, unlock the port | T20 | In the repo |
 
-Criterion 5's screenshot is the single most useful image in your whole portfolio. It goes in the
-README, on your site, and in outreach messages.
+Criterion 5's screenshot is the most useful single image this project produces: a CI run that
+flashed a real board and reported pass/fail. It belongs at the top of the README.
 
 ---
 

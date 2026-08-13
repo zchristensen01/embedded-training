@@ -3,8 +3,16 @@ practice/katas/*/src/
 
 # drill state, deck scheduling, and your start date — local, not the repo's
 logs/.drill_state.json
+logs/.bughunt_state.json
+# Snapshots of your own passing solutions, kept only so `make hunt` has something to
+# mutate. Still your code, still disposable, still never committed.
+logs/.snapshots/
 logs/.start_date
 practice/decks/.state.json
+
+# the calendar with your real dates stamped in. plan/CALENDAR.md is the committed
+# one and carries relative day labels, because the start date is not a repo fact.
+plan/CALENDAR.dated.md
 
 # job-search material never belongs in a public training repo
 plan/APPLICATIONS.md

@@ -1,26 +1,30 @@
 #!/usr/bin/env python3
-"""progress.py — score the 78 capabilities and write the public progress report.
+"""progress.py — score the capability list and write the public progress report.
 
   python3 tools/progress.py            print the summary
   python3 tools/progress.py --write    also write logs/PROGRESS.md and logs/progress.json
-  python3 tools/progress.py --check    exit non-zero if a capability has no mechanism
+  python3 tools/progress.py --check    exit non-zero if the spec and the coverage map
+                                       disagree, or a capability has no mechanism
 
 This is the file a website can read. `logs/progress.json` is stable, machine-shaped
 output: every capability, who owns it, whether its evidence bar is met, and the
 numbers behind that. `logs/PROGRESS.md` is the same thing rendered for a human.
 
-Nothing here is self-reported. A capability moves to "done" only when the evidence
-bar in plan/INTERVIEW_REQUIREMENTS.md is met by something in logs/ or by deck state:
+Nothing here is self-reported. A capability moves to "met" only when the evidence bar
+in plan/INTERVIEW_REQUIREMENTS.md is met by something in logs/ or by deck state:
 
-  C  kata   three clean reps at or under target, across three different variants
-  E  deck   every card tagged with that ID is in Leitner box 4 or 5
-  H  deck   same as E, where a card owns it. Bench items are Mimic's and say so
-  T  deck   same as E. Project items need the harness repo and say so
-  B  story  three rated takes of that story in logs/rehearsal.tsv
+  C  kata    three consecutive clean reps at or under target, across three variants
+  C1 log     the clean-first-compile rate itself, over enough reps to mean something
+  E  deck    every card tagged with that ID is in Leitner box 4 or 5
+  H  deck    same as E, where a card owns it. Bench items are Mimic's and say so
+  T  deck    same as E. Project items need the harness repo and say so
+  T1 prompts enough scored answers, and the recent ones scoring at the bar
+  B  story   three takes rated strong, on three different days
 
 The ownership map is parsed out of plan/COVERAGE.md rather than duplicated here, and
 the capability list out of plan/INTERVIEW_REQUIREMENTS.md, so this file holds no
-third copy of either.
+third copy of either. The count of capabilities is not hardcoded anywhere: --check
+proves the two files describe exactly the same set.
 """
 import argparse
 import glob
@@ -29,7 +33,7 @@ import json
 import os
 import re
 from collections import defaultdict
-from datetime import date, datetime
+from datetime import date
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REQ = os.path.join(ROOT, "plan", "INTERVIEW_REQUIREMENTS.md")
@@ -37,7 +41,7 @@ COV = os.path.join(ROOT, "plan", "COVERAGE.md")
 DECKS = os.path.join(ROOT, "practice", "decks")
 DECK_STATE = os.path.join(DECKS, ".state.json")
 LOG = os.path.join(ROOT, "logs", "log.tsv")
-REHEARSAL = os.path.join(ROOT, "logs", "rehearsal.tsv")
+PROMPTS = os.path.join(ROOT, "logs", "design-prompts")
 OUT_MD = os.path.join(ROOT, "logs", "PROGRESS.md")
 OUT_JSON = os.path.join(ROOT, "logs", "progress.json")
 
@@ -45,20 +49,40 @@ GROUPS = {"C": "C language and syntax fluency", "E": "Embedded concepts",
           "H": "Hardware, signals and debugging", "T": "Test and integration",
           "B": "Behavioural and narrative"}
 
-MASTERED_BOX = 4      # a deck card counts once it reaches box 4
-STRONG_TAKES = 3      # a story counts at three rated takes
-PROMPTS_FOR_T1 = 10   # T1 is a skill measured across subjects, not on one answer
+MASTERED_BOX = 4          # a deck card counts once it reaches box 4
+
+# C1's bar is stated in the spec as a rate, not as a retired kata: "70%+ clean-first-
+# compile rate over 20 logged reps". It is the only capability measured across every
+# module rather than on one of them, so it gets its own arm below.
+C1_CLEAN_RATE = 0.70
+C1_MIN_REPS = 20
+
+# T1's bar is "Rubric score 12+/16, requirements asked first" — a score, not a count.
+# The count is still there because T1 is a skill measured across subjects rather than
+# on one answer, but a stack of unscored files no longer meets it.
+PROMPTS_FOR_T1 = 10
+PROMPT_SCORE_BAR = 12
+PROMPT_RECENT = 3         # the most recent N answers must all clear the bar
+
+
+def _load(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
 
 
 def drill_targets():
-    spec = importlib.util.spec_from_file_location("_d", os.path.join(ROOT, "tools", "drill.py"))
-    m = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(m)
-    return m.TARGETS
+    return _load("_drill", os.path.join(ROOT, "tools", "drill.py")).TARGETS
+
+
+def rehearsal():
+    """rehearse.py owns the definition of a ready story. Don't write a second one."""
+    return _load("_rehearse", os.path.join(ROOT, "tools", "rehearse.py"))
 
 
 def capabilities():
-    """{id: statement} for all 78, from the master checklist tables."""
+    """{id: statement} from the master checklist tables in the spec."""
     caps = {}
     for line in open(REQ):
         m = re.match(r"^\|\s*([CEHTB]\d+)\s*\|\s*(.+?)\s*\|", line)
@@ -86,6 +110,10 @@ def ownership():
     So: take the whole cell, not just what is inside the bold markers, and pick the
     owner tokens out of it. Matching only `**X**` misses every combined cell, which
     is most of them.
+
+    This is the brittlest thing in the repo. What keeps it honest is `--check`, which
+    proves every capability in the spec has exactly one row here and vice versa — so
+    a reworded cell that stops parsing is a CI failure, not a silent zero.
     """
     own = {}
     for line in open(COV):
@@ -111,6 +139,41 @@ def ownership():
     return own
 
 
+def bar_for(cid, owners):
+    """Which single mechanism decides whether this capability is met.
+
+    A capability often has several mechanisms; only one of them is the *bar*. The
+    spec's "Scoring yourself" section sets it per group: C is the kata log, E is deck
+    boxes, B is rated takes. Requiring every listed mechanism instead would mean E1 —
+    a verbal question whose bar is "said aloud with the trap named" — could not be
+    met until a kata was also retired, which is stricter than the spec.
+
+    Order matters, and one ordering bug lived here for a while: Mimic used to be
+    tested before the kata, so E23 and E24 — both `**K** + M0` — were reported as
+    proved at the bench when this repo owns the kata that proves them. A kata in this
+    repo always outranks work tracked elsewhere.
+    """
+    if "DEFER" in owners:
+        return "deferred"
+    if cid == "C1":
+        return "clean rate"
+    if cid[0] == "C":
+        return "kata" if "K" in owners else ("deck" if "D" in owners else "")
+    if cid[0] == "B":
+        return "rehearsal"
+    if "PROMPT" in owners:
+        return "design prompts"
+    if "D" in owners:
+        return "deck"
+    if "K" in owners:
+        return "kata"
+    if "P" in owners:
+        return "HIL project"
+    if owners & {"M0", "M1"}:
+        return "Mimic"
+    return ""
+
+
 def deck_cards():
     """[(id_in_state, caps[])] for every card carrying a capability tag."""
     out = []
@@ -128,8 +191,23 @@ def deck_cards():
 
 
 def prompt_answers():
-    """Design-prompt answers written so far. T1 is the only capability they own."""
-    return sorted(glob.glob(os.path.join(ROOT, "logs", "design-prompts", "*.md")))
+    """[(path, score_or_None)] for every design-prompt answer written so far.
+
+    The score is the rubric total the file carries. `make prompt` writes the rubric
+    into the file with a blank total; you fill it in. An unscored answer counts
+    toward the volume but never toward the bar.
+    """
+    out = []
+    for path in sorted(glob.glob(os.path.join(PROMPTS, "*.md"))):
+        score = None
+        try:
+            m = re.search(r"Total:\s*(\d+)\s*/\s*16", open(path).read())
+            if m:
+                score = int(m.group(1))
+        except OSError:
+            pass
+        out.append((path, score))
+    return out
 
 
 def deck_state():
@@ -157,18 +235,6 @@ def kata_reps():
     return rows
 
 
-def story_takes():
-    takes = defaultdict(list)
-    if not os.path.exists(REHEARSAL):
-        return takes
-    for line in open(REHEARSAL):
-        f = line.rstrip("\n").split("\t")
-        if len(f) < 4 or f[0] == "date":
-            continue
-        takes[f[1].strip()].append(f)
-    return takes
-
-
 def kata_retired(reps, target):
     """PRACTICE_SYSTEM's bar: three consecutive clean reps at target, three variants."""
     tail = reps[-3:]
@@ -176,10 +242,22 @@ def kata_retired(reps, target):
             and len({r["variant"] for r in tail}) == 3)
 
 
+def clean_rate(reps):
+    """(rate, n) across every kata rep, ignoring hand-logged Mimic/project rows."""
+    allr = [r for k, v in reps.items() for r in v if k not in ("mimic", "project")]
+    if not allr:
+        return 0.0, 0
+    return sum(1 for r in allr if r["clean"]) / len(allr), len(allr)
+
+
 def score():
     caps, own = capabilities(), ownership()
     cards, st = deck_cards(), deck_state()
-    reps, takes, targets = kata_reps(), story_takes(), drill_targets()
+    reps, targets = kata_reps(), drill_targets()
+    reh = rehearsal()
+    takes = reh.read_log()
+    prompts = prompt_answers()
+    rate, nreps = clean_rate(reps)
 
     by_cap_cards = defaultdict(list)
     for card_id, cids in cards:
@@ -190,24 +268,32 @@ def score():
     for cid, statement in sorted(caps.items(), key=lambda kv: (kv[0][0], int(kv[0][1:]))):
         o = own.get(cid, {"owners": set(), "katas": [], "note": ""})
         owners, katas = o["owners"], o["katas"]
+        bar = bar_for(cid, owners)
         mechanisms, detail = [], []
         card_ids = by_cap_cards.get(cid, [])
 
-        # Every mechanism that touches this capability, for context.
+        # Every mechanism that touches this capability, for context. Cards tagged with
+        # a capability whose bar is something else are real practice but not evidence,
+        # and they say so rather than silently counting for nothing.
         if "K" in owners:
             mechanisms.append("kata" + (f" ({', '.join(katas)})" if katas else ""))
             for k in katas:
                 detail.append(f"{k}: {len(reps.get(k, []))} rep(s)")
-        if "D" in owners:
-            mechanisms.append(f"deck ({len(card_ids)} card(s))")
-            if card_ids:
+        if card_ids:
+            suffix = "" if bar == "deck" else ", reinforcement"
+            mechanisms.append(f"deck ({len(card_ids)} card{'s' if len(card_ids) > 1 else ''}"
+                              f"{suffix})")
+            if bar == "deck":
                 detail.append("boxes " + ",".join(
                     str(st.get(i, {}).get("box", 0)) for i in card_ids))
+        elif "D" in owners:
+            mechanisms.append("deck (0 cards)")
         if "R" in owners:
             mechanisms.append("rehearsal")
-            detail.append(f"{len(takes.get(cid, []))} take(s)")
+            n = len([r for r in takes if r["story"] == cid])
+            detail.append(f"{n} take(s)")
         if "PROMPT" in owners:
-            mechanisms.append(f"design prompts ({len(prompt_answers())} written)")
+            mechanisms.append(f"design prompts ({len(prompts)} written)")
         if "P" in owners:
             mechanisms.append("HIL project")
             detail.append("evidence lives in the harness repo")
@@ -215,11 +301,6 @@ def score():
             mechanisms.append("Mimic")
             detail.append("bench evidence lives in Mimic, not here")
 
-        # But only ONE of them is the bar. plan/INTERVIEW_REQUIREMENTS.md's "Scoring
-        # yourself" section sets it per group: C is the kata log, E is deck boxes, B
-        # is rated takes. Requiring every listed mechanism instead would mean E1 —
-        # a verbal question whose bar is "said aloud with the trap named" — could not
-        # be met until a kata was also retired, which is stricter than the spec.
         def deck_met():
             return bool(card_ids) and all(
                 st.get(i, {}).get("box", 0) >= MASTERED_BOX for i in card_ids)
@@ -228,30 +309,34 @@ def score():
             return bool(katas) and all(
                 kata_retired(reps.get(k, []), targets.get(k, 15)) for k in katas)
 
-        if "DEFER" in owners:
+        def prompts_met():
+            scored = [s for _, s in prompts[-PROMPT_RECENT:] if s is not None]
+            return (len(prompts) >= PROMPTS_FOR_T1
+                    and len(scored) == PROMPT_RECENT
+                    and all(s >= PROMPT_SCORE_BAR for s in scored))
+
+        if bar == "deferred":
             mechanisms.append("deferred")
             detail.append("out of scope by decision — see plan/COVERAGE.md")
-            done, bar = None, "deferred"
-        elif cid[0] == "C":
-            done = kata_met() if "K" in owners else (deck_met() if "D" in owners else None)
-            bar = "kata"
-        elif cid[0] == "B":
-            done = len(takes.get(cid, [])) >= STRONG_TAKES
-            bar = "rehearsal"
-        elif "PROMPT" in owners:
-            done = len(prompt_answers()) >= PROMPTS_FOR_T1
-            bar = "design prompts"
-        elif "D" in owners:
+            done = None
+        elif bar == "clean rate":
+            done = nreps >= C1_MIN_REPS and rate >= C1_CLEAN_RATE
+            mechanisms.append("the kata log")
+            detail.append(f"{round(100 * rate)}% clean over {nreps} rep(s); "
+                          f"bar is {round(100 * C1_CLEAN_RATE)}% over {C1_MIN_REPS}")
+        elif bar == "kata":
+            done = kata_met()
+        elif bar == "deck":
             done = deck_met()
-            bar = "deck"
-        elif "P" in owners:
-            done, bar = None, "HIL project"          # proved in the harness repo
-        elif owners & {"M0", "M1"}:
-            done, bar = None, "Mimic"                # proved at the bench
-        elif "K" in owners:
-            done, bar = kata_met(), "kata"
+        elif bar == "rehearsal":
+            done = reh.ready(cid, takes)
+        elif bar == "design prompts":
+            done = prompts_met()
+            scored = [s for _, s in prompts if s is not None]
+            detail.append(f"{len(scored)} scored, bar is the last {PROMPT_RECENT} "
+                          f"at {PROMPT_SCORE_BAR}+/16")
         else:
-            done, bar = None, ""
+            done = None                # tracked outside this repo, or nothing owns it
 
         results[cid] = {
             "id": cid, "group": cid[0], "statement": statement,
@@ -266,34 +351,77 @@ def gaps(results):
     return [r for r in results.values() if not r["mechanisms"]]
 
 
+def consistency():
+    """Problems that make the score itself untrustworthy. Returns a list of strings.
+
+    The count of capabilities is deliberately not hardcoded. What is checked instead
+    is that the spec and the coverage map describe the same set, and that each group
+    is numbered 1..n with no gaps and no duplicates — so a row deleted from either
+    file, or a typo'd ID, is a CI failure rather than a quietly smaller total.
+    """
+    problems = []
+    caps, own = capabilities(), ownership()
+
+    if not caps:
+        return [f"{os.path.relpath(REQ, ROOT)}: no capabilities parsed — the spec is "
+                f"empty or its tables changed shape"]
+
+    for cid in sorted(set(caps) - set(own)):
+        problems.append(f"{cid}: in the spec but has no row in plan/COVERAGE.md")
+    for cid in sorted(set(own) - set(caps)):
+        problems.append(f"{cid}: has a row in plan/COVERAGE.md but is not in the spec")
+
+    by_group = defaultdict(list)
+    for cid in caps:
+        by_group[cid[0]].append(int(cid[1:]))
+    for g in sorted(GROUPS):
+        nums = sorted(by_group.get(g, []))
+        if not nums:
+            problems.append(f"group {g}: no capabilities found in the spec")
+            continue
+        if nums != list(range(1, len(nums) + 1)):
+            problems.append(
+                f"group {g}: numbered {nums} — must run 1..{len(nums)} with no gaps "
+                f"or duplicates"
+            )
+    return problems
+
+
 def render_md(results):
     L = []
     a = L.append
     total = len(results)
     scorable = [r for r in results.values() if r["done"] is not None]
     done = [r for r in scorable if r["done"]]
-    external = [r for r in results.values() if r["done"] is None]
+    deferred = [r for r in results.values() if r["bar"] == "deferred"]
+    elsewhere = [r for r in results.values()
+                 if r["done"] is None and r["bar"] != "deferred"]
 
     a("# Progress")
     a("")
     a(f"Generated by `make progress` on {date.today().isoformat()}. Do not edit by hand.")
     a("")
     a(f"**{len(done)} of {len(scorable)} scorable capabilities met.** "
-      f"{len(external)} more are proved outside this repo (bench work and the harness), "
-      f"{total} total.")
+      f"{len(elsewhere)} more are tracked outside this repo — bench work in Mimic and "
+      f"artifacts in the harness — and are *not* verified here; "
+      f"{len(deferred)} deferred by decision. {total} total.")
     a("")
     a("A capability is met only when its evidence bar is met and logged — three clean "
       "kata reps at target across three variants, every tagged deck card in Leitner box "
-      "4 or higher, or three rated takes of a story. Nothing here is self-assessed.")
+      f"{MASTERED_BOX} or higher, or three strong takes of a story on three different "
+      "days. Nothing here is self-assessed.")
+    a("")
+    a("\"Tracked outside this repo\" means exactly that: the mechanism that would prove "
+      "it lives somewhere this repo cannot see, so it is reported rather than counted. "
+      "It is not a claim that the work is done.")
     a("")
 
     reps = kata_reps()
+    a("## Katas")
+    a("")
     if reps:
-        allr = [r for v in reps.values() for r in v]
-        clean = sum(1 for r in allr if r["clean"])
-        a("## Katas")
-        a("")
-        a(f"{len(allr)} reps logged, {round(100 * clean / len(allr))}% clean on first compile.")
+        rate, n = clean_rate(reps)
+        a(f"{n} reps logged, {round(100 * rate)}% clean on first compile.")
         a("")
         a("| Module | Reps | Best clean | Last | Target | Trend |")
         a("|---|---|---|---|---|---|")
@@ -303,12 +431,11 @@ def render_md(results):
             cl = [r["minutes"] for r in v if r["clean"]]
             first, last = v[0]["minutes"], v[-1]["minutes"]
             arrow = "falling" if last < first else ("flat" if last == first else "rising")
-            a(f"| `{k}` | {len(v)} | {min(cl):g} min |" if cl else f"| `{k}` | {len(v)} | — |"
-              f" {last:g} min | {targets.get(k, 15)} min | {arrow} |")
+            best = f"{min(cl):g} min" if cl else "—"
+            a(f"| `{k}` | {len(v)} | {best} | {last:g} min | "
+              f"{targets.get(k, 15)} min | {arrow} |")
         a("")
     else:
-        a("## Katas")
-        a("")
         a("No reps logged yet. `make drill` starts the first one.")
         a("")
 
@@ -325,8 +452,10 @@ def render_md(results):
         for r in rows:
             if r["done"] is True:
                 status = "**met**"
+            elif r["bar"] == "deferred":
+                status = "deferred"
             elif r["done"] is None:
-                status = "outside this repo"
+                status = "tracked outside this repo"
             else:
                 status = "in progress"
             mech = ", ".join(r["mechanisms"]) or "**NO MECHANISM**"
@@ -341,22 +470,31 @@ def main():
     ap.add_argument("--check", action="store_true")
     args = ap.parse_args()
 
-    results = score()
-    missing = gaps(results)
-
     if args.check:
+        problems = consistency()
+        if problems:
+            print(f"{len(problems)} problem(s) between the spec and the coverage map:")
+            for p in problems:
+                print(f"  - {p}")
+            return 1
+        results = score()
+        missing = gaps(results)
         if missing:
             print(f"{len(missing)} capability/capabilities with no mechanism:")
             for r in missing:
                 print(f"  - {r['id']}  {r['statement']}")
             return 1
-        print(f"all {len(results)} capabilities have a mechanism.")
+        print(f"all {len(results)} capabilities are in both files and have a mechanism.")
         return 0
 
+    results = score()
+    missing = gaps(results)
     scorable = [r for r in results.values() if r["done"] is not None]
     done = [r for r in scorable if r["done"]]
+    deferred = sum(1 for r in results.values() if r["bar"] == "deferred")
     print(f"\n  {len(done)}/{len(scorable)} scorable capabilities met "
-          f"({len(results)} total, {len(results) - len(scorable)} proved outside this repo)")
+          f"({len(results)} total, {len(results) - len(scorable) - deferred} tracked "
+          f"outside this repo, {deferred} deferred)")
     for g, title in GROUPS.items():
         rows = [r for r in results.values() if r["group"] == g]
         met = sum(1 for r in rows if r["done"])
@@ -365,7 +503,7 @@ def main():
         print(f"    {g}  {met:>2}/{len(rows):<2} {bar}   {title}")
     if missing:
         print(f"\n  {len(missing)} with NO mechanism: {', '.join(r['id'] for r in missing)}")
-    print("\n  '#' met   '.' in progress   '~' proved outside this repo\n")
+    print("\n  '#' met   '.' in progress   '~' tracked outside this repo\n")
 
     if args.write:
         os.makedirs(os.path.dirname(OUT_MD), exist_ok=True)
@@ -373,7 +511,9 @@ def main():
             fh.write(render_md(results) + "\n")
         payload = {
             "generated": date.today().isoformat(),
-            "totals": {"all": len(results), "scorable": len(scorable), "met": len(done)},
+            "totals": {"all": len(results), "scorable": len(scorable),
+                       "met": len(done), "deferred": deferred,
+                       "tracked_elsewhere": len(results) - len(scorable) - deferred},
             "capabilities": list(results.values()),
         }
         with open(OUT_JSON, "w") as fh:

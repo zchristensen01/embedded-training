@@ -12,13 +12,16 @@ whole thing fits together.
 
 ## The idea in one paragraph
 
-Interview research produced a list of **78 numbered capabilities** — things you have
-to be able to *do*, each with a stated bar for what counts as proof. Every one is
-assigned to a mechanism that practises it repeatedly and records the result. Nothing
-is marked as learned because it feels learned; it is marked when the log says so.
+Interview research produced a list of **numbered capabilities** — things you have to be able
+to *do*, each with a stated bar for what counts as proof. Every one is assigned to a mechanism
+that practises it repeatedly and records the result. Nothing is marked as learned because it
+feels learned; it is marked when the log says so.
+
+The count is not written into any document. `make progress` reports it, and CI proves the
+spec and the coverage map still describe the same set.
 
 ```
-plan/INTERVIEW_REQUIREMENTS.md      the 78 capabilities        THE SPECIFICATION
+plan/INTERVIEW_REQUIREMENTS.md      the capability list        THE SPECIFICATION
         │
         ├── plan/COVERAGE.md         who owns each one
         │
@@ -36,9 +39,9 @@ verbal round is the most common way this kind of preparation goes wrong.
 | Mechanism | Covers | How it repeats | Command |
 |---|---|---|---|
 | **Kata** | C fluency, 12 items | Frozen tests, deleted `src/`, 7 variants each | `make drill` |
-| **Deck** | Concepts and verbal, ~37 items | Leitner boxes at 1/2/4/8/16 days, spoken aloud | `make review` |
+| **Deck** | Concepts and verbal, the whole E group and most of T | Leitner boxes at 1/2/4/8/16 days, spoken aloud | `make review` |
 | **Design prompt** | "How would you test X", the core T&I question | 40 rotating subjects, one fixed rubric | `make prompt` |
-| **Rehearsal** | Behavioural, 10 stories | Re-told to three strong takes | `make rehearse` |
+| **Rehearsal** | Behavioural, 10 stories | Re-told to three strong takes on three days | `make rehearse` |
 | **Project** | The HIL harness, 6 items | Not repeatable — one artifact, done well | its own repo |
 
 ## The kata mechanism, because it is the unusual one
@@ -48,7 +51,7 @@ Inside every kata directory:
 ```
 practice/katas/ring_buffer/
 ├── BRIEF.md      committed   what it is, the API, how to think about it, what to test
-├── VARIANTS.md   committed   seven variants the drill draws from
+├── VARIANTS.md   committed   the seven variants the drill draws from
 ├── NOTES.md      committed   one decision or bug per rep, appended automatically
 ├── include/      committed   the API contract.  FROZEN — never edited during a rep
 ├── tests/        committed   the test suite.    FROZEN — never edited during a rep
@@ -67,14 +70,20 @@ What accumulates is the *lesson* and the *time*, not the code.
 
 ```bash
 date +%F > logs/.start_date     # the Monday you're starting
-make calendar                   # stamps plan/CALENDAR.md with real dates
+make dates                      # plan/CALENDAR.dated.md — 70 days with real dates
 make today                      # what to do right now
 ```
+
+`plan/CALENDAR.md` is committed and carries relative labels (`Day 1 · Mon`), because
+your start date is yours and not the repo's. `make dates` writes the same seventy days
+with real dates to a gitignored file next to it — that is the one to open, or to paste
+into a real calendar. `make calendar` regenerates the committed file and is only needed
+after editing `tools/schedule.py`.
 
 Then read, once, in this order — and then stop reading:
 
 1. **`SETUP.md`** — day 0 and the kata build order.
-2. **`plan/INTERVIEW_REQUIREMENTS.md`** — the research, and the 78 capabilities.
+2. **`plan/INTERVIEW_REQUIREMENTS.md`** — the research, and the capability list.
 3. **`plan/COVERAGE.md`** — which mechanism owns each capability.
 4. **`practice/PRACTICE_SYSTEM.md`** — how practice is made repeatable and AI-proof.
 5. **`plan/CURRICULUM.md`** — ten weeks, hour by hour.
@@ -93,6 +102,10 @@ make done           stop the clock, log the rep
 make review         deck pass — ANSWER OUT LOUD
 ```
 
+**[`DAILY.md`](DAILY.md)** is the checklist for that loop: what a line like `make drill
+KATA=bitops VARIANT=v1` actually does, what changes with the day of the week, and what you
+owe the log at each end of a session. Read it before day 1.
+
 Full list with explanations: **[`reference/COMMANDS.md`](reference/COMMANDS.md)**.
 
 ## The one rule that matters
@@ -109,7 +122,7 @@ suite means outsourcing the thing you are selling. Every use gets logged in
 
 ```bash
 make report      time curve, clean-compile rate, phase breakdown, coverage
-make progress    the 78 capabilities scored against their evidence bars
+make progress    every capability scored against its evidence bar
 ```
 
 Four numbers matter, and all four come from the logs rather than from self-assessment:
@@ -118,7 +131,8 @@ Four numbers matter, and all four come from the logs rather than from self-asses
   week 4, 55% by week 6, 70% by week 10.
 - **`write` + `compile` as a share of total rep time** — syntax fluency in one number.
   Under 40% by week 10.
-- **Reps per week** — consistency beats intensity. Six is the target.
+- **Reps per week** — consistency beats intensity. The calendar schedules seven; six is the
+  target, because one missed day is real life and two is a drift.
 - **Capabilities met** — `make progress`. Should climb steadily, not in a rush at the end.
 
 If all four are flat and you feel like you are improving, you are not. That is what

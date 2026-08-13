@@ -5,13 +5,23 @@ sitting an embedded or test-and-integration interview. **This file is the specif
 other file in this repo exists to satisfy some part of it.
 
 Capabilities are numbered so `plan/COVERAGE.md` can point at them, `tools/progress.py` can score
-them, and you can tick them off. 78 of them, in five groups.
+them, and you can tick them off. Five groups:
 
 - **C**n — C language and syntax fluency
 - **E**n — Embedded concepts
 - **H**n — Hardware, signals, and debugging
 - **T**n — Test and integration
 - **B**n — Behavioural and narrative
+
+The count is not written down here on purpose — `make progress` reports it, and
+`make check-coverage` proves this file and `plan/COVERAGE.md` describe exactly the same set,
+each group numbered from 1 with no gaps. A number in prose is a number that goes stale.
+
+**On the research below.** It was gathered from public candidate reports — Glassdoor, Blind,
+engineering blogs — in **August 2026**, and it has no citations because most of the sources are
+individual accounts rather than anything durable. Read every company-specific claim as "candidates
+have reported", not as policy. Interview processes change without announcement, and §6 says more
+about how much to trust each part.
 
 ---
 
@@ -83,8 +93,9 @@ swap, debouncer, a driver function. Plus C-language trap questions and project d
 frequently decisive. Whiteboard and on-paper still appear for C traps and "draw the state
 machine."
 
-**Languages:** C dominates embedded. Python dominates test and integration. C++ and Rust appear
-at ASIC and high-frequency-trading firms, which are outside the scope of this plan.
+**Languages:** C dominates embedded. Python dominates test and integration. C++ shows up in
+robotics, automotive and anywhere with a real application layer on top of the firmware; Rust is
+still rare in job requirements and mostly appears as a nice-to-have. Neither is in scope here.
 
 **AI in take-homes:** take-homes increasingly ship with automated test suites (SpaceX) and a
 follow-up interview where you defend the solution live (Kraken, Tesla). Assume you will have to
@@ -193,6 +204,9 @@ evidence bar that counts as proof. `plan/COVERAGE.md` says who owns each one.
 | E23 | State machine patterns: switch, table-driven, function-pointer, and when each | Verbal + code | — |
 | E24 | Debouncing approaches and non-blocking timing | Verbal + code | — |
 | E25 | Watchdog design done correctly | Verbal | Not kicked from a timer ISR |
+| E26 | What a linker script does, and read a `.map` file to see where code and data landed | Verbal | Names which sections live in flash and which in RAM |
+| E27 | Field firmware update: A/B partitions, integrity check, rollback | Verbal | Handles power loss mid-update |
+| E28 | MCU low-power modes, wake sources, and how you'd measure real current draw | Verbal | Says what stops running in each mode |
 
 ## H — Hardware, signals, and debugging
 
@@ -234,6 +248,8 @@ evidence bar that counts as proof. `plan/COVERAGE.md` says who owns each one.
 | T19 | Run tests against real hardware in CI | Portfolio | Green CI run, screenshot |
 | T20 | Write Bash for test scripting and device wrangling | Take-home | — |
 | T21 | Trace each test to a requirement | Portfolio | Requirement IDs in test names or markers |
+| T22 | Test firmware C on the host: build the logic without hardware and fake what it talks to | Take-home, portfolio | Names the seam the fake goes at |
+| T23 | Explain static analysis and coding standards (MISRA-C): what they catch and what they don't | Verbal | Not "it finds the bugs for you" |
 
 ## B — Behavioural and narrative
 
@@ -252,15 +268,34 @@ evidence bar that counts as proof. `plan/COVERAGE.md` says who owns each one.
 
 ---
 
+## Known gaps in this list
+
+Two things the research above says matter, which nothing in this repo currently measures. They
+are written down here rather than added as capabilities, because a numbered capability with no
+mechanism behind it is worse than an admitted hole:
+
+- **Debugging C you did not write.** Tesla's take-home is reported to include "debugging existing
+  code", and take-homes generally hand you a codebase rather than a blank file. Every mechanism
+  here starts from an empty editor. Week 10's mock take-home is the only exposure, and it is one
+  day out of seventy. Closing this needs a corpus of broken C to read, and writing that corpus is
+  the human's job under the AI rule — an AI-written bug is an AI-written exercise.
+- **Whiteboard and paper.** Still reported for C traps and "draw the state machine". The only
+  mechanism is one constraint card, drawn on roughly one rep in ten of the third that draw a card
+  at all.
+
 ## Scoring yourself
 
 A capability is **done** when the evidence bar is met and logged — not when you feel you know it.
 
-- **C items:** logged in `logs/log.tsv` via `make done`. Time and clean-rate are the proof.
+- **C items:** logged in `logs/log.tsv` via `make done`. Three consecutive clean reps at or under
+  target across three different variants retires the kata. C1 is the exception: it is the
+  clean-first-compile rate itself, across every module, over at least twenty reps.
 - **E items:** in box 4 or 5 of the deck via `make review`, meaning you've said it correctly
   across several spaced sessions including the trap.
 - **H items:** a mix — some are deck cards, some need a real capture or bench session.
-- **T items:** deck cards plus artifacts in the harness repo.
-- **B items:** written in STAR form and rehearsed aloud at least three times.
+- **T items:** deck cards, the design-prompt rubric for T1, or artifacts in the harness repo.
+- **B items:** written in STAR form, then three takes rated strong on three different days.
 
-`plan/COVERAGE.md` says which system is responsible for getting you there.
+`plan/COVERAGE.md` says which system is responsible for getting you there, and `make progress`
+scores it. A capability whose mechanism lives outside this repo is reported as *tracked
+elsewhere* — which is not the same as done, and the report does not pretend otherwise.

@@ -1,5 +1,13 @@
 # Kata 7 — register_map
 
+> **Before your first rep you owe this module two files:** `include/register_map.h` — the API
+> contract — and the suite in `tests/`. Write the header first, then list the cases under
+> **What to test** below in your own words, then write every one of them yourself. AI writes
+> neither. `make drill` refuses a module whose header and tests do not exist, because a rep
+> against an empty suite is not a rep. Both are frozen once written: you do not edit them
+> during a rep, only your `src/`, which is deleted each time. See
+> [DAILY.md](../../../DAILY.md#build-sessions).
+
 ## What it is
 A simulated peripheral: a block of memory you treat as memory-mapped hardware registers, plus
 the accessor layer over it. You write the header declarations, the read/modify/write helpers,
@@ -9,9 +17,8 @@ optimised away.
 
 ## Why firmware needs it
 Every driver you will ever write starts here. And the `volatile` / `static` / `const` /
-pointer cluster is the single most-asked embedded interview topic — none of your other six
-modules touch access semantics at all. `bitops` operates on values; this operates on
-*locations*.
+pointer cluster is the most-asked embedded interview topic — no other module in the set
+touches access semantics at all. `bitops` operates on values; this operates on *locations*.
 
 ## The API you implement
 ```c

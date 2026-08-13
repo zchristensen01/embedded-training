@@ -4,8 +4,8 @@ The B group in `plan/INTERVIEW_REQUIREMENTS.md` — ten narrative capabilities. 
 reject more test & integration candidates than technical rounds do, so this is not the soft part
 of the plan.
 
-Rehearsal is Format C-shaped: repeatable, because you re-tell the same story until it's tight,
-and recorded, because you can't hear your own filler words.
+Rehearsal is the fifth format in `practice/PRACTICE_SYSTEM.md`: repeatable, because you re-tell
+the same story until it's tight, and recorded, because you can't hear your own filler words.
 
 ```
 make rehearse          # draws a story, starts the clock, logs the take

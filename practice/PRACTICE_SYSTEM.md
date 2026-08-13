@@ -5,17 +5,18 @@ How this repo makes practice repeatable, forced, and recorded. Mimic is not disc
 
 ---
 
-## Four formats, because "practice" is not one thing
+## Five formats, because "practice" is not one thing
 
 | Format | Repeatable? | Mechanism | Recorded in |
 |---|---|---|---|
 | **A. Katas** | Infinitely | Frozen tests + gitignored `src/` + variants | `logs/log.tsv` |
 | **B. Concepts** | On a schedule | Leitner spaced repetition, spoken aloud | `practice/decks/.state.json` |
 | **C. Design prompts** | With fresh subjects | Rotating subject list, fixed rubric | `logs/design-prompts/` |
-| **D. Projects** | **No. One-shot.** | Artifact + README + rehearsed story | The repo itself |
+| **D. Rehearsal** | Until it's tight | Re-tell one story to three strong takes | `logs/rehearsal.tsv` |
+| **E. Projects** | **No. One-shot.** | Artifact + README + rehearsed story | The repo itself |
 
-Only A, B, and C repeat. D does not, and trying to drill it wastes time — its value is the
-artifact and the story.
+A through D repeat. E does not, and trying to drill it wastes time — its value is the artifact
+and the story.
 
 ---
 
@@ -46,9 +47,10 @@ What accumulates across reps is the *lesson* and the *time*, not the code. That'
 
 Three sources that multiply:
 
-**1. Variants.** Same kata, different constraint, own test file. `ring_buffer` has six: count-based
-full/empty, sacrificial slot, power-of-two masking, overwrite-oldest, ISR-safe single-producer
-single-consumer, and generic element size via `void*`. You cannot muscle-memory six.
+**1. Variants.** Same kata, different constraint. Every module has seven, written up in its
+`VARIANTS.md` — `ring_buffer`'s run from count-based full/empty through lock-free
+single-producer/single-consumer, power-of-two masking, overwrite-oldest, generic element size,
+bulk transfer, and peek. You cannot muscle-memory seven.
 
 **2. Constraint cards.** Drawn automatically about a third of the time, applied on top of any
 variant:
@@ -103,16 +105,45 @@ by week 10 is the target.
 Missing a lap call isn't a problem — `make done` attributes whatever is left to the next phase in
 sequence. Skipping laps entirely just means you get totals without the diagnosis.
 
-### Selection — you don't get to choose
+### Selection — the default chooses, you can always override
 
-`make drill` picks by: worst recent time first, then longest since last rep, then never attempted.
-It won't repeat a kata within three days if alternatives exist. This is deliberate — left to
-choose, you'd avoid `pool_allocator`.
+`make drill` with no arguments picks by: worst recent time first, then longest since last rep,
+then never attempted, then closest to meeting its bar. It won't repeat a module within three
+days if alternatives exist. That default is deliberate — left to choose every day, you'd avoid
+`pool_allocator` for ten weeks.
 
-### Retirement
+**But nothing stops you choosing.** `make drill KATA=fsm` runs `fsm` right now, whatever the
+calendar says, and picks the variant you've done least recently. `make drill KATA=fsm VARIANT=v4`
+pins both. Swapping the assigned module for one you know you're worse at is not cheating the
+system, it is using it — the score comes from `logs/log.tsv`, which records what you *did*, not
+what the calendar asked for. The calendar is a default, not a gate.
 
-A kata drops to maintenance rotation (once a fortnight) after **three consecutive clean reps at
-target time, across three different variants.** Not before.
+The one thing that does refuse you is a module with no frozen header and test suite. A rep
+against an empty suite isn't a rep, so `make drill` will tell you what you owe it instead.
+
+Two things to watch if you free-play a lot:
+
+- **`make report` flags what you're avoiding** — anything untouched for 14 days, and anything
+  never attempted. That is the honest counterweight to choosing your own reps.
+- **Spread the variants.** Doing `v1` six times is one exercise done six times. Leaving `VARIANT=`
+  off handles this for you: it picks the one you've gone longest without.
+
+### When a module has met its bar
+
+A module has met its bar after **three consecutive clean reps at target time, across three
+different variants.** Not before.
+
+**"Met" does not mean "stop".** Nothing locks, nothing is removed from the rotation, and the
+calendar keeps scheduling it. All it means is that the capability resting on that module is now
+proved by the log rather than by how you feel about it — `make progress` flips it to **met** and
+`make log` prints *bar met* beside the module. Keep drilling it if you want to; a module you can
+do cold in eight minutes is a nice way to start a session.
+
+`tools/progress.py:kata_retired()` is that rule in code. Two consequences worth knowing:
+consecutive means one bad rep resets the count, and every module that owns a capability's bar is
+scheduled with at least three slots ending in three different variants — `make check-calendar`
+fails if that stops being true. Saturday's adaptive rep is the slack that lets you recover from
+a bad one.
 
 ---
 
@@ -137,11 +168,13 @@ if a similar question already exists, and refuses a card with no trap — a card
 wrong answer on it is worth much less than one with it. `make done` offers the same prompt
 at the end of every rep, which is the moment you are most likely to have been caught out.
 
-The 56 cards that ship here do not cover all 78 capabilities and are not meant to: C is
-katas, B is rehearsal, and most of H is Mimic's bench work. The deck covers roughly the E
-group plus most of T. S3's encoder interrupts and S10's anti-windup will each produce two
-or three cards of their own — write them the same day, while you still remember which part
-actually caught you.
+The cards that ship here do not cover every capability and are not meant to: C is katas, B is
+rehearsal, and part of H is bench work. The deck is the evidence bar for the whole E group and
+most of T — `make decks` prints which capabilities it carries and which are resting on a single
+card. Some cards are tagged with a capability scored some other way; those are reinforcement,
+they are labelled as such, and `make check-decks` will fail on a tag that names no capability
+at all. S3's encoder interrupts and S10's anti-windup will each produce two or three cards of
+their own — write them the same day, while you still remember which part actually caught you.
 
 ---
 
@@ -159,7 +192,25 @@ before you're told to stop.
 
 ---
 
-## Format D — Projects
+## Format D — Rehearsal
+
+The B group: ten narrative capabilities, in `practice/rehearsal/STORIES.md`. The research is
+blunt that test-and-integration candidates fail the behavioural round *more often* than the
+technical one, which makes this the least optional part of the plan and the easiest to skip.
+
+`make rehearse` draws the story with the fewest strong takes, times it, and asks for a rating.
+A story is **ready at three takes rated strong, on three different days** — three takes in one
+afternoon is one rehearsal, not three, and the point is that the story survives a gap.
+`tools/rehearse.py:ready()` is the single definition of that; `make progress` imports it rather
+than keeping a second opinion.
+
+Ten stories at three takes each is thirty takes. The calendar schedules one on Saturday and two
+on Sunday from week 3 on, plus heavier blocks in weeks 9 and 10 — which is how the arithmetic
+closes. Fill in `STORIES.md` before the first take; an unwritten story wanders.
+
+Record every third take and watch it back. You cannot hear your own filler.
+
+## Format E — Projects
 
 Not repeatable. Do it once, properly, and extract three things: a public repo with a README that
 states design decisions, three to five rehearsed answers to "walk me through a project," and a
@@ -212,7 +263,8 @@ appearing under "explanations" three times a day in week 6, you've drifted. The 
    directly measures the gap you're fixing.
 2. **Clean-first-compile rate.** The best single proxy for syntax fluency. Above 40% by week 4,
    above 55% by week 6, above 70% by week 10.
-3. **Reps per week.** Consistency beats intensity. Five is the target.
+3. **Reps per week.** Consistency beats intensity. The calendar schedules seven; six is the
+   target, because one missed day a week is real life and two is a drift.
 4. **Coverage.** Which katas you're avoiding. The report flags anything untouched for 14 days.
 
 `make stats` gives a fifth: deck box distribution. If most cards are stuck in boxes 1–2 by week 5,

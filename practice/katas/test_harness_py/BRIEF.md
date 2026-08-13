@@ -1,14 +1,21 @@
 # Kata 11 — test_harness_py
 
+> **Before your first rep you owe this module its test suite** in `tests/`, in pytest,
+> written by you. It is the one module with no build session — week 7's main block is five
+> days of pytest from zero and this kata is the artifact those days produce. `make drill`
+> refuses a module whose tests do not exist. Frozen once written: you do not edit it during
+> a rep, only your `src/`, which is deleted each time. See
+> [DAILY.md](../../../DAILY.md#build-sessions).
+
 ## What it is
 The test & integration kata. A pytest-based harness that drives a device under test, first
 against a simulated device, then against real hardware over serial.
 
 ## Why this is the wedge
-Kepler Communications' embedded test automation posting asks for Python and Bash for test
-development, pytest, GitLab CI/CD, and hardware-in-the-loop testing with custom test rigs. You
-already have four of those five from your backend work. This kata plus the Week 7 project gets
-you the fifth and turns a web resume into an embedded credential.
+A representative embedded test-automation posting asks for Python and Bash test development,
+pytest, CI/CD, and hardware-in-the-loop testing with custom test rigs. Four of those five are
+ordinary backend skills wearing different vocabulary. This kata plus the week 8 harness is the
+fifth — and it is the one that cannot be claimed without having built it.
 
 It is a kata rather than only a project because the *structure* — fixture, device abstraction,
 parametrised cases, deterministic teardown — is a pattern you should be able to reproduce cold

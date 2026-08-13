@@ -33,10 +33,14 @@ jobs:
       - uses: actions/checkout@v4
       - name: validate logs/log.tsv
         run: make check-log
-      - name: schedule and build plan agree
+      - name: schedule, build plan and timer blocks agree
         run: make check-calendar
-      - name: every capability has a mechanism
+      - name: spec and coverage map describe the same capabilities
         run: make check-coverage
+      - name: every deck tag names a real capability
+        run: make check-decks
+      - name: generated files match their generators
+        run: make check-generated
 
   tools:
     runs-on: ubuntu-latest

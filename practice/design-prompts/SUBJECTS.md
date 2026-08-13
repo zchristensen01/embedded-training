@@ -78,7 +78,7 @@ Medical devices and imaging:
 33. A surgical stapler
 34. A defibrillator
 35. A patient monitor alarm
-36. A powered exoskeleton joint *(your kinesiology background is a real edge here — use it)*
+36. A powered exoskeleton joint
 37. A prosthetic knee
 
 Robotics:

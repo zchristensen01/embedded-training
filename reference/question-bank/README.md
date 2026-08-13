@@ -1,12 +1,13 @@
 # Question bank
 
-Everything from the interview research, formatted to drop into the kata repo. Split by practice
-format because they need different mechanisms:
+Everything from the interview research, split by practice format because each needs a different
+mechanism:
 
 - `embedded-coding.md` — **(a) coding exercises.** Things you write. Map to katas.
 - `embedded-concepts.md` — **(b) conceptual/verbal.** Things you say. Map to deck cards.
 - `test-integration.md` — the T&I track, both (a) and (b), plus process/regulatory.
-- `design-prompts.md` — **(c) explain-your-design** and "how would you test X." Rubric-scored.
+- `../../practice/design-prompts/SUBJECTS.md` — **(c) explain-your-design** and "how would you
+  test X." Rubric-scored, and drawn from by `make prompt`.
 
 ---
 
@@ -21,22 +22,24 @@ format because they need different mechanisms:
 | Framing, CRC, byte-stream parsing | `protocol_parser` | Covered |
 | Fixed-point math, control loops | `fixed_point_pid` | Covered |
 
-## Topics that need new katas — flagged
+## Topics that needed new katas
 
-Your six modules leave five real gaps. Each of these is a high-frequency interview topic that
-does not fit any existing module, so forcing it in would weaken both.
+The six original modules left six real gaps. Each is a high-frequency interview topic that does
+not fit any existing module, so forcing it in would weaken both.
 
 | # | New kata | Why it can't fold into an existing module |
 |---|---|---|
 | 7 | `register_map` | `volatile`/`static`/`const` + memory-mapped I/O + struct padding is **the single most-asked embedded topic** and none of the six touch it. `bitops` is arithmetic on values; this is about *access semantics* and the type system. Different skill entirely. |
 | 8 | `mem_primitives` | `memcpy`/`memmove`/`memset`/`strlen`/`strncpy` from scratch. Asked constantly. Pure pointer-and-bounds work; doesn't belong in `bitops` (no bit manipulation) or `protocol_parser` (no framing). |
 | 9 | `pool_allocator` | Fixed-block allocator / your own `malloc`. Covers stack-vs-heap, fragmentation, alignment, and "why no malloc in firmware." No existing module allocates anything. |
-| 10 | `concurrency_sim` | Mutex vs. semaphore, priority inversion, deadlock — run on host pthreads so it's practicable with no RTOS hardware. Roughly half of candidates fail this cluster. `ring_buffer` v5 touches ISR-safety but not scheduling or ownership. |
-| 11 | `test_harness_py` | The T&I track's kata: pytest, fixtures, parametrize, driving a device over serial. Different language, different repo conventions, and it's the wedge. Must exist. |
+| 10 | `concurrency_sim` | Mutex vs. semaphore, priority inversion, deadlock — run on host pthreads so it's practicable with no RTOS hardware. The cluster candidates most reliably fail. `ring_buffer` v2 touches ISR-safety but not scheduling or ownership. |
+| 11 | `test_harness_py` | The T&I track's kata: pytest, fixtures, parametrize, driving a device over serial. Different language, different conventions, and it is the wedge. Must exist. |
+| 12 | `rollover_timer` | C11 was marked as a kata in `plan/COVERAGE.md` with no kata behind it. Tick counters, the rollover-safe comparison, and superloop scheduling — the famous bug that only shows up after 49.7 days of uptime. |
 
-Briefs for all five are in `practice/katas/`.
+Briefs for all six are in `practice/katas/`.
 
 ---
 
 This repo is about building and proving the capability. It deliberately contains nothing about
-where to apply or what to ask for.
+where to apply or what to ask for — `.gitignore` reserves `plan/APPLICATIONS.md` and
+`plan/private/` for that, so there is an obvious place to put it that is not here.

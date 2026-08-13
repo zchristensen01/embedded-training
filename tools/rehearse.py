@@ -4,6 +4,12 @@
   python3 tools/rehearse.py            draw the story with fewest strong takes
   python3 tools/rehearse.py B7         a specific story
   python3 tools/rehearse.py --stats    takes per story, best times, what's ready
+
+The stories and their target times both come from practice/rehearsal/STORIES.md.
+Nothing about the B group is hardcoded here, so adding a story needs no code change.
+
+`ready()` is the single definition of a finished story, and `make progress` imports it
+from this file rather than keeping a second opinion about what "three takes" means.
 """
 import os
 import re
@@ -15,19 +21,39 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STORIES = os.path.join(ROOT, "practice", "rehearsal", "STORIES.md")
 LOG = os.path.join(ROOT, "logs", "rehearsal.tsv")
 
-TARGET = {"B1": 60, "B2": 45, "B3": 180, "B4": 120, "B5": 90,
-          "B6": 90, "B7": 90, "B8": 90, "B9": 90, "B10": 600}
+STRONG = 1          # the rating that counts
+STRONG_DAYS = 3     # ...on this many different days
+DEFAULT_TARGET = 90
+
+HEAD_RE = re.compile(r"^## (B\d+) · (.+)$")
+TARGET_RE = re.compile(r"Target:\s*(\d+)\s*(second|minute)", re.I)
 
 
 def load():
-    out = []
+    """[(id, title, target_seconds)] in file order, from STORIES.md."""
     if not os.path.exists(STORIES):
         sys.exit(f"Missing {STORIES}")
+    out, pending = [], None
     for line in open(STORIES):
-        m = re.match(r"^## (B\d+) · (.+)$", line.strip())
+        m = HEAD_RE.match(line.strip())
         if m:
-            out.append((m.group(1), m.group(2)))
+            if pending:
+                out.append(pending + (DEFAULT_TARGET,))
+            pending = (m.group(1), m.group(2))
+            continue
+        if pending:
+            t = TARGET_RE.search(line)
+            if t:
+                secs = int(t.group(1)) * (60 if t.group(2).lower() == "minute" else 1)
+                out.append(pending + (secs,))
+                pending = None
+    if pending:
+        out.append(pending + (DEFAULT_TARGET,))
     return out
+
+
+def targets():
+    return {sid: secs for sid, _, secs in load()}
 
 
 def read_log():
@@ -39,7 +65,7 @@ def read_log():
         if len(p) < 4 or p[0] == "date":
             continue
         try:
-            rows.append({"date": p[0], "story": p[1], "seconds": float(p[2]),
+            rows.append({"date": p[0], "story": p[1].strip(), "seconds": float(p[2]),
                          "rating": int(p[3]), "note": p[4] if len(p) > 4 else ""})
         except ValueError:
             continue
@@ -47,20 +73,28 @@ def read_log():
 
 
 def ready(story, rows):
-    strong = [r for r in rows if r["story"] == story and r["rating"] == 1]
-    return len({r["date"] for r in strong}) >= 3
+    """Three takes rated strong, on three different days. The bar, in one place.
+
+    Three takes in one afternoon is one rehearsal, not three — the point of the B
+    group is that the story survives a gap. `make progress` calls this function.
+    """
+    strong = [r for r in rows if r["story"] == story and r["rating"] == STRONG]
+    return len({r["date"] for r in strong}) >= STRONG_DAYS
 
 
 def stats(stories, rows):
     print(f"\n  {len(rows)} takes logged.\n")
-    print(f"  {'':<5}{'story':<42}{'takes':>6}{'best':>8}{'target':>8}  ready")
-    for sid, title in stories:
+    print(f"  {'':<5}{'story':<42}{'takes':>6}{'strong days':>13}{'best':>8}{'target':>8}  ready")
+    for sid, title, target in stories:
         mine = [r for r in rows if r["story"] == sid]
+        days = len({r["date"] for r in mine if r["rating"] == STRONG})
         best = min((r["seconds"] for r in mine), default=None)
         b = f"{best:.0f}s" if best else "—"
         mark = "yes" if ready(sid, rows) else ""
-        print(f"  {sid:<5}{title[:40]:<42}{len(mine):>6}{b:>8}{TARGET[sid]:>7}s  {mark}")
-    print("\n  Ready = three takes rated 1 (strong), on three different days.")
+        print(f"  {sid:<5}{title[:40]:<42}{len(mine):>6}{days:>13}{b:>8}"
+              f"{target:>7}s  {mark}")
+    print(f"\n  Ready = {STRONG_DAYS} takes rated {STRONG} (strong), on "
+          f"{STRONG_DAYS} different days.")
     print("  Record yourself every third take. You cannot hear your own filler.\n")
 
 
@@ -81,12 +115,11 @@ def main():
             sys.exit(f"No story {sid}")
     else:
         scored = sorted(stories, key=lambda s: (
-            len([r for r in rows if r["story"] == s[0] and r["rating"] == 1]),
+            len({r["date"] for r in rows if r["story"] == s[0] and r["rating"] == STRONG}),
             len([r for r in rows if r["story"] == s[0]])))
         pick = scored[0]
 
-    sid, title = pick
-    target = TARGET[sid]
+    sid, title, target = pick
     n = len([r for r in rows if r["story"] == sid]) + 1
 
     print("\n" + "=" * 66)
@@ -122,7 +155,8 @@ def main():
 
     rows = read_log()
     if ready(sid, rows):
-        print(f"\n  {sid} is READY — three strong takes on three days.")
+        print(f"\n  {sid} is READY — {STRONG_DAYS} strong takes on "
+              f"{STRONG_DAYS} different days.")
     print("  Logged.\n")
 
 
