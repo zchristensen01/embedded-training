@@ -11,6 +11,7 @@
 """
 import importlib.util
 import os
+import sys
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 
@@ -34,8 +35,18 @@ def _targets():
 TARGETS = _targets()
 
 
+def _skipped(where, n):
+    """Say so, loudly, on stderr. A reader that silently drops rows turns a typo into a
+    smaller denominator, and one bad row used to make `make report` claim there were no
+    reps at all — the tool you check weekly to decide whether you are improving, lying by
+    omission. It still keeps going: a broken row should not cost you the whole report.
+    `make check-log` is what tells you exactly which line."""
+    if n:
+        print(f"warning: {where}: skipped {n} unparseable row(s). Run `make check-log`.",
+              file=sys.stderr)
+
 def read_log():
-    rows = []
+    rows, bad = [], 0
     if not os.path.exists(LOG):
         return rows
     with open(LOG) as fh:
@@ -50,12 +61,13 @@ def read_log():
                     "clean": p[4].strip().lower() in ("y", "yes", "1", "true"),
                 })
             except ValueError:
-                continue
+                bad += 1
+    _skipped("logs/log.tsv", bad)
     return rows
 
 
 def read_splits():
-    rows = []
+    rows, bad = [], 0
     if not os.path.exists(SPLITS):
         return rows
     with open(SPLITS) as fh:
@@ -67,7 +79,8 @@ def read_splits():
                 rows.append({"date": datetime.strptime(p[0], "%Y-%m-%d").date(),
                              "module": p[1], "phase": p[3], "minutes": float(p[4])})
             except ValueError:
-                continue
+                bad += 1
+    _skipped("logs/splits.tsv", bad)
     return rows
 
 

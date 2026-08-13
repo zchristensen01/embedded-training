@@ -138,6 +138,12 @@ would you test this" is a top-three question in both tracks — outsourcing the 
 suite means outsourcing the thing you are selling. Every use gets logged in
 `logs/ai-use.tsv`, and the count should fall over the ten weeks.
 
+That log is not just self-discipline. The research found a real company take-home that requires
+candidates to submit a `PROMPTS.md` documenting the AI they used — the industry is moving to
+*audit* AI use rather than ban it, and take-homes increasingly end in a live defence of the code
+you submitted. Being able to say exactly what you generated and why is becoming the skill; being
+unable to explain your own submission is the fastest way to fail the follow-up.
+
 ## How to tell it is working
 
 ```bash

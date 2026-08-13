@@ -6,7 +6,8 @@
   rate alone, and `make report` prints them as separate tables.
 - `splits.tsv` — phase breakdown per rep: design, write, compile, debug. Written by `make lap`.
   A Python rep records `run` where a C rep records `compile`, because there is nothing to
-  compile. `write + compile` as a share of total is your syntax fluency in one number.
+  compile. `write + compile` as a share of total is your C syntax fluency in one number, and
+  `write + run` is the Python one. `make report` prints them apart, never combined.
 - `ai-use.tsv` — one line every time you use AI. date, used_for, rule, note. Review it weekly.
   If this file is growing in week 6, the rules in PRACTICE_SYSTEM.md aren't being followed.
 - `WEEKLY_REVIEW.md` — copy the block every Sunday.

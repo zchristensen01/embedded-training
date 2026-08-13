@@ -38,7 +38,7 @@ Then check the machine is ready. This should pass on a clean tree, and it is the
 runs:
 
 ```bash
-make check                         # all six checks
+make check                         # all seven checks
 ```
 
 ---

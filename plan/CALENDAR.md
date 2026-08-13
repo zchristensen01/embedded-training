@@ -45,7 +45,7 @@ session there is nothing left to build.
 | Week 2 Sunday | `debouncer`, `fixed_point_pid`, `rollover_timer` | weeks 4–5 | 3 hr |
 | Week 3 Sunday | `cli_tool_py`, `concurrency_sim` | week 6 | 2 hr 30 min |
 
-**`test_harness_py` is not in the table above, deliberately.** It is built by week 7's main block rather than by a build session. Week 7 is five consecutive days of pytest from zero — discovery, assertions, fixtures, conftest.py, parametrize — and this kata is the artifact those five days produce. Giving it its own build slot would mean writing the same suite twice. This is a deliberate exception, not an oversight: it is the one module whose build IS the main work.
+**`test_harness_py` is not in the table above, deliberately.** It is built by week 7's main block rather than by a build session. Week 7 is five consecutive days on pytest itself — discovery, assertions, fixtures, conftest.py, parametrize — and this kata is the artifact those five days produce. Giving it its own build slot would mean writing the same suite twice. This is a deliberate exception, not an oversight: it is the one module whose build IS the main work.
 
 So it is built by week 7 Fri and first drilled in week 7 — inside the same week, rather than the week before like everything else. That is the one place the usual rule does not apply. It is checked separately rather than waived, and at day resolution rather than week resolution: `--check` fails if the kata is ever scheduled on or before week 7 Fri.
 
@@ -261,7 +261,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **28 min** | Kata — LONG rep | make drill KATA=pool_allocator VARIANT=v1 |
 | **20 min** | Weekly review | make report, then fill logs/WEEKLY_REVIEW.md |
 | **15 min** | Deck — full pass | make review 30 |
-| **150 min** | Kata build | BUILD x2: cli_tool_py, concurrency_sim (builds under -fsanitize=thread, not address). Write the header first, then list the cases in the BRIEF, then write them. Every BRIEF ships with a 'What to test' section. |
+| **150 min** | Kata build | BUILD x2: cli_tool_py, concurrency_sim (builds under -fsanitize=thread, not address). Write the contract first — the header for the C ones, and the API in the BRIEF for cli_tool_py, which has none, then list the cases in the BRIEF, then write them. Every BRIEF ships with a 'What to test' section. |
 | **30 min** | Rehearsal | make rehearse x3  (3 stories, out loud, timed) |
 
 ---
@@ -499,7 +499,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=bitops VARIANT=v7 |
 | **25 min** | Kata — Python | make drill KATA=log_parser_py VARIANT=v2 |
-| **55 min** | Main block | pytest from zero: discovery, assertions, exit codes. 20 tests on a pure function |
+| **55 min** | Main block | pytest itself: discovery, assertions, exit codes. 20 tests on a pure function |
 | **12 min** | Deck | make review  (V&V, traceability, test design) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 

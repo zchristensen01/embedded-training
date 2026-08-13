@@ -60,11 +60,14 @@ mode this repo exists to prevent.
 Three to five rounds, three weeks to two months end to end.
 
 - **Intuitive Surgical:** recruiter → hiring manager project walkthrough → senior engineer
-  walkthrough → analysis challenge → panel. Coding in C# and Python.
+  walkthrough → analysis challenge → panel. Coding in C# and Python — **but split by role**, which
+  the original claim missed: C#/Python on the manufacturing-test side, Python or C/C++ on the
+  embedded-test side. Confirmed from live postings in the second pass.
 - **Medtronic:** around two rounds, mostly behavioural and resume-driven, ~3 weeks. Sometimes a
   four-person panel.
 - **Stryker:** around six rounds over ~2 months, including a Gallup strengths interview that acts
-  as a filter separate from technical merit.
+  as a filter separate from technical merit. `[UNCONFIRMED]` — the second pass could not re-source
+  the Gallup round to any dated first-hand report. Do not plan around it.
 - **Rocket Lab:** 45-minute virtual panel plus a 10-minute project presentation. Candidates report
   the focus was on understanding their technical contributions rather than algorithm questions.
 - **Kraken Robotics:** HR pre-screen → behavioural with hiring manager and team → **6-hour
@@ -100,8 +103,17 @@ frequently decisive. Whiteboard and on-paper still appear for C traps and "draw 
 machine."
 
 **Languages:** C dominates embedded. Python dominates test and integration. C++ shows up in
-robotics, automotive and anywhere with a real application layer on top of the firmware; Rust is
-still rare in job requirements and mostly appears as a nice-to-have. Neither is in scope here.
+robotics, automotive and anywhere with a real application layer on top of the firmware; Rust
+reached 48.8% of organisations making non-trivial use in 2025 but is still a nice-to-have rather
+than a filter at junior level. Neither is in scope here.
+
+**What to deliberately not learn.** The second pass found a whole sub-market — dedicated
+LabVIEW/TestStand production-test roles — that is a hard gate you either meet or skip. **Skip it
+unless a specific role you want names it**; Keysight's own white paper says the next generation of
+test engineers is moving to Python anyway. **MATLAB** is different: it appears at Tesla, Blue
+Origin and Medtronic, and reading fluency is worth having even though writing it is not scheduled
+here. **C#** is the manufacturing-test side at Intuitive and Medtronic — see T27, deferred by
+decision.
 
 **AI in take-homes:** take-homes increasingly ship with automated test suites (SpaceX) and a
 follow-up interview where you defend the solution live (Kraken, Tesla). Assume you will have to
@@ -140,7 +152,9 @@ Framework thinking transfers. Live syntax under observation does not. That findi
 **Y** group exists and why Python is drilled from week 1 rather than week 7.
 
 **What hurts:** a resume reading as pure web/SaaS with no low-level signal, and leading with
-"LLM integration," which reads as prompt engineering unless it sits under systems depth.
+"LLM integration," which reads as prompt engineering unless it sits under systems depth. `[INFERRED]` — the first pass flagged the LLM-integration read as
+plausible but unsourced to any first-hand account. Treat it as a hypothesis about how a resume
+lands, not a finding.
 
 **Domain background** outside software is worth naming where it is relevant — for medical
 devices, human-factors and usability testing is a regulated activity under IEC 62366, and being

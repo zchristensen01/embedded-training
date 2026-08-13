@@ -321,8 +321,9 @@ appearing under "explanations" three times a day in week 6, you've drifted. The 
 2. **Clean-first-compile rate.** The best single proxy for syntax fluency. Above 40% by week 4,
    above 55% by week 6, above 70% by week 10.
 3. **Reps per week.** Consistency beats intensity. The calendar schedules ten — seven C and
-   three Python. Nine is the target, because one missed day a week is real life and two is
-   a drift.
+   three Python for most of the plan, shifting to six and four in weeks 7, 8 and 10 when
+   `test_harness_py` enters the rotation. Nine is the target, because one missed day a week
+   is real life and two is a drift.
 4. **Coverage.** Which katas you're avoiding. The report flags anything untouched for 14 days.
 
 `make stats` gives a fifth: deck box distribution. If most cards are stuck in boxes 1–2 by week 5,
@@ -343,6 +344,9 @@ for.
 | Every AI use | `logs/ai-use.tsv` | you, by hand |
 | Deck scheduling and box state | `practice/decks/.state.json` | `make review` |
 | Design prompt answers and rubric scores | `logs/design-prompts/` | `make prompt`, then you |
+| Architecture drills and rubric scores | `logs/architecture/` | `make design`, then you |
+| Behavioural takes: date, story, seconds, rating | `logs/rehearsal.tsv` | `make rehearse` |
+| Bug hunts: module, mutation kind, minutes, found | `logs/bughunt.tsv` | `make hunt-done` |
 | Weekly honesty check | `logs/WEEKLY_REVIEW.md` | you, Sundays |
 | Mimic sessions | `logs/log.tsv` with `module=mimic`, variant = session ID | you, by hand |
 

@@ -120,7 +120,7 @@ WEEKEND = {
 }
 
 MAIN_LATE = {
-    7: {"Mon": "pytest from zero: discovery, assertions, exit codes. 20 tests on a pure function",
+    7: {"Mon": "pytest itself: discovery, assertions, exit codes. 20 tests on a pure function",
         "Tue": "Fixtures, scope, teardown that survives a failing test. conftest.py",
         "Wed": "parametrize. Then verification vs validation, test plan structure",
         "Thu": "Traceability, IEC 62304 classes, one test case per requirement",
@@ -246,7 +246,7 @@ BUILD_MIN_DEFAULT = 60
 EXEMPT = {
     "test_harness_py": (7, "Fri",
         "It is built by week 7's main block rather than by a build session. Week 7 is "
-        "five consecutive days of pytest from zero — discovery, assertions, fixtures, "
+        "five consecutive days on pytest itself — discovery, assertions, fixtures, "
         "conftest.py, parametrize — and this kata is the artifact those five days "
         "produce. Giving it its own build slot would mean writing the same suite "
         "twice. This is a deliberate exception, not an oversight: it is the one "
@@ -317,9 +317,25 @@ def build_plan():
 
 
 def build_text(katas):
+    """The build instruction for one session. Branches on language.
+
+    "Write the header first" is wrong for a `*_py` kata — it has no header and no
+    `include/`, its contract is the API in the BRIEF. The day-0 session builds two of
+    them, so the generic wording was wrong on the very first instruction a new user
+    reads. newkata.py already branches; this had not.
+    """
     parts = [f"{k} ({BUILD_NOTE[k]})" if k in BUILD_NOTE else k for k in katas]
+    py = [k for k in katas if k.endswith("_py")]
+    if not py:
+        first = "Write the header first"
+    elif len(py) == len(katas):
+        first = "Write the API into the BRIEF first — these have no header"
+    else:
+        has = "has" if len(py) == 1 else "have"
+        first = (f"Write the contract first — the header for the C ones, and the API in "
+                 f"the BRIEF for {', '.join(py)}, which {has} none")
     return (f"BUILD x{len(katas)}: " + ", ".join(parts)
-            + ". Write the header first, then list the cases in the BRIEF, then write "
+            + f". {first}, then list the cases in the BRIEF, then write "
               "them. Every BRIEF ships with a 'What to test' section.")
 
 

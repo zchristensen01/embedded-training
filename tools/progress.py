@@ -32,6 +32,7 @@ import importlib.util
 import json
 import os
 import re
+import sys
 from collections import defaultdict
 from datetime import date
 
@@ -72,7 +73,7 @@ PROMPTS_FOR_T1 = 10
 PROMPT_SCORE_BAR = 12
 PROMPT_RECENT = 3         # the most recent N answers must all clear the bar
 
-# E30's bar is three designs, not ten. T1's subject rotates across 40 everyday objects and
+# E30's bar is three designs, not ten. T1's subject rotates across 60 subjects and
 # the skill is breadth; an architecture round is one deep 45-minute exercise and three of
 # them scored at the bar is a real claim. Same rubric denominator, same recency rule.
 DESIGNS_FOR_E30 = 3
@@ -259,8 +260,17 @@ def deck_state():
     return {}
 
 
+_KATA_REPS = None
+
+
 def kata_reps():
-    rows = defaultdict(list)
+    """Parsed once per process. score() and render_md() both want it, and re-reading meant
+    parsing the file twice and printing the same warning twice. The log does not change
+    under a running command."""
+    global _KATA_REPS
+    if _KATA_REPS is not None:
+        return _KATA_REPS
+    rows, bad = defaultdict(list), 0
     if not os.path.exists(LOG):
         return rows
     for line in open(LOG):
@@ -271,7 +281,11 @@ def kata_reps():
             rows[f[1]].append({"date": f[0], "variant": f[2], "minutes": float(f[3]),
                                "clean": f[4].strip().lower() == "y"})
         except ValueError:
-            continue
+            bad += 1
+    if bad:
+        print(f"warning: logs/log.tsv: skipped {bad} unparseable row(s). "
+              f"Run `make check-log`.", file=sys.stderr)
+    _KATA_REPS = rows
     return rows
 
 

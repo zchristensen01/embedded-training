@@ -170,7 +170,7 @@ def variants_for(kata):
 
 
 def read_log():
-    rows = []
+    rows, bad = [], 0
     if not os.path.exists(LOG):
         return rows
     with open(LOG) as fh:
@@ -185,7 +185,10 @@ def read_log():
                     "note": parts[5] if len(parts) > 5 else "",
                 })
             except ValueError:
-                continue
+                bad += 1
+    if bad:
+        print(f"warning: logs/log.tsv: skipped {bad} unparseable row(s). "
+              f"Run `make check-log`.", file=sys.stderr)
     return rows
 
 

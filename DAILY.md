@@ -59,8 +59,9 @@ only, at 90 minutes; the three days that carry a Python rep are 115. Keeping two
 clear is what stops this becoming two full rotations.
 
 **"Main block" is not in this repo.** For weeks 1–6 it is the Mimic robotics project in its
-own repo; from week 7 it is the harness work. (Week 7 used to be "pytest from zero" — it is
-not from zero any more, because the Python katas have been running since week 1.) This repo *schedules*
+own repo; from week 7 it is the harness work. (Week 7 is pytest, not Python — the language has
+been drilled in its own daily block since week 1, so week 7 starts from someone who can already
+write it and is learning the test framework.) This repo *schedules*
 those hours and tracks what they cover — it does not contain them. See
 [`plan/REPOS.md`](plan/REPOS.md).
 
@@ -167,8 +168,10 @@ which is where a module's fourth and fifth reps come from.
       and which katas you are avoiding.
 - [ ] Copy the block in `logs/WEEKLY_REVIEW.md` and fill it in honestly. Ten minutes.
 - [ ] `make progress` — rescores every capability from the logs and regenerates
-      `logs/PROGRESS.md`. **Never edit those files by hand**; `make check-generated` will
-      catch it.
+      `logs/PROGRESS.md` and `logs/progress.json`. **Never edit those two by hand.** Unlike
+      the calendar, `make check-generated` does *not* police them — they move every time you
+      review a card, so checking them made CI permanently red. Nothing will catch a hand-edit
+      except you, and a hand-edited score is the one lie this whole repo exists to prevent.
 - [ ] `make check` before you push.
 
 ---

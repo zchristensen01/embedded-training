@@ -2,7 +2,7 @@
 
 > **Before your first rep you owe this module its test suite** in `tests/`, in pytest,
 > written by you. It is the one module with no build session — week 7's main block is five
-> days of pytest from zero and this kata is the artifact those days produce. `make drill`
+> days on pytest itself and this kata is the artifact those days produce. `make drill`
 > refuses a module whose tests do not exist. Frozen once written: you do not edit it during
 > a rep, only your `src/`, which is deleted each time. See
 > [DAILY.md](../../../DAILY.md#build-sessions).

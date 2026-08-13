@@ -13,6 +13,10 @@ Every file, what it's for, whether you edit it.
 | `MANIFEST.md` | This file | No |
 | `Makefile` | The command interface. Put your build rules under `test:` | **Yes** |
 | `.gitignore` | Contains `practice/katas/*/src/` — the line that makes reps repeatable | Rarely |
+| `.gitattributes` | Forces LF endings. The log validator rejects carriage returns | No |
+| `.clang-format` | The C style the katas are written in | Rarely |
+| `.github/workflows/ci.yml` | The seven checks, on every push. gcc and clang for the frozen suites | Rarely |
+| `LICENSE` | MIT | No |
 
 ## `plan/` — the program. Read once, then follow the calendar.
 
@@ -40,6 +44,7 @@ Every file, what it's for, whether you edit it.
 | `decks/embedded.tsv` | `topic <TAB> question <TAB> answer <TAB> trap <TAB> caps` | `make card` |
 | `decks/test-integration.tsv` | Same format, the T&I half of the deck | `make card` |
 | `decks/python.tsv` | Same format, the Python fluency deck — the Y group's bar | `make card` |
+| `decks/.state.json` | Leitner box per card. **Committed** — a box is the E group's evidence, not a preference | `make review` |
 | `design-prompts/SUBJECTS.md` | 60 "how would you test X" subjects + the fixed 8-category rubric | No |
 | `design-prompts/ARCHITECTURE.md` | 8 "design this subsystem" prompts + a different 8-axis rubric | No |
 | `rehearsal/README.md` | How takes work, what "ready" means | No |

@@ -7,7 +7,7 @@ PY := python3
 .PHONY: help today calendar dates newkata drill lap done status review stats prompt \
         design designs rehearse report card progress test debug analyze valgrind list log decks \
         hunt hunt-done hunts snapshots \
-        check-log check-frozen check-calendar check-coverage check-decks \
+        check-log check-frozen check-frozen-py check-calendar check-coverage check-decks \
         check-generated check clean
 
 help:
@@ -58,8 +58,9 @@ help:
 	@echo "    make list                      which katas have an implementation"
 	@echo "    make clean                     remove build/"
 	@echo ""
-	@echo "  the checks. CI runs all six on every push; 'make check' runs them here"
-	@echo "    make check-frozen              the headers and suites still compile"
+	@echo "  the checks. CI runs all seven on every push; 'make check' runs them here"
+	@echo "    make check-frozen              the C headers and suites still compile"
+	@echo "    make check-frozen-py           the Python suites still import and collect"
 	@echo "    make check-log                 validate logs/log.tsv"
 	@echo "    make check-calendar            schedule, build plan and timer blocks agree"
 	@echo "    make check-coverage            spec and coverage map describe the same set"
@@ -91,9 +92,11 @@ designs:  ; @$(PY) tools/design.py --stats
 STORY := $(if $(S),$(S),$(filter B%,$(MAKECMDGOALS)))
 rehearse: ; @$(PY) tools/rehearse.py $(STORY)
 
-# Swallow the story id so it is not treated as an unbuildable target. No real target starts
-# with B, so this cannot shadow anything.
-B%: ; @:
+# Swallow the story id so it is not treated as an unbuildable target. Derived from
+# STORIES.md rather than a `B%` wildcard, which also matched `make Build` and any other
+# capital-B word — succeeding silently while doing nothing.
+STORY_IDS := $(shell sed -n 's/^## \(B[0-9]\+\) .*/\1/p' practice/rehearsal/STORIES.md)
+$(STORY_IDS): ; @:
 report:   ; @$(PY) tools/report.py
 card:     ; @$(PY) tools/card.py $(ARGS)
 progress: ; @$(PY) tools/progress.py --write
@@ -110,7 +113,7 @@ check-decks:     ; @$(PY) tools/check_decks.py
 check-generated: ; @$(PY) tools/check_generated.py
 
 # Everything CI runs, in one command. Run it before you push.
-check: check-frozen check-log check-calendar check-coverage check-decks check-generated
+check: check-frozen check-frozen-py check-log check-calendar check-coverage check-decks check-generated
 	@echo "all checks pass"
 
 # ------------------------------------------------------------------- build ---
@@ -238,6 +241,25 @@ check-frozen:
 	    done; \
 	done
 	@echo "frozen contracts compile"
+
+# The Python half. `make test` needs an implementation and src/ is gitignored, so — exactly
+# as for C — the most CI can prove about a frozen Python suite is that it is valid and
+# collectable. Without this a suite with a syntax error passed every check and shipped green,
+# and you found out mid-rep with the clock running.
+#
+# --collect-only imports the module and enumerates its tests without running them, which is
+# the closest analogue to compiling a C suite without linking it. A suite that collects zero
+# tests is a suite that is not there.
+FROZEN_PY := $(sort $(patsubst $(KATAS)/%/tests/,%,$(dir $(wildcard $(KATAS)/*/tests/*.py))))
+
+check-frozen-py:
+	@if [ -z "$(FROZEN_PY)" ]; then echo "no Python test suites yet — see SETUP.md"; fi
+	@for m in $(FROZEN_PY); do \
+	    echo "=== $$m (frozen, pytest) ==="; \
+	    PYTHONPATH=$(KATAS)/$$m/src $(PY) -B -m pytest -q -p no:cacheprovider \
+	        --collect-only $(KATAS)/$$m/tests > /dev/null || exit 1; \
+	done
+	@echo "frozen Python suites collect"
 
 list:
 	@echo "with an implementation: $(if $(ALL_MODULES),$(ALL_MODULES),none yet)"

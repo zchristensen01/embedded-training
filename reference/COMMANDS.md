@@ -292,6 +292,14 @@ This is what CI can actually prove. `src/` is gitignored, so a fresh clone has n
 implementations and no kata can be linked — but the artifacts that *are* permanent,
 the contracts and the suites, must never stop being valid C.
 
+### `make check-frozen-py`
+Imports every frozen `*_py` suite and enumerates its tests under pytest, without running
+them. `src/` is gitignored, so — exactly as for C — the most that can be proved about a
+frozen Python suite is that it is valid and collectable.
+
+This exists because it did not, and a suite with a syntax error passed every other check and
+shipped green. You would have found it mid-rep, with the clock running.
+
 ### `make check-log`
 Validates `logs/log.tsv`: header, field count, date order, known modules, variants
 that exist in that kata's `VARIANTS.md`, and `y`/`n` for the clean column. It takes
@@ -356,7 +364,7 @@ the next `make calendar` silently reverts it.
 | `plan/CALENDAR.md` | `make calendar` | yes |
 | `practice/katas/*/NOTES.md` | `make done` | yes |
 | `practice/decks/*.tsv` | `make card` | yes |
-| `practice/decks/.state.json` | `make review` | no — local scheduling state |
+| `practice/decks/.state.json` | `make review` | **yes — a card's box is the evidence bar for the E group and Y1, so it is proof, not preference** |
 | `logs/.drill_state.json` | `make drill` | no — one rep in flight |
 | `logs/.start_date` | you, once | no — yours, not the repo's |
 | `practice/katas/*/src/` | you, every rep | **no — deleted every rep, on purpose** |

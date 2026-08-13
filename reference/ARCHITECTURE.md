@@ -46,15 +46,24 @@ right: what you keep is the *lesson* and the *time*, not the code.
 
 ## What is generated and what is source
 
-Three files are output. Every document says so, and `make check-generated` proves it on every
-push — a hand-edit to any of them fails CI rather than surviving until the next regeneration
-silently reverts it.
+Three files are output. Every document says so. **One of the three is enforced by
+`make check-generated`, and the split is deliberate:**
 
-| Generated | Generator | Regenerate with |
-|---|---|---|
-| `plan/CALENDAR.md` | `tools/schedule.py` | `make calendar` |
-| `logs/PROGRESS.md` | `tools/progress.py` | `make progress` |
-| `logs/progress.json` | `tools/progress.py` | `make progress` |
+| Generated | Generator | Regenerate with | Checked in CI |
+|---|---|---|---|
+| `plan/CALENDAR.md` | `tools/schedule.py` | `make calendar` | **yes** |
+| `logs/PROGRESS.md` | `tools/progress.py` | `make progress` | no |
+| `logs/progress.json` | `tools/progress.py` | `make progress` | no |
+
+The calendar is a *plan*, derived purely from `tools/schedule.py` with no runtime input, so a
+hand-edit silently desynchronises the thing you follow every day — that is worth failing CI
+over. The score files are a *report* of what the logs already say. Their content moves with
+the kata log, rubric totals and Leitner box positions, and box positions live in
+`practice/decks/.state.json`, which is committed but changes every time you run `make review`.
+Checking them made CI permanently red the first time a card reached box 4, with no ordering
+of commands that satisfied both. They still carry a do-not-edit header and a generation date,
+and `make progress` rebuilds them in a second. The reasoning is written out in full in
+`tools/check_generated.py`.
 
 The rule behind that: **one source of truth per fact, and the tools read it rather than
 restating it.**
@@ -83,11 +92,12 @@ table above exists — it is the list to check before adding a constant anywhere
 
 ## The checks, and what each one can actually prove
 
-Six, all run by CI on every push and all runnable together with `make check`.
+Seven, all run by CI on every push and all runnable together with `make check`.
 
 | Check | Proves |
 |---|---|
 | `check-frozen` | Every frozen C header parses standalone and every frozen C suite compiles against it, gcc and clang. Python modules have no header and are not compiled — `make test` runs them under pytest instead |
+| `check-frozen-py` | Every frozen Python suite imports and collects under pytest. src/ is gitignored so nothing can be run — collection is the closest analogue to compiling a C suite without linking it |
 | `check-log` | `logs/log.tsv` is well formed: header, fields, date order, known modules, real variants |
 | `check-calendar` | Schedule, derived build plan, timer blocks, variants and retirement feasibility all agree |
 | `check-coverage` | The spec and the coverage map describe exactly the same set of capabilities, each group numbered from 1 with no gaps |

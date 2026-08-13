@@ -21,9 +21,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 LOG = ROOT / "logs" / "log.tsv"
+SPLITS = ROOT / "logs" / "splits.tsv"
 KATAS = ROOT / "practice" / "katas"
 
 HEADER = ["date", "module", "variant", "minutes", "clean", "note"]
+SPLITS_HEADER = ["date", "module", "variant", "phase", "minutes"]
+
+# Both phase vocabularies. A C rep records `compile`, a Python one records `run`,
+# and `make done` may append a trailing `final`/`extraN` if you kept lapping.
+PHASES_OK = {"design", "write", "compile", "run", "debug", "final"}
 
 # Non-kata modules PRACTICE_SYSTEM.md tells you to log by hand. Their variant field
 # is free-form: a Mimic session ID (S0, S1.5) or a project phase.
@@ -235,15 +241,64 @@ def summarise(rows):
               f"across {', '.join(sorted({r['module'] for r in other}))}")
 
 
+def parse_splits():
+    """Validate logs/splits.tsv. It had no validator at all, and it feeds the `write +
+    compile` share that four documents call the headline fluency number — so a malformed
+    row silently changed a metric nobody would think to distrust."""
+    errors = []
+    if not SPLITS.exists():
+        return errors                       # nothing logged yet is not an error
+    text = SPLITS.read_text()
+    if "\r" in text:
+        errors.append("logs/splits.tsv: contains carriage returns; use Unix line endings")
+    lines = text.split("\n")
+    if lines and lines[-1] == "":
+        lines.pop()
+    if not lines:
+        return ["logs/splits.tsv: empty; it needs at least the header row"]
+    if lines[0].split("\t") != SPLITS_HEADER:
+        errors.append(f"logs/splits.tsv:1: header must be exactly "
+                      f"{chr(9).join(SPLITS_HEADER)}")
+    known = katas()
+    for n, line in enumerate(lines[1:], start=2):
+        where = f"logs/splits.tsv:{n}"
+        if not line.strip():
+            errors.append(f"{where}: blank line; the file is append-only")
+            continue
+        f = line.split("\t")
+        if len(f) != 5:
+            errors.append(f"{where}: {len(f)} field(s), expected 5 (tab-separated)")
+            continue
+        d, module, variant, phase, mins = f
+        try:
+            date.fromisoformat(d.strip())
+        except ValueError:
+            errors.append(f"{where}: date '{d}' is not YYYY-MM-DD")
+        if module not in known and module not in FREEFORM_MODULES:
+            errors.append(f"{where}: unknown module '{module}'")
+        if phase not in PHASES_OK and not phase.startswith("extra"):
+            errors.append(f"{where}: phase '{phase}' is not one of "
+                          f"{', '.join(sorted(PHASES_OK))} or extraN")
+        try:
+            if float(mins) < 0:
+                errors.append(f"{where}: minutes '{mins}' is negative")
+        except ValueError:
+            errors.append(f"{where}: minutes '{mins}' is not a number")
+    return errors
+
+
 def main():
     rows, errors = parse()
+    errors += parse_splits()
     if errors:
         fail(errors)
 
     if "--summary" in sys.argv:
         summarise(rows)
     else:
-        print(f"logs/log.tsv ok — {len(rows)} rep(s)")
+        n_splits = max(0, len(SPLITS.read_text().split(chr(10))) - 2) if SPLITS.exists() else 0
+        print(f"logs/log.tsv ok — {len(rows)} rep(s); "
+              f"logs/splits.tsv ok — {n_splits} split row(s)")
 
 
 if __name__ == "__main__":

@@ -130,11 +130,12 @@ its evidence bar is met and logged:
 exiting 0), on both gcc and clang. `concurrency_sim` builds under ThreadSanitizer
 instead, since the two cannot coexist.
 
-Six checks run in CI on every push, and `make check` runs all of them locally:
+Seven checks run in CI on every push, and `make check` runs all of them locally:
 
 | Check | Proves |
 |---|---|
-| `make check-frozen` | Every frozen header and test suite still compiles, gcc and clang |
+| `make check-frozen` | Every frozen C header and test suite still compiles, gcc and clang |
+| `make check-frozen-py` | Every frozen Python suite still imports and collects under pytest |
 | `make check-log` | The practice log is well formed |
 | `make check-calendar` | Schedule, derived build plan, timer blocks and retirement feasibility agree |
 | `make check-coverage` | The spec and the coverage map describe exactly the same capabilities |

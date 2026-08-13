@@ -30,10 +30,10 @@ If you can only give 60 minutes on a weekday, cut the main block — never the k
 never the deck. Those two are what produce interview performance, and they are under half an
 hour combined.
 
-### The three kata modes
+### The four kata modes
 
 A ring buffer does not fit in ten minutes, and pretending it does just teaches you to abandon
-reps halfway. So there are three block shapes:
+reps halfway. So there are four block shapes:
 
 - **Sprint blocks — Mon, Tue, Thu, Fri.** A short C module, in a block sized to beat its target.
 - **Long-rep blocks — Wed, Sun.** The C modules that need real time.

@@ -27,6 +27,21 @@ jobs:
       - name: make check-frozen (${{ matrix.cc }})
         run: make check-frozen CC=${{ matrix.cc }}
 
+  frozen-py:
+    # The Python counterpart of `frozen`. src/ is gitignored so nothing can be run, but a
+    # frozen suite that does not import or collects no tests is broken, and used to ship
+    # green because no job here ever touched Python.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: install pytest
+        run: python3 -m pip install --quiet pytest
+      - name: frozen Python suites import and collect
+        run: make check-frozen-py
+
   log:
     runs-on: ubuntu-latest
     steps:

@@ -246,6 +246,12 @@ Three more were scoped down and are recorded in their own rows above: **E32** (d
 postings named DO-178C), **T25** (deck only — a Gauge R&R study is metrology coursework), and
 **T27** (deferred — the research gates it on Intuitive or Medtronic manufacturing being live).
 
+### Exercises not landed
+
+| Exercise | Source | Decision |
+|---|---|---|
+| CAN log filter and 12-bit signal decode | report 2 §3, **LOW** confidence, sourced to a single Tesla posting | **Dropped.** Motorola-vs-Intel bit ordering on a sub-byte signal is real and worth knowing, but it is one posting and the nearest capability is already covered by `log_parser_py` and `binary_frame_py`. Recorded here so the drop is a decision rather than an omission |
+
 ### Recommendations declined
 
 | Recommendation | Decision | Why |
