@@ -5,7 +5,7 @@
 PY := python3
 
 .PHONY: help today calendar dates newkata drill lap done status review stats prompt \
-        rehearse report card progress test debug analyze valgrind list log decks \
+        design designs rehearse report card progress test debug analyze valgrind list log decks \
         hunt hunt-done hunts snapshots \
         check-log check-frozen check-calendar check-coverage check-decks \
         check-generated check clean
@@ -24,10 +24,12 @@ help:
 	@echo "    make drill KATA=fsm            any module, any time. Picks the variant"
 	@echo "                                   you have done least recently"
 	@echo "    make drill KATA=fsm VARIANT=v4 exactly that one"
+	@echo "    make drill LANG=py             a Python rep now; LANG=c for a C one"
 	@echo "    make hunt                      find a bug planted in your own old code"
 	@echo "    make review N=40               a bigger deck pass"
 	@echo "    make review N=\"--topic sync\"   just one topic"
 	@echo "    make prompt                    a 'how would you test X' subject"
+	@echo "    make design                    architect a subsystem in 45 min, then defend it"
 	@echo "    make rehearse                  a behavioural story, timed"
 	@echo ""
 	@echo "  where you stand"
@@ -36,6 +38,7 @@ help:
 	@echo "    make log      the per-module time curve and which have met their bar"
 	@echo "    make decks    what each deck card is doing, and what is thin"
 	@echo "    make hunts    bug-hunt history: which bug kinds catch you out"
+	@echo "    make designs  architecture drills written, and what they scored"
 	@echo "    make stats    deck box distribution"
 	@echo ""
 	@echo "  occasional"
@@ -69,14 +72,26 @@ today:    ; @$(PY) tools/today.py
 calendar: ; @$(PY) tools/schedule.py --write
 dates:    ; @$(PY) tools/schedule.py --dates
 newkata:  ; @$(PY) tools/newkata.py $(NAME)
-drill:    ; @$(PY) tools/drill.py start $(KATA) $(VARIANT)
+drill:    ; @$(PY) tools/drill.py start $(KATA) $(VARIANT) $(LANG)
 lap:      ; @$(PY) tools/drill.py lap $(P)
 done:     ; @$(PY) tools/drill.py done
 status:   ; @$(PY) tools/drill.py status
 review:   ; @$(PY) tools/review.py $(N)
 stats:    ; @$(PY) tools/review.py --stats
 prompt:   ; @$(PY) tools/prompt.py
-rehearse: ; @$(PY) tools/rehearse.py $(S)
+design:   ; @$(PY) tools/design.py $(N)
+designs:  ; @$(PY) tools/design.py --stats
+# Accept both `make rehearse S=B7` and the bare `make rehearse B7`. The bare form is what
+# the calendar and `make design` print, and what anyone would type. Without this, make
+# treats B7 as a second target: `rehearse` runs with no argument, silently draws the FIRST
+# story, LOGS A TAKE AGAINST IT, and only then fails with "No rule to make target 'B7'".
+# A wrong row in logs/rehearsal.tsv is worse than an error, so both forms now work.
+STORY := $(if $(S),$(S),$(filter B%,$(MAKECMDGOALS)))
+rehearse: ; @$(PY) tools/rehearse.py $(STORY)
+
+# Swallow the story id so it is not treated as an unbuildable target. No real target starts
+# with B, so this cannot shadow anything.
+B%: ; @:
 report:   ; @$(PY) tools/report.py
 card:     ; @$(PY) tools/card.py $(ARGS)
 progress: ; @$(PY) tools/progress.py --write
@@ -159,7 +174,8 @@ test: | $(BUILD)
 	done
 	@for m in $(PY_MODULES); do \
 	    echo "=== $$m (pytest) ==="; \
-	    $(PY) -m pytest -q $(KATAS)/$$m/tests || exit 1; \
+	    PYTHONPATH=$(KATAS)/$$m/src $(PY) -B -m pytest -q -p no:cacheprovider \
+	        $(KATAS)/$$m/tests || exit 1; \
 	done
 
 # Sanitizers stay on: they work fine under gdb and you want them there.

@@ -17,11 +17,12 @@ with your real dates, and that is the one to open.
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=bitops VARIANT=v1 |
+| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v1 |
 | **55 min** | Main block | Mimic: S0 bench, toolchain, repo · S1 motor forensics |
 | **12 min** | Deck | make review  (types, pointers, strings) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-Five things to know about that table.
+Six things to know about that table.
 
 **The timer is a ceiling, not an estimate.** Set an actual timer for each block. When it
 rings you move on, finished or not. Running over on the main block is how the kata and the
@@ -50,8 +51,15 @@ argument — picks your weakest built module)` is the command `make drill`, with
 it. If you genuinely want to pin the deck to one topic, that is `make review N="--topic
 interrupts"`.
 
+**Two katas, two languages, most weekdays.** The C rep and the Python rep are both
+`make drill`, back to back, from week 1. They are interleaved rather than phased on purpose:
+an interview loop does not block by language, and identifying which kind of problem you are
+looking at before solving it is part of what is being trained. Tuesday and Thursday are C
+only, which is what keeps the day at 115 minutes rather than becoming two full rotations.
+
 **"Main block" is not in this repo.** For weeks 1–6 it is the Mimic robotics project in its
-own repo; from week 7 it is the pytest work and then the HIL harness. This repo *schedules*
+own repo; from week 7 it is the harness work. (Week 7 used to be "pytest from zero" — it is
+not from zero any more, because the Python katas have been running since week 1.) This repo *schedules*
 those hours and tracks what they cover — it does not contain them. See
 [`plan/REPOS.md`](plan/REPOS.md).
 
@@ -75,6 +83,7 @@ Four things, about ninety seconds.
 make drill KATA=<name> VARIANT=<vN>   # exactly as the calendar prints it
     make lap                          # the first line of code you type   -> ends `design`
     make lap                          # your first compile attempt        -> ends `write`
+                                      # (a Python rep: your first run attempt)
 make test                             # frozen suite, under sanitizers
     make lap                          # it compiled clean                 -> ends `compile`
 make done                             # tests pass. Stop the clock and log it
@@ -122,8 +131,9 @@ the calendar, so they live in exactly one place and are not repeated here.
 
 | Day | Blocks, in order | Notes |
 |---|---|---|
-| **Mon, Tue, Thu, Fri** | kata (sprint, assigned) → main → deck → log and commit | Short modules only |
-| **Wed** | kata (**long**, assigned) → main → deck → log and commit | The modules that need real time |
+| **Mon, Fri** | kata (sprint) → **Python kata** → main → deck → log and commit | Short C modules only |
+| **Tue, Thu** | kata (sprint, assigned) → main → deck → log and commit | C only. The two short days |
+| **Wed** | kata (**long**) → **Python kata** → main → deck → log and commit | The modules that need real time |
 | **Sat** | kata (**adaptive**, no argument) → main → rehearsal *(from week 3)* | **No deck.** The only day with no assigned module |
 | **Sun** | kata (long, assigned) → weekly review → full deck pass → **then see below** | The lightest day, except during a build session |
 
@@ -172,13 +182,16 @@ For each module named:
 
 - [ ] `make newkata NAME=<module>` — scaffolds the directories, a header stub, and a test
       *runner*.
-- [ ] **Write `include/<module>.h`** — the contract, first, before anything else. You live
-      with it for weeks and it is frozen once written.
+- [ ] **Write the contract, first, before anything else.** For a C module that is
+      `include/<module>.h`. For a Python module (`*_py`) there is no header — the contract is
+      the API written out in `BRIEF.md`, and the test suite is what enforces it. Either way it
+      is frozen once written and you live with it for weeks.
 - [ ] **List the cases** in `BRIEF.md` under "What to test", in your own words, before
       writing any of them.
 - [ ] **Write every case** in `tests/`, yourself.
 - [ ] `make check-frozen` — the header parses standalone and the suite compiles, on gcc and
-      clang.
+      clang. Python modules are not compiled; run `make test MODULE=<module>` instead and
+      confirm pytest collects the suite.
 
 > **This is not setup overhead, and the AI rule bites hardest here.** AI may write the test
 > runner and the assert macros — that plumbing is already in the generated file. It may not
@@ -202,8 +215,10 @@ If you have twenty spare minutes and want to lift, here is the menu:
 | Talking instead of typing | `make review N=40`, out loud |
 | One topic only | `make review N="--topic sync"` |
 | The T&I muscle | `make prompt` — ten minutes, one subject, one rubric |
+| To design something instead of testing it | `make design` — 45 minutes, architect a subsystem |
+| A Python rep specifically | `make drill LANG=py` — or name the module: `make drill KATA=binary_frame_py` |
 | The story I always fumble | `make rehearse S=B6` |
-| Just to see where I am | `make report`, `make progress`, `make log`, `make decks`, `make hunts` |
+| Just to see where I am | `make report`, `make progress`, `make log`, `make decks`, `make hunts`, `make designs` |
 
 **Swapping the assigned module for one you know you are worse at is using the system, not
 cheating it.** The score is computed from `logs/log.tsv` — what you actually did — never from
@@ -230,6 +245,7 @@ what you owe it instead.
 | Something you got wrong | `make card` → `practice/decks/*.tsv` | The question, the answer, and the **trap** |
 | A deck pass | `make review` → local box state | Saying it **out loud**, with the trap |
 | A design prompt | `make prompt` → `logs/design-prompts/` | **The rubric total.** Unscored counts for nothing |
+| An architecture drill | `make design` → `logs/architecture/` | **The rubric total**, and the pushback on axis 8 |
 | A behavioural take | `make rehearse` → `logs/rehearsal.tsv` | The rating, on the day |
 | A bug hunt | `make hunt-done` → `logs/bughunt.tsv` | Whether you actually found it |
 | Mimic / bench / project hours | nothing — the tools cannot see them | A row in `logs/log.tsv` |

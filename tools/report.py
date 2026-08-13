@@ -160,23 +160,34 @@ def main():
         print(f"  {flag} {kata:<18} {sparkline(mins):<14} "
               f"first {mins[0]:>5.1f}  last {mins[-1]:>5.1f}  target {target:>2}  n={len(mins)}")
 
-    print("\n" + "=" * 70)
-    print("  CLEAN FIRST COMPILE — the syntax-fluency proxy.")
-    print("  40% by week 4, 55% by week 6, 70% by week 10.")
-    print("=" * 70)
-    weeks = defaultdict(list)
-    for r in rows:
-        monday = r["date"] - timedelta(days=r["date"].weekday())
-        weeks[monday].append(r)
-    for wk in sorted(weeks):
-        reps = weeks[wk]
-        clean = sum(1 for r in reps if r["clean"])
-        pct = round(100 * clean / len(reps))
-        bar = "#" * (pct // 5)
-        print(f"  week of {wk}  {len(reps):>2} reps  {pct:>3}% clean  {bar}")
-
-    overall = round(100 * sum(1 for r in rows if r["clean"]) / len(rows))
-    print(f"\n  Overall: {overall}% clean across {len(rows)} reps.")
+    # C and Python are reported separately and never combined. C1's bar is the
+    # clean-first-*compile* rate; a Python kata has no compile step, so "clean" there means
+    # "ran first try, no traceback". Averaging the two produces a number that is not
+    # evidence for either capability. progress.py:clean_rate() draws the same line.
+    for label, want, note in (
+            ("CLEAN FIRST COMPILE — the C syntax-fluency proxy.", False,
+             "  40% by week 4, 55% by week 6, 70% by week 10.  (C1)"),
+            ("CLEAN FIRST RUN — the Python equivalent.", True,
+             "  No traceback on the first run. Reported apart from C on purpose.  (Y2, Y3)")):
+        subset = [r for r in rows if r["module"].endswith("_py") == want]
+        if not subset:
+            continue
+        print("\n" + "=" * 70)
+        print(f"  {label}")
+        print(note)
+        print("=" * 70)
+        weeks = defaultdict(list)
+        for r in subset:
+            monday = r["date"] - timedelta(days=r["date"].weekday())
+            weeks[monday].append(r)
+        for wk in sorted(weeks):
+            reps = weeks[wk]
+            clean = sum(1 for r in reps if r["clean"])
+            pct = round(100 * clean / len(reps))
+            bar = "#" * (pct // 5)
+            print(f"  week of {wk}  {len(reps):>2} reps  {pct:>3}% clean  {bar}")
+        overall = round(100 * sum(1 for r in subset if r["clean"]) / len(subset))
+        print(f"\n  Overall: {overall}% clean across {len(subset)} reps.")
 
     phase_report(read_splits())
 

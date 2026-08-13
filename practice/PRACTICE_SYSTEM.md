@@ -5,17 +5,19 @@ How this repo makes practice repeatable, forced, and recorded. Mimic is not disc
 
 ---
 
-## Five formats, because "practice" is not one thing
+## Seven formats, because "practice" is not one thing
 
 | Format | Repeatable? | Mechanism | Recorded in |
 |---|---|---|---|
 | **A. Katas** | Infinitely | Frozen tests + gitignored `src/` + variants | `logs/log.tsv` |
 | **B. Concepts** | On a schedule | Leitner spaced repetition, spoken aloud | `practice/decks/.state.json` |
 | **C. Design prompts** | With fresh subjects | Rotating subject list, fixed rubric | `logs/design-prompts/` |
-| **D. Rehearsal** | Until it's tight | Re-tell one story to three strong takes | `logs/rehearsal.tsv` |
-| **E. Projects** | **No. One-shot.** | Artifact + README + rehearsed story | The repo itself |
+| **D. Architecture drills** | With fresh prompts | Rotating prompt list, a *different* fixed rubric | `logs/architecture/` |
+| **E. Bug hunts** | After any rep you keep | Your own old solution, silently mutated | `logs/bughunt.tsv` |
+| **F. Rehearsal** | Until it's tight | Re-tell one story to three strong takes | `logs/rehearsal.tsv` |
+| **G. Projects** | **No. One-shot.** | Artifact + README + rehearsed story | The repo itself |
 
-A through D repeat. E does not, and trying to drill it wastes time — its value is the artifact
+A through F repeat. G does not, and trying to drill it wastes time — its value is the artifact
 and the story.
 
 ---
@@ -71,6 +73,11 @@ write the test you'd add before the implementation
 The paper one matters more than it looks. Whiteboard rounds still exist and paper removes
 autocomplete entirely.
 
+A Python rep draws from a different deck, because half of that list is unobeyable in Python —
+there is no `goto` to forbid and no allocation to avoid. Its cards are stdlib-only, O(1)
+memory, no bare `except`, type-annotate everything, and *say the byte order out loud before
+you type the format string*.
+
 **3. Falling time targets.** A kata that's comfortable at 40 minutes is a different exercise at 12.
 
 ### Phase splits — the diagnosis
@@ -84,6 +91,11 @@ A total time tells you whether you're getting faster. It doesn't tell you *what*
 | `write` | first line | your first compile attempt |
 | `compile` | first compile attempt | it compiles clean |
 | `debug` | clean compile | tests pass |
+
+A Python kata has no compile step, so its third phase is **`run`** — from your first
+execution attempt to the point where it runs without a syntax or import error. Same position
+in the sequence, same meaning: the gap between having typed something and the machine
+accepting it. `make lap` picks the right set from the module name.
 
 `make done` prints the breakdown and writes it to `logs/splits.tsv`. `make report` aggregates it
 and, once you have enough reps, compares your first reps against your recent ones.
@@ -99,8 +111,8 @@ and, once you have enough reps, compares your first reps against your recent one
 - **`debug` dominates** — logic and edge cases. Write the test you'd add *before* the
   implementation on the next rep.
 
-**`write` + `compile` combined is your syntax fluency in one number.** Watch it fall. Under 40%
-by week 10 is the target.
+**`write` + `compile` combined is your syntax fluency in one number** (`write` + `run` for a
+Python rep). Watch it fall. Under 40% by week 10 is the target.
 
 Missing a lap call isn't a problem — `make done` attributes whatever is left to the next phase in
 sequence. Skipping laps entirely just means you get totals without the diagnosis.
@@ -169,8 +181,8 @@ wrong answer on it is worth much less than one with it. `make done` offers the s
 at the end of every rep, which is the moment you are most likely to have been caught out.
 
 The cards that ship here do not cover every capability and are not meant to: C is katas, B is
-rehearsal, and part of H is bench work. The deck is the evidence bar for the whole E group and
-most of T — `make decks` prints which capabilities it carries and which are resting on a single
+rehearsal, and part of H is bench work. The deck is the evidence bar for the whole E group,
+most of T, and Y1 — `make decks` prints which capabilities it carries and which are resting on a single
 card. Some cards are tagged with a capability scored some other way; those are reinforcement,
 they are labelled as such, and `make check-decks` will fail on a tag that names no capability
 at all. S3's encoder interrupts and S10's anti-windup will each produce two or three cards of
@@ -192,7 +204,45 @@ before you're told to stop.
 
 ---
 
-## Format D — Rehearsal
+## Format D — Architecture drills
+
+`make design` draws one of 8 prompts and starts a 45-minute clock. You produce a labelled
+block diagram with numbers on it, then argue against your own design and answer yourself.
+
+**This is not Format C with different words.** A design prompt hands you a finished object and
+asks how you would test it. An architecture drill asks you to invent the object. Candidate
+reports put it as a dedicated round at Google and Meta Reality Labs, and as a design item
+inside Tesla's and Medtronic's take-homes — and nothing else here produces it, because katas
+start from a written contract and design prompts start from a thing that already exists.
+
+Both rubrics are out of 16 so one parser reads either. They are different rubrics. The
+architecture one scores six axes the interviewer is actually grading — ISR/main partitioning,
+memory budget, comms topology, power states, failure handling, testability — plus two gates:
+asking for constraints before drawing, and holding your position under one round of pushback.
+
+The subject rotates and the rubric does not, which is what makes it repeatable. E30 is met at
+three scored 12+/16. The out-loud defence logs separately as a B11 rehearsal take.
+
+---
+
+## Format E — Bug hunts
+
+`make hunt` takes a solution *you* wrote on an earlier rep, silently mutates one line, and
+starts a clock. You find it.
+
+Every other format here starts from an empty file. Real take-homes do not: Tesla's is reported
+to hand you a broken C module and ask you to find the errors, and Intel runs a dedicated
+debug round. This is the only mechanism that practises reading code you did not write today,
+and it uses your own old code because a corpus of broken C written by an AI would be an
+AI-written exercise — which the rules below forbid for good reason.
+
+Mutations are chosen to be *silent*: a `<` becomes `<=`, a `volatile` disappears, a struct
+format's endianness prefix flips. None of them raise. `make hunts` shows which kinds keep
+catching you, and that list is a reading list.
+
+---
+
+## Format F — Rehearsal
 
 The B group: ten narrative capabilities, in `practice/rehearsal/STORIES.md`. The research is
 blunt that test-and-integration candidates fail the behavioural round *more often* than the
@@ -210,7 +260,7 @@ closes. Fill in `STORIES.md` before the first take; an unwritten story wanders.
 
 Record every third take and watch it back. You cannot hear your own filler.
 
-## Format E — Projects
+## Format G — Projects
 
 Not repeatable. Do it once, properly, and extract three things: a public repo with a README that
 states design decisions, three to five rehearsed answers to "walk me through a project," and a
@@ -263,8 +313,9 @@ appearing under "explanations" three times a day in week 6, you've drifted. The 
    directly measures the gap you're fixing.
 2. **Clean-first-compile rate.** The best single proxy for syntax fluency. Above 40% by week 4,
    above 55% by week 6, above 70% by week 10.
-3. **Reps per week.** Consistency beats intensity. The calendar schedules seven; six is the
-   target, because one missed day a week is real life and two is a drift.
+3. **Reps per week.** Consistency beats intensity. The calendar schedules ten — seven C and
+   three Python. Nine is the target, because one missed day a week is real life and two is
+   a drift.
 4. **Coverage.** Which katas you're avoiding. The report flags anything untouched for 14 days.
 
 `make stats` gives a fifth: deck box distribution. If most cards are stuck in boxes 1–2 by week 5,

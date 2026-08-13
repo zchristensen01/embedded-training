@@ -9,9 +9,8 @@ Every file, what it's for, whether you edit it.
 | `README.md` | Front page: what this is, why it's built this way, the layout | No |
 | `START_HERE.md` | **Read this first.** How the whole system fits together, in five minutes | No |
 | `SETUP.md` | Day 0 and the staged kata build order. **Start here** | No |
-| `DAILY.md` | What a calendar line means, and the start/end-of-session checklist | No |
-| `MANIFEST.md` | This file | No |
 | `DAILY.md` | What a calendar line means, the session checklist, and how to practise off-plan | No |
+| `MANIFEST.md` | This file | No |
 | `Makefile` | The command interface. Put your build rules under `test:` | **Yes** |
 | `.gitignore` | Contains `practice/katas/*/src/` — the line that makes reps repeatable | Rarely |
 
@@ -30,8 +29,8 @@ Every file, what it's for, whether you edit it.
 
 | Path | What it is | Edit? |
 |---|---|---|
-| `PRACTICE_SYSTEM.md` | Five formats, variants, constraint cards, AI rules, measurement | No |
-| `katas/README.md` | The twelve-module map and target times | No |
+| `PRACTICE_SYSTEM.md` | Seven formats, variants, constraint cards, AI rules, measurement | No |
+| `katas/README.md` | The fifteen-module map and target times | No |
 | `katas/<name>/BRIEF.md` | What it is, the API, how to think about it, what to test | Once, when building |
 | `katas/<name>/VARIANTS.md` | The variants `make drill` draws from | Add over time |
 | `katas/<name>/NOTES.md` | One decision or bug per rep | `make done` appends |
@@ -40,11 +39,13 @@ Every file, what it's for, whether you edit it.
 | `katas/<name>/src/` | Your implementation. **Gitignored, deleted every rep** | Every rep |
 | `decks/embedded.tsv` | `topic <TAB> question <TAB> answer <TAB> trap <TAB> caps` | `make card` |
 | `decks/test-integration.tsv` | Same format, the T&I half of the deck | `make card` |
-| `design-prompts/SUBJECTS.md` | 40 subjects + the fixed 8-category rubric | No |
+| `decks/python.tsv` | Same format, the Python fluency deck — the Y group's bar | `make card` |
+| `design-prompts/SUBJECTS.md` | 40 "how would you test X" subjects + the fixed 8-category rubric | No |
+| `design-prompts/ARCHITECTURE.md` | 8 "design this subsystem" prompts + a different 8-axis rubric | No |
 | `rehearsal/README.md` | How takes work, what "ready" means | No |
-| `rehearsal/STORIES.md` | The ten behavioural stories | **Yes — fill before your first take** |
+| `rehearsal/STORIES.md` | The behavioural stories | **Yes — fill before your first take** |
 
-**All twelve katas ship with `BRIEF.md` and `VARIANTS.md` written.** For every one of them you
+**All fifteen katas ship with `BRIEF.md` and `VARIANTS.md` written.** For every one of them you
 owe exactly two things: the API header and the test suite. `make newkata NAME=x` scaffolds the
 directories and a test runner; the cases are yours. Which to build when is derived from the
 rotation — `make check-calendar` prints it.
@@ -76,6 +77,7 @@ The project itself lives in its own repo, `~/embedded/mimic-hil`. This is only t
 | `review.py` | Leitner spaced repetition over the decks |
 | `rehearse.py` | Behavioural takes: draw, time, rate, log |
 | `prompt.py` | Draws a design prompt, opens a rubric-scored answer file |
+| `design.py` | Draws an architecture prompt, times 45 min, opens a rubric-scored answer file |
 | `report.py` | Time curve, clean-compile rate, phase breakdown, coverage |
 | `progress.py` | Scores every capability, writes `logs/PROGRESS.md` and `progress.json` |
 | `card.py` | Adds a deck card in ~20s. `make card`, and offered at the end of `make done` |
@@ -99,6 +101,7 @@ The project itself lives in its own repo, `~/embedded/mimic-hil`. This is only t
 | `ai-use.tsv` | Every AI use: date, what for, which rule | You, by hand |
 | `WEEKLY_REVIEW.md` | The Sunday honesty check template | You, Sundays |
 | `design-prompts/` | Prompt answers with rubric scores | `make prompt`, then you |
+| `architecture/` | Architecture drills with rubric scores | `make design`, then you |
 | `PROGRESS.md` | Every capability scored against its evidence bar. **Generated** | `make progress` |
 | `progress.json` | The same data, machine-readable — this is what a website reads | `make progress` |
 | `.start_date` | Day 1. `date +%F > logs/.start_date` | You, once |

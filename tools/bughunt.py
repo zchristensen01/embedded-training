@@ -85,9 +85,42 @@ MUTATIONS = [
      "an assignment became a comparison"),
 ]
 
+# The Python set, and it is not a translation of the C one. `&&`, `++` and `volatile` do not
+# exist here, and `=` -> `==` is a SyntaxError rather than a bug. What replaces them are the
+# mutations that make Python fail *silently* — which is the whole selection criterion, in
+# either language.
+#
+# The fifth field is new and it matters: these mutations are allowed to fire INSIDE a string
+# literal. In C that would be vandalism, but in Python the single highest-value bug in this
+# domain is a struct format string whose endianness prefix flipped — it does not raise, it
+# returns plausible wrong numbers. `strip_literals` is skipped for those.
+MUTATIONS_PY = [
+    ("endianness", r"(?<=['\"])<(?=[bBhHiIlLqQfd0-9])", ">",
+     "a struct format's byte order flipped from little- to big-endian", True),
+    ("endianness", r"(?<=['\"])>(?=[bBhHiIlLqQfd0-9])", "<",
+     "a struct format's byte order flipped from big- to little-endian", True),
+    ("signedness", r"(?<=[<>!=@])H", "h", "a uint16 struct format became int16", True),
+    ("signedness", r"(?<=[<>!=@])h", "H", "an int16 struct format became uint16", True),
+    ("signedness", r"(?<=[<>!=@])I", "i", "a uint32 struct format became int32", True),
+    ("relational", r"(?<![<>=!])<(?![<=])", "<=", "a strict < became <=", False),
+    ("relational", r"<=", "<", "a <= became a strict <", False),
+    ("relational", r"(?<![<>=!])>(?![>=])", ">=", "a strict > became >=", False),
+    ("relational", r">=", ">", "a >= became a strict >", False),
+    ("equality", r"==", "!=", "an == became !=", False),
+    ("equality", r"!=", "==", "a != became ==", False),
+    ("identity", r"\bis not\b", "is", "an `is not` became `is`", False),
+    ("identity", r"(?<!\w)==(?!=)", " is ", "an == became an identity test", False),
+    ("logical", r"\band\b", "or", "an `and` became `or`", False),
+    ("logical", r"\bor\b", "and", "an `or` became `and`", False),
+    ("off-by-one", r"\b(\d+)\b", None, "a numeric literal moved by one", False),
+    ("decorator", r"^\s*@functools\.wraps\([^)]*\)\s*$", "",
+     "a @functools.wraps was deleted", False),
+    ("copy", r"\bdeepcopy\b", "copy", "a deepcopy became a shallow copy", False),
+]
+
 # Never touch these. Mutating an include guard or a header path produces a build error, not
-# a bug, and mutating the license line is just noise.
-SKIP_LINE = re.compile(r"^\s*(#include|#ifndef|#define|#endif|//|/\*|\*)")
+# a bug, and mutating the license line is just noise. `#` also covers Python comments.
+SKIP_LINE = re.compile(r"^\s*(#|//|/\*|\*)")
 
 
 def snapshots():
@@ -146,14 +179,29 @@ def strip_literals(line):
                   lambda m: " " * len(m.group(0)), line)
 
 
-def mutate_once(text, rng):
+def mutations_for(fname):
+    """The mutation set for a language, normalised to 5-tuples.
+
+    The C list predates the in-literal flag, so it is widened here rather than edited —
+    every C mutation is literal-safe and always was.
+    """
+    if fname.endswith(".py"):
+        return MUTATIONS_PY
+    return [(n, p, r, d, False) for n, p, r, d in MUTATIONS]
+
+
+def mutate_once(text, rng, fname=".c"):
     """Return (new_text, record) or None if nothing could be mutated."""
     lines = text.split("\n")
     candidates = []
+    muts = mutations_for(fname)
     for i in eligible_lines(text):
         masked = strip_literals(lines[i])
-        for name, pat, rep, desc in MUTATIONS:
-            for m in re.finditer(pat, masked):
+        for name, pat, rep, desc, in_literal in muts:
+            # A struct format only exists inside a string, so those patterns have to see
+            # the raw line. Everything else reads the masked one and cannot touch a literal.
+            subject = lines[i] if in_literal else masked
+            for m in re.finditer(pat, subject):
                 candidates.append((i, m.start(), m.end(), name, rep, desc, m.group(0)))
     if not candidates:
         return None
@@ -192,10 +240,11 @@ def cmd_start(argv):
     path, snap_date, variant = snaps[kata][0]      # oldest kept snapshot
     age = (date.today() - datetime.strptime(snap_date, "%Y-%m-%d").date()).days
 
+    # Same reason as drill.py's wipe: a remove() loop raises IsADirectoryError on the
+    # __pycache__/ that pytest leaves in src/, so `make hunt` died on every Python kata.
     src = os.path.join(KATAS, kata, "src")
+    shutil.rmtree(src, ignore_errors=True)
     os.makedirs(src, exist_ok=True)
-    for f in os.listdir(src):
-        os.remove(os.path.join(src, f))
     fname = f"{kata}.{path.rsplit('.', 1)[1]}"
     original = open(path).read()
 
@@ -210,7 +259,7 @@ def cmd_start(argv):
         )
 
     for attempt in range(40):
-        result = mutate_once(original, rng)
+        result = mutate_once(original, rng, fname)
         if not result:
             break
         mutant, record = result
@@ -219,7 +268,11 @@ def cmd_start(argv):
         ok, out = run_tests(kata)
         if ok:
             continue                     # equivalent mutant: the tests can't see it
-        if "error:" in out and "FAIL" not in out and "failure" not in out.lower():
+        broke_build = ("error:" in out                      # gcc
+                       or "SyntaxError" in out              # python parse
+                       or "IndentationError" in out
+                       or "ImportError" in out)             # python collect
+        if broke_build and "FAIL" not in out and "failure" not in out.lower():
             continue                     # it broke the build, which is not a bug hunt
         break
     else:

@@ -52,6 +52,10 @@ Records a phase split. Call it at each transition:
 | `compile` | first compile | it compiles clean |
 | `debug` | clean compile | tests pass |
 
+A Python kata (`*_py`) has no compile step, so its third phase is **`run`** — first execution
+attempt until it runs without a syntax or import error. `make lap` picks the right set from
+the module name, so you call it the same way either way.
+
 ```bash
 make lap            # auto-advances to the next phase in sequence
 make lap P=debug    # name it explicitly
@@ -71,9 +75,10 @@ make test MODULE=ring_buffer   # just one
 make test CC=clang             # second compiler; the two disagree usefully
 ```
 
-Two katas are special and handled automatically: `concurrency_sim` builds under
-ThreadSanitizer instead of AddressSanitizer (the two cannot coexist in one binary),
-and `test_harness_py` runs under pytest instead of being compiled.
+Some katas are handled automatically: `concurrency_sim` builds under ThreadSanitizer instead
+of AddressSanitizer (the two cannot coexist in one binary), and the four `*_py` modules
+(`binary_frame_py`, `log_parser_py`, `cli_tool_py`, `test_harness_py`) run under pytest
+instead of being compiled. The `_py` suffix is the switch, in the Makefile and in every tool.
 
 ### `make done`
 Stops the clock, prints where the time went, and asks two questions: whether it was
@@ -134,6 +139,29 @@ listed reasons candidates get rejected. Two things fail you automatically regard
 of the rest: **proposing solutions before asking for requirements**, and **stopping
 before you are told to stop**. The subject rotates; the eight-category rubric does
 not, so your score across many subjects measures one real skill.
+
+### `make design`
+Draws one of the 8 architecture prompts from `practice/design-prompts/ARCHITECTURE.md`,
+starts a 45-minute clock, and opens a pre-scored answer file in `logs/architecture/`.
+**Fill in the rubric total** — E30 is met on three scored 12+/16, not on the number of files.
+
+```bash
+make design            # the prompt you have written least recently
+make design N=3        # that one
+make designs           # what you have written and what it scored
+```
+
+**Not the same exercise as `make prompt`, and the difference is the point.** A design prompt
+hands you a finished object and asks how you would test it. This asks you to invent the
+object: partition ISR from main, budget RAM and flash *in numbers*, choose a comms topology,
+plan power states, say what fails and what the safe state is, and say where you would cut it
+to test it. Then argue against yourself and answer.
+
+Candidate reports put it as a dedicated round at Google and Meta Reality Labs and as a design
+item inside Tesla's and Medtronic's take-homes. Two automatic failures: **drawing before
+asking what the constraints are**, and **a block diagram with no numbers on it**. Axis 8 —
+holding the position under pushback — is the behavioural half, and logs separately as a B11
+rehearsal take.
 
 ### `make rehearse`
 Draws a behavioural story from `practice/rehearsal/STORIES.md`, times the take, and
@@ -301,6 +329,8 @@ the next `make calendar` silently reverts it.
 | `logs/rehearsal.tsv` | `make rehearse` | yes |
 | `logs/ai-use.tsv` | you, by hand | yes |
 | `logs/design-prompts/*.md` | `make prompt`, then you | yes |
+| `logs/architecture/*.md` | `make design`, then you | yes |
+| `logs/bughunt.tsv` | `make hunt-done` | yes |
 | `logs/PROGRESS.md`, `logs/progress.json` | `make progress` | yes |
 | `logs/WEEKLY_REVIEW.md` | you, Sundays | yes |
 | `plan/CALENDAR.md` | `make calendar` | yes |
@@ -310,3 +340,4 @@ the next `make calendar` silently reverts it.
 | `logs/.drill_state.json` | `make drill` | no — one rep in flight |
 | `logs/.start_date` | you, once | no — yours, not the repo's |
 | `practice/katas/*/src/` | you, every rep | **no — deleted every rep, on purpose** |
+| `logs/.snapshots/` | `make done` | no — fuel for `make hunt` |

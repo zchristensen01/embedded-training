@@ -179,8 +179,14 @@ def main():
         write(os.path.join(d, "tests", f"test_{name}.c"), TEST_C.format(name=name))
 
     os.makedirs(os.path.join(d, "src"), exist_ok=True)
+    # The first step differs by language and used to not: a Python module was told to
+    # write a C header it has no directory for. The contract for a Python kata is the
+    # test suite itself — there is no separate declaration to write first.
+    first = (f"1. Write the API docstring in BRIEF.md — the contract. Deliberately."
+             if py else
+             f"1. Write include/{name}.h — the contract. Deliberately.")
     print(f"\n  Now, in this order:")
-    print(f"    1. Write include/{name}.h — the contract. Deliberately.")
+    print(f"    {first}")
     print(f"    2. List the cases in BRIEF.md under 'What to test'.")
     print(f"    3. Write those cases in tests/. Yourself.")
     print(f"    4. Only then: make drill KATA={name}\n")

@@ -149,3 +149,26 @@ capture and the green CI run on screen.
 - Outline:
 - The one hard decision I go deep on:
 - The artifact I show:
+
+---
+
+## B11 · Defend an architecture under pushback
+**Target: 120 seconds per challenge. The design round grades this as much as the design.**
+
+Not a story — a drill. Take the design you just wrote in `make design`, pick the weakest
+decision in it, and have the room argue against it. Then answer.
+
+Strong contains: you hold the position when it is defensible, and you *change it* when it is
+not, out loud, saying which part of the challenge moved you. Interviewers are listening for
+whether you can be corrected without collapsing.
+
+Fails two ways, and both are common. Folding immediately — "oh, you're right, I'd do it your
+way" — reads as having had no reason in the first place. Digging in past the point the
+evidence turned reads as worse.
+
+Run it right after `make design`, while the trade-offs are still loaded.
+
+- The design:
+- The decision I'd defend, and why:
+- The strongest argument against it:
+- What would actually change my mind:

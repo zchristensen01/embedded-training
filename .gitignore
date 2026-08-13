@@ -27,3 +27,6 @@ a.out
 __pycache__/
 *.pyc
 .venv/
+
+# working notes from the integration audit — delete once the fix list is done
+TMP_AUDIT.md

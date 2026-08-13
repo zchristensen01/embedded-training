@@ -1,8 +1,10 @@
 # Katas
 
-Twelve modules. Six carried over from the earlier repo, five added to close the gaps the
-interview research exposed, and one (`rollover_timer`) added because C11 was marked as a kata
-in `plan/COVERAGE.md` with no kata behind it.
+Fifteen modules. Six carried over from the earlier repo, five added to close the gaps the
+first interview research exposed, one (`rollover_timer`) added because C11 was marked as a
+kata in `plan/COVERAGE.md` with no kata behind it, and three Python modules added when the
+second research pass showed that Python fluency is tested live and directly and that this
+repo had no mechanism for it.
 
 `fixed_point_pid` and `debouncer` are **retained** even though Mimic Stage 0 covers PID and
 timing. Stage 0's PID runs in floating point, so the Q-notation reps are still yours to do, and
@@ -35,6 +37,13 @@ is where the slack lives — it is the only day that can give any module a fourt
 | 10 | `concurrency_sim` | mutex vs semaphore, priority inversion, deadlock | **new** |
 | 11 | `test_harness_py` | pytest, fixtures, HIL, the T&I wedge | **new** |
 | 12 | `rollover_timer` | tick counters, rollover-safe comparison, superloop scheduling | **new** |
+| 13 | `binary_frame_py` | struct, endianness, framing, TLV — the host side of the wire | **Python** |
+| 14 | `log_parser_py` | streaming parse larger than RAM, reduce, exit codes | **Python** |
+| 15 | `cli_tool_py` | argparse, device discovery by USB serial, retry decorators | **Python** |
+
+The three Python modules run in their own daily block alongside the C rotation, not instead
+of it. `binary_frame_py` is deliberately the same problem as `protocol_parser` seen from the
+test harness rather than the firmware — do them close together.
 
 Each module directory holds:
 
@@ -47,8 +56,9 @@ tests/        the frozen test suite. Committed. You do not edit this during a re
 src/          GITIGNORED. Your implementation. Deleted at the start of every rep.
 ```
 
-Every module ships with `BRIEF.md` and `VARIANTS.md` written. For all twelve you owe exactly
-two things: the header and the tests. Read the BRIEF's "What to test" section — it lists the
+Every module ships with `BRIEF.md` and `VARIANTS.md` written. For each you owe the tests, and
+for the C modules the header as well — a `*_py` module has no header, because its contract is
+the API in the BRIEF and the suite is what enforces it. Read the BRIEF's "What to test" section — it lists the
 cases in prose. Turning that list into actual test cases is the work, and it is yours.
 
 ## Target times
@@ -71,6 +81,9 @@ is scheduled into. The table below is a reading copy.
 | `fixed_point_pid` | 20 min | long |
 | `concurrency_sim` | 25 min | long |
 | `test_harness_py` | 25 min | long |
+| `binary_frame_py` | 20 min | Python block |
+| `log_parser_py` | 20 min | Python block |
+| `cli_tool_py` | 25 min | Python block |
 
 Targets are meant to fall. A kata that is comfortable at its target is a different exercise
 three minutes lower — but lower the number in `drill.py`, not in your head, so the log still

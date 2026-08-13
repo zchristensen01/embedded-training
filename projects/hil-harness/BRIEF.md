@@ -21,9 +21,22 @@ A Python program on your PC that tests the Mimic Stage 0 firmware automatically.
 ## Why it's the flagship
 
 A representative embedded test-automation posting asks for Python and Bash test development,
-pytest, CI/CD, and hardware-in-the-loop testing with custom test rigs. Four of those five are
-ordinary backend skills wearing different vocabulary. This project is the fifth, and it is the
-one that cannot be claimed without having built it.
+pytest, CI/CD, and hardware-in-the-loop testing with custom test rigs. Most of that is
+ordinary backend work wearing different vocabulary, and this project is the part that is
+not — the part that cannot be claimed without having built it.
+
+**One correction to the older framing.** This brief used to say four of those five transfer
+straight from web work. The second research pass found that half true: framework design,
+Docker and CI/CD do transfer, and *raw Python under observation does not* — Tesla runs a
+standalone 90-minute Python assessment for test roles. That is why Python fluency is now its
+own capability group (**Y**) with its own katas, drilled from week 1, rather than being
+assumed. Build this harness on top of that, not instead of it.
+
+**Build it to survive four questions.** A test-automation practitioner's screen for fake
+automation is: how many automated tests did your last project have, how long do they take to
+run, how often does the team run them, and how do you run them. Have real numbers for all
+four. That is the most directly actionable thing the research found about this project, and
+it is worth more than any amount of polish on the README.
 
 It also collapses two portfolio pieces into one story: **you wrote the firmware, then you built
 the rig that regression-tests it on every commit.**

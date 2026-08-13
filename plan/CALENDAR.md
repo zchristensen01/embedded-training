@@ -20,8 +20,8 @@ picks by worst recent time, then longest since last rep, then never attempted �
 so Saturday is the day that catches whatever you have been avoiding. It is also
 the slack in the rotation: every kata's spare reps live here.
 
-Weekly load: about 11.3 hours, every week from week 4 on.
-Weeks 1, 2, 3 carry the build sessions on top of that — 14.2, 13.7, 12.3 hours. They are the
+Weekly load: about 12.6 hours, every week from week 4 on.
+Weeks 1, 2, 3 carry the build sessions on top of that — 15.4, 14.9, 14.6 hours. They are the
 heavy weeks of the ten, and they are heavy once instead of a little heavy for five.
 
 ---
@@ -40,10 +40,10 @@ session there is nothing left to build.
 
 | Built during | Modules | First drilled | Time |
 |---|---|---|---|
-| Day 0 weekend | `bitops`, `fsm`, `mem_primitives`, `ring_buffer` | week 1 | 4 hr 30 min |
+| Day 0 weekend | `binary_frame_py`, `bitops`, `fsm`, `log_parser_py`, `mem_primitives`, `ring_buffer` | week 1 | 6 hr 30 min |
 | Week 1 Sunday | `protocol_parser`, `register_map`, `pool_allocator` | weeks 2–3 | 3 hr 30 min |
 | Week 2 Sunday | `debouncer`, `fixed_point_pid`, `rollover_timer` | weeks 4–5 | 3 hr |
-| Week 3 Sunday | `concurrency_sim` | week 6 | 1 hr 30 min |
+| Week 3 Sunday | `cli_tool_py`, `concurrency_sim` | week 6 | 2 hr 30 min |
 
 **`test_harness_py` is not in the table above, deliberately.** It is built by week 7's main block rather than by a build session. Week 7 is five consecutive days of pytest from zero — discovery, assertions, fixtures, conftest.py, parametrize — and this kata is the artifact those five days produce. Giving it its own build slot would mean writing the same suite twice. This is a deliberate exception, not an oversight: it is the one module whose build IS the main work.
 
@@ -56,11 +56,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 **Mimic this week:** S0 bench, toolchain, repo · S1 motor forensics and bolting it down
 **Deck focus:** types, pointers, strings
 
-### **Day 1 · Mon**  (90 min)
+### **Day 1 · Mon**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=bitops VARIANT=v1 |
+| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v1 |
 | **55 min** | Main block | Mimic: S0 bench, toolchain, repo · S1 motor forensics and bolting it down |
 | **12 min** | Deck | make review  (types, pointers, strings) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -74,11 +75,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (types, pointers, strings) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 3 · Wed**  (90 min)
+### **Day 3 · Wed**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **28 min** | Kata — LONG rep | make drill KATA=ring_buffer VARIANT=v1 |
+| **25 min** | Kata — Python | make drill KATA=log_parser_py VARIANT=v1 |
 | **42 min** | Main block | Mimic: S0 bench, toolchain, repo · S1 motor forensics and bolting it down |
 | **12 min** | Deck | make review  (types, pointers, strings) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -92,11 +94,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (types, pointers, strings) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 5 · Fri**  (90 min)
+### **Day 5 · Fri**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=mem_primitives VARIANT=v2 |
+| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v2 |
 | **55 min** | Main block | Mimic: S0 bench, toolchain, repo · S1 motor forensics and bolting it down |
 | **12 min** | Deck | make review  (types, pointers, strings) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -124,11 +127,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 **Mimic this week:** S2 power topology and first soldering · S3 encoder, interrupts, x4 decoding
 **Deck focus:** interrupts, memory
 
-### **Day 8 · Mon**  (90 min)
+### **Day 8 · Mon**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=mem_primitives VARIANT=v3 |
+| **25 min** | Kata — Python | make drill KATA=log_parser_py VARIANT=v2 |
 | **55 min** | Main block | Mimic: S2 power topology and first soldering · S3 encoder, interrupts, x4 decoding |
 | **12 min** | Deck | make review  (interrupts, memory) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -142,11 +146,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (interrupts, memory) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 10 · Wed**  (90 min)
+### **Day 10 · Wed**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **28 min** | Kata — LONG rep | make drill KATA=ring_buffer VARIANT=v2 |
+| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v3 |
 | **42 min** | Main block | Mimic: S2 power topology and first soldering · S3 encoder, interrupts, x4 decoding |
 | **12 min** | Deck | make review  (interrupts, memory) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -160,11 +165,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (interrupts, memory) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 12 · Fri**  (90 min)
+### **Day 12 · Fri**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=mem_primitives VARIANT=v4 |
+| **25 min** | Kata — Python | make drill KATA=log_parser_py VARIANT=v3 |
 | **55 min** | Main block | Mimic: S2 power topology and first soldering · S3 encoder, interrupts, x4 decoding |
 | **12 min** | Deck | make review  (interrupts, memory) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -192,11 +198,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 **Mimic this week:** S4 open loop, both directions · S5 the fixed-rate loop, rate proven
 **Deck focus:** volatile, static, const
 
-### **Day 15 · Mon**  (90 min)
+### **Day 15 · Mon**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=register_map VARIANT=v2 |
+| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v4 |
 | **55 min** | Main block | Mimic: S4 open loop, both directions · S5 the fixed-rate loop, rate proven |
 | **12 min** | Deck | make review  (volatile, static, const) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -210,11 +217,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (volatile, static, const) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 17 · Wed**  (90 min)
+### **Day 17 · Wed**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **28 min** | Kata — LONG rep | make drill KATA=fsm VARIANT=v2 |
+| **25 min** | Kata — Python | make drill KATA=log_parser_py VARIANT=v4 |
 | **42 min** | Main block | Mimic: S4 open loop, both directions · S5 the fixed-rate loop, rate proven |
 | **12 min** | Deck | make review  (volatile, static, const) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -228,11 +236,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (volatile, static, const) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 19 · Fri**  (90 min)
+### **Day 19 · Fri**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=mem_primitives VARIANT=v5 |
+| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v5 |
 | **55 min** | Main block | Mimic: S4 open loop, both directions · S5 the fixed-rate loop, rate proven |
 | **12 min** | Deck | make review  (volatile, static, const) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -245,14 +254,14 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **100 min** | Main block | S3/S4 overflow. First logic-analyzer capture goes in docs/. |
 | **10 min** | Rehearsal | make rehearse  (one story, out loud, timed) |
 
-### **Day 21 · Sun**  (153 min)
+### **Day 21 · Sun**  (213 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **28 min** | Kata — LONG rep | make drill KATA=pool_allocator VARIANT=v1 |
 | **20 min** | Weekly review | make report, then fill logs/WEEKLY_REVIEW.md |
 | **15 min** | Deck — full pass | make review 30 |
-| **90 min** | Kata build | BUILD x1: concurrency_sim (builds under -fsanitize=thread, not address). Write the header first, then list the cases in the BRIEF, then write them. Every BRIEF ships with a 'What to test' section. |
+| **150 min** | Kata build | BUILD x2: cli_tool_py, concurrency_sim (builds under -fsanitize=thread, not address). Write the header first, then list the cases in the BRIEF, then write them. Every BRIEF ships with a 'What to test' section. |
 
 ---
 
@@ -261,11 +270,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 **Mimic this week:** S6 units, convert at the boundary · S7 telemetry and the bandwidth budget
 **Deck focus:** registers, alignment
 
-### **Day 22 · Mon**  (90 min)
+### **Day 22 · Mon**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=register_map VARIANT=v4 |
+| **25 min** | Kata — Python | make drill KATA=log_parser_py VARIANT=v5 |
 | **55 min** | Main block | Mimic: S6 units, convert at the boundary · S7 telemetry and the bandwidth budget |
 | **12 min** | Deck | make review  (registers, alignment) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -279,11 +289,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (registers, alignment) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 24 · Wed**  (90 min)
+### **Day 24 · Wed**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **28 min** | Kata — LONG rep | make drill KATA=protocol_parser VARIANT=v2 |
+| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v6 |
 | **42 min** | Main block | Mimic: S6 units, convert at the boundary · S7 telemetry and the bandwidth budget |
 | **12 min** | Deck | make review  (registers, alignment) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -297,11 +308,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (registers, alignment) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 26 · Fri**  (90 min)
+### **Day 26 · Fri**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=bitops VARIANT=v5 |
+| **25 min** | Kata — Python | make drill KATA=log_parser_py VARIANT=v6 |
 | **55 min** | Main block | Mimic: S6 units, convert at the boundary · S7 telemetry and the bandwidth budget |
 | **12 min** | Deck | make review  (registers, alignment) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -331,11 +343,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 **Mimic this week:** S8 P only, stability boundary · S9 step-response metrics · S10 D then I
 **Deck focus:** protocols, timing
 
-### **Day 29 · Mon**  (90 min)
+### **Day 29 · Mon**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=debouncer VARIANT=v2 |
+| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v7 |
 | **55 min** | Main block | Mimic: S8 P only, stability boundary · S9 step-response metrics · S10 D then I |
 | **12 min** | Deck | make review  (protocols, timing) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -349,11 +362,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (protocols, timing) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 31 · Wed**  (90 min)
+### **Day 31 · Wed**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **28 min** | Kata — LONG rep | make drill KATA=fixed_point_pid VARIANT=v1 |
+| **25 min** | Kata — Python | make drill KATA=log_parser_py VARIANT=v7 |
 | **42 min** | Main block | Mimic: S8 P only, stability boundary · S9 step-response metrics · S10 D then I |
 | **12 min** | Deck | make review  (protocols, timing) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -367,11 +381,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (protocols, timing) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 33 · Fri**  (90 min)
+### **Day 33 · Fri**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=bitops VARIANT=v6 |
+| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v1 |
 | **55 min** | Main block | Mimic: S8 P only, stability boundary · S9 step-response metrics · S10 D then I |
 | **12 min** | Deck | make review  (protocols, timing) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -405,11 +420,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 > above 55%, 25+ logged reps. If the second one is failing, the kata slot has
 > been getting eaten — that is the exact failure mode this plan exists to stop.
 
-### **Day 36 · Mon**  (90 min)
+### **Day 36 · Mon**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=register_map VARIANT=v7 |
+| **25 min** | Kata — Python | make drill KATA=log_parser_py VARIANT=v1 |
 | **55 min** | Main block | Mimic: S11 safety envelope and real PWM · S12 the refactor, tests, exit gate |
 | **12 min** | Deck | make review  (sync, RTOS) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -423,11 +439,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (sync, RTOS) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 38 · Wed**  (90 min)
+### **Day 38 · Wed**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **28 min** | Kata — LONG rep | make drill KATA=pool_allocator VARIANT=v3 |
+| **25 min** | Kata — Python | make drill KATA=cli_tool_py VARIANT=v1 |
 | **42 min** | Main block | Mimic: S11 safety envelope and real PWM · S12 the refactor, tests, exit gate |
 | **12 min** | Deck | make review  (sync, RTOS) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -441,11 +458,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (sync, RTOS) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 40 · Fri**  (90 min)
+### **Day 40 · Fri**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=mem_primitives VARIANT=v6 |
+| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v2 |
 | **55 min** | Main block | Mimic: S11 safety envelope and real PWM · S12 the refactor, tests, exit gate |
 | **12 min** | Deck | make review  (sync, RTOS) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -474,11 +492,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 
 **Deck focus:** V&V, traceability, test design
 
-### **Day 43 · Mon**  (90 min)
+### **Day 43 · Mon**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=bitops VARIANT=v7 |
+| **25 min** | Kata — Python | make drill KATA=log_parser_py VARIANT=v2 |
 | **55 min** | Main block | pytest from zero: discovery, assertions, exit codes. 20 tests on a pure function |
 | **12 min** | Deck | make review  (V&V, traceability, test design) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -492,11 +511,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (V&V, traceability, test design) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 45 · Wed**  (90 min)
+### **Day 45 · Wed**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **28 min** | Kata — LONG rep | make drill KATA=fixed_point_pid VARIANT=v2 |
+| **25 min** | Kata — Python | make drill KATA=cli_tool_py VARIANT=v2 |
 | **42 min** | Main block | parametrize. Then verification vs validation, test plan structure |
 | **12 min** | Deck | make review  (V&V, traceability, test design) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -510,11 +530,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (V&V, traceability, test design) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 47 · Fri**  (90 min)
+### **Day 47 · Fri**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=debouncer VARIANT=v4 |
+| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v3 |
 | **55 min** | Main block | make prompt x3. Score each against the rubric |
 | **12 min** | Deck | make review  (V&V, traceability, test design) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -543,11 +564,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 
 **Deck focus:** test infra, pytest
 
-### **Day 50 · Mon**  (90 min)
+### **Day 50 · Mon**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=register_map VARIANT=v3 |
+| **25 min** | Kata — Python | make drill KATA=log_parser_py VARIANT=v3 |
 | **55 min** | Main block | pyserial: open, write, read with timeout, frame responses. Talk to the board |
 | **12 min** | Deck | make review  (test infra, pytest) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -561,11 +583,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (test infra, pytest) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 52 · Wed**  (90 min)
+### **Day 52 · Wed**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **28 min** | Kata — LONG rep | make drill KATA=test_harness_py VARIANT=v2 |
+| **25 min** | Kata — Python | make drill KATA=cli_tool_py VARIANT=v3 |
 | **42 min** | Main block | Flashing from the harness. Test isolation |
 | **12 min** | Deck | make review  (test infra, pytest) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -579,11 +602,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (test infra, pytest) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 54 · Fri**  (90 min)
+### **Day 54 · Fri**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=debouncer VARIANT=v5 |
+| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v4 |
 | **55 min** | Main block | Trace each test to a Stage 0 requirement. Requirement IDs in test names |
 | **12 min** | Deck | make review  (test infra, pytest) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -612,11 +636,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 
 **Deck focus:** hardware, debug
 
-### **Day 57 · Mon**  (90 min)
+### **Day 57 · Mon**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=bitops VARIANT=v5 |
+| **25 min** | Kata — Python | make drill KATA=log_parser_py VARIANT=v4 |
 | **55 min** | Main block | Green CI run against real hardware. Screenshot it |
 | **12 min** | Deck | make review  (hardware, debug) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -630,11 +655,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (hardware, debug) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 59 · Wed**  (90 min)
+### **Day 59 · Wed**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **28 min** | Kata — LONG rep | make drill KATA=fsm VARIANT=v3 |
+| **25 min** | Kata — Python | make drill KATA=cli_tool_py VARIANT=v4 |
 | **42 min** | Main block | make prompt x4. Then the full protocol and hardware verbal set |
 | **12 min** | Deck | make review  (hardware, debug) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -648,12 +674,13 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (hardware, debug) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 61 · Fri**  (90 min)
+### **Day 61 · Fri**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=debouncer VARIANT=v6 |
-| **55 min** | Main block | make rehearse B3, B4, B10. Record one. Watch it back |
+| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v5 |
+| **55 min** | Main block | make rehearse S=B3, then S=B4, then S=B10. Record one. Watch it back |
 | **12 min** | Deck | make review  (hardware, debug) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
@@ -681,11 +708,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 
 **Deck focus:** full deck, no filter
 
-### **Day 64 · Mon**  (90 min)
+### **Day 64 · Mon**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=mem_primitives VARIANT=v6 |
+| **25 min** | Kata — Python | make drill KATA=log_parser_py VARIANT=v5 |
 | **55 min** | Main block | Timed 2-hour mock take-home, AI-free: state machine, debugging, bit masking |
 | **12 min** | Deck | make review  (full deck, no filter) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -699,11 +727,12 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (full deck, no filter) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 66 · Wed**  (90 min)
+### **Day 66 · Wed**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **28 min** | Kata — LONG rep | make drill KATA=test_harness_py VARIANT=v3 |
+| **25 min** | Kata — Python | make drill KATA=cli_tool_py VARIANT=v5 |
 | **42 min** | Main block | Full deck pass. Every card box 4+ or it goes back to daily |
 | **12 min** | Deck | make review  (full deck, no filter) |
 | **8 min** | Log and commit | make done, log the session, git commit |
@@ -713,15 +742,16 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=rollover_timer VARIANT=v5 |
-| **55 min** | Main block | make rehearse B10 twice, timed. Then --stats: every story ready? |
+| **55 min** | Main block | make rehearse S=B10 twice, timed. Then --stats: every story ready? |
 | **12 min** | Deck | make review  (full deck, no filter) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 68 · Fri**  (90 min)
+### **Day 68 · Fri**  (115 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **15 min** | Kata — sprint | make drill KATA=bitops VARIANT=v6 |
+| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v6 |
 | **55 min** | Main block | Mock verbal round: 20 cards cold, out loud, no reveal. Then make prompt x2 |
 | **12 min** | Deck | make review  (full deck, no filter) |
 | **8 min** | Log and commit | make done, log the session, git commit |

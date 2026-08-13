@@ -13,6 +13,9 @@ The four phases, in order. Call `make lap` at each transition:
   compile   first compile attempt -> it compiles clean
   debug     clean compile -> tests pass
 
+A Python kata (`*_py`) records `run` where a C one records `compile` — first execution
+attempt until it runs without a syntax or import error. Same position, same meaning.
+
 The breakdown is the diagnosis. See `make report`.
 
 Selection with no arguments: worst recent time first, then longest since last rep, then
@@ -27,6 +30,7 @@ import json
 import os
 import random
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -44,11 +48,36 @@ TARGETS = {
     "bitops": 8, "mem_primitives": 10, "register_map": 12, "debouncer": 12,
     "rollover_timer": 12, "ring_buffer": 15, "fsm": 15, "pool_allocator": 20,
     "protocol_parser": 20, "fixed_point_pid": 20, "concurrency_sim": 25,
+    "binary_frame_py": 20, "log_parser_py": 20, "cli_tool_py": 25,
     "test_harness_py": 25,
 }
 
+# The four phases, per language. A Python kata has no compile step, so the third phase is
+# the first *run* — from your first execution attempt to the point where it runs without a
+# syntax or import error. Same diagnostic shape, same position in the sequence: it is the
+# gap between "I have typed something" and "the machine accepts it". Keeping the C name
+# would put a column in logs/splits.tsv that means two different things.
 PHASES = ["design", "write", "compile", "debug"]
+PHASES_PY = ["design", "write", "run", "debug"]
 
+
+def is_python(kata):
+    """The `_py` suffix is the language discriminator across the whole repo.
+
+    Makefile:122 routes these to pytest, newkata.py scaffolds them without a header, and
+    progress.py excludes them from C1's clean-first-compile rate. One convention.
+    """
+    return kata.endswith("_py")
+
+
+def phases_for(kata):
+    return PHASES_PY if is_python(kata) else PHASES
+
+
+# Constraint cards are per-language. Half the C list is meaningless in Python — there is no
+# goto to forbid, "no dynamic allocation" is not a thing you can honour, and a RAM budget in
+# a header comment has no header to live in. A constraint you cannot obey is not a
+# constraint, it is noise on a card you are trying to take seriously.
 CONSTRAINT_CARDS = [
     "No dynamic allocation anywhere.",
     "Single return per function. No goto.",
@@ -61,6 +90,23 @@ CONSTRAINT_CARDS = [
     "Name every variable in full words. No i, n, tmp, buf.",
     "Write the test you'd add before you write the implementation.",
 ]
+
+CONSTRAINT_CARDS_PY = [
+    "No imports beyond the standard library.",
+    "O(1) memory. If you materialise the input, you have failed the card.",
+    "Type-annotate every signature, and make it survive `mypy --strict` in your head.",
+    "No third-party anything. struct, bytes and the stdlib only.",
+    "Every exception you raise must be your own type, not a bare ValueError.",
+    "Write it on paper first, then type it in. Timer runs during the paper phase.",
+    "Name every variable in full words. No i, n, tmp, buf.",
+    "Write the test you'd add before you write the implementation.",
+    "No comments. The names have to carry it.",
+    "Explain the byte order out loud before you type the format string.",
+]
+
+
+def constraint_cards(kata):
+    return CONSTRAINT_CARDS_PY if is_python(kata) else CONSTRAINT_CARDS
 
 
 def katas():
@@ -130,8 +176,19 @@ def read_log():
     return rows
 
 
-def pick(rows):
+def pick(rows, lang=None):
+    """lang="c" or "py" narrows the adaptive picker. Free practice only.
+
+    The scheduled days name their module outright, so this is for `make drill LANG=py`
+    when you want a Python rep now. Saturday deliberately does NOT pass a language: its
+    whole job is to hand you whatever you have been avoiding, and letting you filter that
+    would defeat the one day designed to be uncomfortable.
+    """
     available = built_katas()
+    if lang == "py":
+        available = [k for k in available if is_python(k)]
+    elif lang == "c":
+        available = [k for k in available if not is_python(k)]
     if not available:
         sys.exit(
             "No kata has a header and a test suite yet, so there is nothing to drill\n"
@@ -220,6 +277,13 @@ def stub_for(kata):
 
 def cmd_start(argv):
     rows = read_log()
+    lang = None
+    argv = list(argv)
+    for i, a in enumerate(argv):
+        if a.lower() in ("c", "py", "python"):
+            lang = "py" if a.lower().startswith("py") else "c"
+            argv.pop(i)
+            break
     if len(argv) >= 1:
         kata = argv[0]
         if kata not in katas():
@@ -241,20 +305,22 @@ def cmd_start(argv):
         else:
             variant, desc = pick_variant(kata, rows)
     else:
-        kata, variant, desc = pick(rows)
+        kata, variant, desc = pick(rows, lang)
 
+    # rmtree rather than a remove() loop over listdir. `make test` puts src/ on PYTHONPATH
+    # for a Python kata, so CPython writes src/__pycache__/ there — and os.remove() raises
+    # IsADirectoryError on a directory, which killed the *second* rep of every Python kata
+    # and could leave src/ half-wiped with no drill state written. The Makefile also passes
+    # -B now so the cache is not created in the first place; this is the belt to that brace.
     src = os.path.join(KATAS, kata, "src")
-    if os.path.isdir(src):
-        for f in os.listdir(src):
-            os.remove(os.path.join(src, f))
-    else:
-        os.makedirs(src, exist_ok=True)
+    shutil.rmtree(src, ignore_errors=True)
+    os.makedirs(src, exist_ok=True)
 
     fname, body = stub_for(kata)
     with open(os.path.join(src, fname), "w") as fh:
         fh.write(body)
 
-    card = random.choice(CONSTRAINT_CARDS) if random.random() < 0.35 else None
+    card = random.choice(constraint_cards(kata)) if random.random() < 0.35 else None
 
     with open(STATE, "w") as fh:
         json.dump({"kata": kata, "variant": variant, "start": time.time(),
@@ -268,11 +334,13 @@ def cmd_start(argv):
     if card:
         print(f"  CONSTRAINT CARD: {card}")
         print("-" * 66)
-    print(f"  Target: {target} min, clean, first compile.")
+    goal = "first run, no traceback" if is_python(kata) else "clean, first compile"
+    print(f"  Target: {target} min, {goal}.")
     print(f"  Wrote empty stub: katas/{kata}/src/{fname}")
     print(f"  Read BRIEF.md if you need the API. Do not read anything else.")
     print(f"  Clock is running. `make test` when ready, `make done` when passing.")
-    print(f"  Call `make lap` at each transition: design -> write -> compile -> debug.")
+    print(f"  Call `make lap` at each transition: "
+          f"{' -> '.join(phases_for(kata))}.")
     print("=" * 66)
 
 
@@ -282,12 +350,13 @@ def cmd_lap(argv):
     with open(STATE) as fh:
         st = json.load(fh)
     laps = st.get("laps", [])
+    phases = phases_for(st["kata"])
     if argv:
         phase = argv[0]
-    elif len(laps) < len(PHASES):
-        phase = PHASES[len(laps)]
+    elif len(laps) < len(phases):
+        phase = phases[len(laps)]
     else:
-        phase = f"extra{len(laps) - len(PHASES) + 1}"
+        phase = f"extra{len(laps) - len(phases) + 1}"
     now = time.time()
     mins = round((now - st.get("last", st["start"])) / 60.0, 2)
     laps.append({"phase": phase, "minutes": mins})
@@ -295,7 +364,7 @@ def cmd_lap(argv):
     with open(STATE, "w") as fh:
         json.dump(st, fh)
     total = round((now - st["start"]) / 60.0, 1)
-    nxt = PHASES[len(laps)] if len(laps) < len(PHASES) else "done"
+    nxt = phases[len(laps)] if len(laps) < len(phases) else "done"
     print(f"  {phase:<8} {mins:>6.2f} min   (total {total} min)   next: {nxt}")
 
 
@@ -309,10 +378,11 @@ def cmd_done():
     target = TARGETS.get(st["kata"], 15)
 
     laps = st.get("laps", [])
+    phases = phases_for(st["kata"])
     if laps:
         remaining = round((now - st.get("last", st["start"])) / 60.0, 2)
         if remaining > 0.05:
-            phase = PHASES[len(laps)] if len(laps) < len(PHASES) else "final"
+            phase = phases[len(laps)] if len(laps) < len(phases) else "final"
             laps.append({"phase": phase, "minutes": remaining})
 
     print(f"\n{st['kata']} {st['variant']} — {minutes} min (target {target}).")
@@ -322,7 +392,13 @@ def cmd_done():
             pct = round(100 * lap["minutes"] / minutes) if minutes else 0
             bar = "#" * max(1, pct // 4)
             print(f"    {lap['phase']:<8} {lap['minutes']:>6.2f} min  {pct:>3}%  {bar}")
-    clean = input("Clean? compiled first try, no sanitizer findings [y/N]: ").strip().lower()
+    # "Clean" is one column in logs/log.tsv and it has to mean one thing per language, or
+    # the number it feeds is measuring two skills at once. For C it is the clean-first-
+    # compile rate that C1 is scored on; for Python there is no compile, so the equivalent
+    # claim is that it ran without a traceback the first time you ran it.
+    ask = ("Clean? ran first try, no traceback [y/N]: " if is_python(st["kata"])
+           else "Clean? compiled first try, no sanitizer findings [y/N]: ")
+    clean = input(ask).strip().lower()
     clean = "y" if clean in ("y", "yes") else "n"
     note = input("One line: a design decision or a bug you hit: ").strip()
 
@@ -386,7 +462,8 @@ def cmd_status():
     print(f"{st['kata']} {st['variant']} — {mins} min elapsed.")
     for lap in laps:
         print(f"  {lap['phase']:<8} {lap['minutes']:>6.2f} min")
-    nxt = PHASES[len(laps)] if len(laps) < len(PHASES) else "done"
+    phases = phases_for(st["kata"])
+    nxt = phases[len(laps)] if len(laps) < len(phases) else "done"
     print(f"  current phase: {nxt}")
     if st.get("card"):
         print(f"Constraint: {st['card']}")

@@ -42,12 +42,20 @@ DECKS = os.path.join(ROOT, "practice", "decks")
 DECK_STATE = os.path.join(DECKS, ".state.json")
 LOG = os.path.join(ROOT, "logs", "log.tsv")
 PROMPTS = os.path.join(ROOT, "logs", "design-prompts")
+DESIGNS = os.path.join(ROOT, "logs", "architecture")
 OUT_MD = os.path.join(ROOT, "logs", "PROGRESS.md")
 OUT_JSON = os.path.join(ROOT, "logs", "progress.json")
 
-GROUPS = {"C": "C language and syntax fluency", "E": "Embedded concepts",
-          "H": "Hardware, signals and debugging", "T": "Test and integration",
-          "B": "Behavioural and narrative"}
+GROUPS = {"C": "C language and syntax fluency", "Y": "Python fluency",
+          "E": "Embedded concepts", "H": "Hardware, signals and debugging",
+          "T": "Test and integration", "B": "Behavioural and narrative"}
+
+# Every capability-ID regex below is built from GROUPS rather than spelling the letters
+# out. Adding a group used to mean finding five separate `[CEHTB]` character classes,
+# and missing one did not fail loudly: a group the regex cannot see is absent from both
+# sides of `--check`, so the spec and the coverage map agree about nothing and the check
+# passes while scoring zero capabilities. One source, derived.
+GRP = "[" + "".join(GROUPS) + "]"
 
 MASTERED_BOX = 4          # a deck card counts once it reaches box 4
 
@@ -63,6 +71,12 @@ C1_MIN_REPS = 20
 PROMPTS_FOR_T1 = 10
 PROMPT_SCORE_BAR = 12
 PROMPT_RECENT = 3         # the most recent N answers must all clear the bar
+
+# E30's bar is three designs, not ten. T1's subject rotates across 40 everyday objects and
+# the skill is breadth; an architecture round is one deep 45-minute exercise and three of
+# them scored at the bar is a real claim. Same rubric denominator, same recency rule.
+DESIGNS_FOR_E30 = 3
+DESIGN_SCORE_BAR = 12
 
 
 def _load(name, path):
@@ -85,7 +99,7 @@ def capabilities():
     """{id: statement} from the master checklist tables in the spec."""
     caps = {}
     for line in open(REQ):
-        m = re.match(r"^\|\s*([CEHTB]\d+)\s*\|\s*(.+?)\s*\|", line)
+        m = re.match(rf"^\|\s*({GRP}\d+)\s*\|\s*(.+?)\s*\|", line)
         if m:
             caps[m.group(1)] = m.group(2)
     return caps
@@ -93,11 +107,11 @@ def capabilities():
 
 def _expand_ids(label):
     """'B5' -> ['B5'];  'B5-B9' / 'B5–B9' -> ['B5','B6',...,'B9']."""
-    m = re.match(r"^([CEHTB])(\d+)\s*[–—-]\s*[CEHTB]?(\d+)$", label.strip())
+    m = re.match(rf"^({GRP})(\d+)\s*[–—-]\s*{GRP}?(\d+)$", label.strip())
     if m:
         g, lo, hi = m.group(1), int(m.group(2)), int(m.group(3))
         return [f"{g}{n}" for n in range(lo, hi + 1)]
-    m = re.match(r"^([CEHTB]\d+)$", label.strip())
+    m = re.match(rf"^({GRP}\d+)$", label.strip())
     return [m.group(1)] if m else []
 
 
@@ -117,15 +131,15 @@ def ownership():
     """
     own = {}
     for line in open(COV):
-        m = re.match(r"^\|\s*([CEHTB]\d+(?:\s*[–—-]\s*[CEHTB]?\d+)?)\s[^|]*\|"
+        m = re.match(rf"^\|\s*({GRP}\d+(?:\s*[–—-]\s*{GRP}?\d+)?)\s[^|]*\|"
                      r"\s*(.+?)\s*\|\s*(.*?)\s*\|", line)
         if not m:
             continue
         label, cell, note = m.groups()
         flat = cell.replace("*", "")
         owners = set()
-        for tok, code in (("Design prompts", "PROMPT"), ("Deferred", "DEFER"),
-                          ("M0", "M0"), ("M1", "M1")):
+        for tok, code in (("Design prompts", "PROMPT"), ("Architecture drill", "DESIGN"),
+                          ("Deferred", "DEFER"), ("M0", "M0"), ("M1", "M1")):
             if tok in flat:
                 owners.add(code)
         # Single letters, only as standalone tokens, so the K in a kata name or the
@@ -159,10 +173,19 @@ def bar_for(cid, owners):
         return "clean rate"
     if cid[0] == "C":
         return "kata" if "K" in owners else ("deck" if "D" in owners else "")
+    # Y is a fluency group like C, so it takes C's precedence rather than the default
+    # below: a kata outranks a deck card. Without this arm Y2 and Y3 — whose bars are
+    # logged reps against binary_frame_py and log_parser_py — would fall through to the
+    # generic "D before K" order and be scored on the deck instead, which measures
+    # whether you can *say* the answer rather than whether you can write it cold.
+    if cid[0] == "Y":
+        return "kata" if "K" in owners else ("deck" if "D" in owners else "")
     if cid[0] == "B":
         return "rehearsal"
     if "PROMPT" in owners:
         return "design prompts"
+    if "DESIGN" in owners:
+        return "architecture drills"
     if "D" in owners:
         return "deck"
     if "K" in owners:
@@ -190,15 +213,19 @@ def deck_cards():
     return out
 
 
-def prompt_answers():
-    """[(path, score_or_None)] for every design-prompt answer written so far.
+def scored_answers(directory):
+    """[(path, score_or_None)] for every rubric-scored answer in a directory.
 
-    The score is the rubric total the file carries. `make prompt` writes the rubric
-    into the file with a blank total; you fill it in. An unscored answer counts
-    toward the volume but never toward the bar.
+    The score is the rubric total the file carries. Both `make prompt` and `make design`
+    write their rubric into the file with a blank total; you fill it in. An unscored
+    answer counts toward the volume but never toward the bar.
+
+    Both rubrics are out of 16 on purpose, so one parse serves both. They are different
+    rubrics — one asks how you would test a thing, the other asks you to design one — and
+    they live in different directories for exactly that reason.
     """
     out = []
-    for path in sorted(glob.glob(os.path.join(PROMPTS, "*.md"))):
+    for path in sorted(glob.glob(os.path.join(directory, "*.md"))):
         score = None
         try:
             m = re.search(r"Total:\s*(\d+)\s*/\s*16", open(path).read())
@@ -208,6 +235,14 @@ def prompt_answers():
             pass
         out.append((path, score))
     return out
+
+
+def prompt_answers():
+    return scored_answers(PROMPTS)
+
+
+def design_answers():
+    return scored_answers(DESIGNS)
 
 
 def deck_state():
@@ -243,8 +278,15 @@ def kata_retired(reps, target):
 
 
 def clean_rate(reps):
-    """(rate, n) across every kata rep, ignoring hand-logged Mimic/project rows."""
-    allr = [r for k, v in reps.items() for r in v if k not in ("mimic", "project")]
+    """(rate, n) across every C kata rep, ignoring Mimic/project and Python modules.
+
+    C1's bar is the clean-*first-compile* rate, and a Python kata has no compile step —
+    `clean` there means "ran first try, no traceback", which is a different claim about a
+    different skill. Counting both in one number measures neither. Python fluency has its
+    own bar in the Y group; this one is C's alone.
+    """
+    allr = [r for k, v in reps.items() for r in v
+            if k not in ("mimic", "project") and not k.endswith("_py")]
     if not allr:
         return 0.0, 0
     return sum(1 for r in allr if r["clean"]) / len(allr), len(allr)
@@ -257,6 +299,7 @@ def score():
     reh = rehearsal()
     takes = reh.read_log()
     prompts = prompt_answers()
+    designs = design_answers()
     rate, nreps = clean_rate(reps)
 
     by_cap_cards = defaultdict(list)
@@ -294,6 +337,8 @@ def score():
             detail.append(f"{n} take(s)")
         if "PROMPT" in owners:
             mechanisms.append(f"design prompts ({len(prompts)} written)")
+        if "DESIGN" in owners:
+            mechanisms.append(f"architecture drills ({len(designs)} written)")
         if "P" in owners:
             mechanisms.append("HIL project")
             detail.append("evidence lives in the harness repo")
@@ -315,6 +360,12 @@ def score():
                     and len(scored) == PROMPT_RECENT
                     and all(s >= PROMPT_SCORE_BAR for s in scored))
 
+        def designs_met():
+            scored = [s for _, s in designs[-DESIGNS_FOR_E30:] if s is not None]
+            return (len(designs) >= DESIGNS_FOR_E30
+                    and len(scored) == DESIGNS_FOR_E30
+                    and all(s >= DESIGN_SCORE_BAR for s in scored))
+
         if bar == "deferred":
             mechanisms.append("deferred")
             detail.append("out of scope by decision — see plan/COVERAGE.md")
@@ -335,6 +386,11 @@ def score():
             scored = [s for _, s in prompts if s is not None]
             detail.append(f"{len(scored)} scored, bar is the last {PROMPT_RECENT} "
                           f"at {PROMPT_SCORE_BAR}+/16")
+        elif bar == "architecture drills":
+            done = designs_met()
+            scored = [s for _, s in designs if s is not None]
+            detail.append(f"{len(scored)} scored, bar is {DESIGNS_FOR_E30} "
+                          f"at {DESIGN_SCORE_BAR}+/16")
         else:
             done = None                # tracked outside this repo, or nothing owns it
 

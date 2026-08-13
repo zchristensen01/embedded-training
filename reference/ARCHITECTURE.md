@@ -17,6 +17,8 @@ Inside each kata module:
 practice/katas/ring_buffer/
 ├── BRIEF.md          committed   what it is, the API, how to think about it, what to test
 ├── VARIANTS.md       committed   the seven variants of this kata
+│                                (a *_py kata has no include/ — its contract is the BRIEF
+│                                 and the frozen pytest suite that enforces it)
 ├── NOTES.md          committed   design decisions and bugs, one line per rep
 ├── include/
 │   └── ring_buffer.h committed   the API contract. Frozen. Not edited during a rep.
@@ -67,6 +69,9 @@ restating it.**
 | Which mechanism is a capability's *bar* | `tools/progress.py:bar_for()` | `progress.py`, `check_decks.py`, `schedule.py` |
 | When a story counts as ready | `tools/rehearse.py:ready()` | `rehearse.py`, `progress.py` |
 | The behavioural stories and their targets | `practice/rehearsal/STORIES.md` | `rehearse.py` |
+| The architecture prompts and their rubric | `practice/design-prompts/ARCHITECTURE.md` | `design.py` |
+| Which capability groups exist | `tools/progress.py:GROUPS` | every ID regex in `progress.py`, derived from it |
+| Which language a kata is | the `_py` suffix on its directory name | `drill.py`, `newkata.py`, `report.py`, `progress.py`, the Makefile |
 
 Every one of those used to have, or nearly had, a second copy. Two of them drifted before
 anyone noticed: `report.py` kept its own target-time dict and fell a kata behind, and
@@ -82,7 +87,7 @@ Six, all run by CI on every push and all runnable together with `make check`.
 
 | Check | Proves |
 |---|---|
-| `check-frozen` | Every frozen header parses standalone and every frozen suite compiles against it, gcc and clang |
+| `check-frozen` | Every frozen C header parses standalone and every frozen C suite compiles against it, gcc and clang. Python modules have no header and are not compiled — `make test` runs them under pytest instead |
 | `check-log` | `logs/log.tsv` is well formed: header, fields, date order, known modules, real variants |
 | `check-calendar` | Schedule, derived build plan, timer blocks, variants and retirement feasibility all agree |
 | `check-coverage` | The spec and the coverage map describe exactly the same set of capabilities, each group numbered from 1 with no gaps |
@@ -110,6 +115,9 @@ C11, `-Wall -Wextra -Werror`, AddressSanitizer and UndefinedBehaviorSanitizer wi
 `-fno-sanitize-recover=all`, on both gcc and clang. `concurrency_sim` builds under
 ThreadSanitizer instead, because TSan and ASan cannot coexist in one binary; `make test`
 selects per module.
+
+Python modules (`*_py`) are run by pytest, not compiled. `Makefile:ALL_PY` routes them, and
+the `_py` suffix is the only switch — there is no per-module list to keep in sync.
 
 `-fno-sanitize-recover=all` is not optional. By default UBSan prints a diagnostic and lets the
 program carry on, so a run containing real undefined behaviour still exits 0 and CI goes green.

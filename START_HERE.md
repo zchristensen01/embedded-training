@@ -26,23 +26,34 @@ plan/INTERVIEW_REQUIREMENTS.md      the capability list        THE SPECIFICATION
         ├── plan/COVERAGE.md         who owns each one
         │
         ├── practice/                the mechanisms that do the work
+        │     ├── katas/             C and Python, written cold every rep
+        │     ├── decks/             embedded · test-integration · python
+        │     ├── design-prompts/    SUBJECTS (test it) · ARCHITECTURE (design it)
+        │     └── rehearsal/         the behavioural stories
         │
         └── logs/                    what actually happened
                 └── PROGRESS.md      the score, generated from the logs
 ```
 
-## The five mechanisms
+## The seven mechanisms
 
 Only the first is katas. That is deliberate — drilling code and then failing the
 verbal round is the most common way this kind of preparation goes wrong.
 
 | Mechanism | Covers | How it repeats | Command |
 |---|---|---|---|
-| **Kata** | C fluency, 12 items | Frozen tests, deleted `src/`, 7 variants each | `make drill` |
-| **Deck** | Concepts and verbal, the whole E group and most of T | Leitner boxes at 1/2/4/8/16 days, spoken aloud | `make review` |
+| **Kata** | C and Python fluency — the C and Y groups | Frozen tests, deleted `src/`, 7 variants each | `make drill` |
+| **Deck** | Concepts and verbal — the whole E group, most of T, and Y1 | Leitner boxes at 1/2/4/8/16 days, spoken aloud | `make review` |
 | **Design prompt** | "How would you test X", the core T&I question | 40 rotating subjects, one fixed rubric | `make prompt` |
-| **Rehearsal** | Behavioural, 10 stories | Re-told to three strong takes on three days | `make rehearse` |
-| **Project** | The HIL harness, 6 items | Not repeatable — one artifact, done well | its own repo |
+| **Architecture drill** | "Design this subsystem", the embedded design round | 8 rotating prompts, a different fixed rubric | `make design` |
+| **Bug hunt** | Debugging code you did not write today | Your own old solution, silently mutated | `make hunt` |
+| **Rehearsal** | Behavioural, 11 stories | Re-told to three strong takes on three days | `make rehearse` |
+| **Project** | The HIL harness | Not repeatable — one artifact, done well | its own repo |
+
+**Both languages, every day, from day one.** The C rep and the Python rep sit next to each
+other on a weekday rather than being separated into phases. That is deliberate too: an
+interview loop does not block by language, and working out *which* kind of problem you are
+looking at before you solve it is part of the skill being trained.
 
 ## The kata mechanism, because it is the unusual one
 
@@ -54,6 +65,8 @@ practice/katas/ring_buffer/
 ├── VARIANTS.md   committed   the seven variants the drill draws from
 ├── NOTES.md      committed   one decision or bug per rep, appended automatically
 ├── include/      committed   the API contract.  FROZEN — never edited during a rep
+│                          (a *_py kata has none: its contract is the BRIEF, and the
+│                           frozen suite is what enforces it)
 ├── tests/        committed   the test suite.    FROZEN — never edited during a rep
 └── src/          GITIGNORED  your implementation. DELETED at the start of every rep
 ```
@@ -97,10 +110,14 @@ generated, not written, so it cannot drift out of step with the rest.
 make today          what to do right now
 make drill          start a rep — wipes src/, starts the clock
     make lap        at each transition: design -> write -> compile -> debug
+                    (a Python rep reads design -> write -> run -> debug)
 make test           build and run the frozen suite under sanitizers
 make done           stop the clock, log the rep
 make review         deck pass — ANSWER OUT LOUD
 ```
+
+Most weekdays carry two reps: the assigned C kata and the assigned Python one. Both are
+`make drill KATA=...`, and `make today` prints them in order.
 
 **[`DAILY.md`](DAILY.md)** is the checklist for that loop: what a line like `make drill
 KATA=bitops VARIANT=v1` actually does, what changes with the day of the week, and what you
@@ -127,12 +144,14 @@ make progress    every capability scored against its evidence bar
 
 Four numbers matter, and all four come from the logs rather than from self-assessment:
 
-- **Clean-first-compile rate** — the best single proxy for syntax fluency. 40% by
-  week 4, 55% by week 6, 70% by week 10.
+- **Clean-first-compile rate** — the best single proxy for C syntax fluency. 40% by
+  week 4, 55% by week 6, 70% by week 10. Python reps are excluded from it and reported
+  separately: a Python kata has no compile step, so "clean" there is a different claim
+  about a different skill, and one number covering both would measure neither.
 - **`write` + `compile` as a share of total rep time** — syntax fluency in one number.
   Under 40% by week 10.
-- **Reps per week** — consistency beats intensity. The calendar schedules seven; six is the
-  target, because one missed day is real life and two is a drift.
+- **Reps per week** — consistency beats intensity. The calendar schedules ten: seven C and
+  three Python. Nine is the target, because one missed day is real life and two is a drift.
 - **Capabilities met** — `make progress`. Should climb steadily, not in a rush at the end.
 
 If all four are flat and you feel like you are improving, you are not. That is what

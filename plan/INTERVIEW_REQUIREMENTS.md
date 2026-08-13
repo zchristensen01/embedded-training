@@ -5,9 +5,10 @@ sitting an embedded or test-and-integration interview. **This file is the specif
 other file in this repo exists to satisfy some part of it.
 
 Capabilities are numbered so `plan/COVERAGE.md` can point at them, `tools/progress.py` can score
-them, and you can tick them off. Five groups:
+them, and you can tick them off. Six groups:
 
 - **C**n — C language and syntax fluency
+- **Y**n — Python fluency
 - **E**n — Embedded concepts
 - **H**n — Hardware, signals, and debugging
 - **T**n — Test and integration
@@ -18,10 +19,15 @@ The count is not written down here on purpose — `make progress` reports it, an
 each group numbered from 1 with no gaps. A number in prose is a number that goes stale.
 
 **On the research below.** It was gathered from public candidate reports — Glassdoor, Blind,
-engineering blogs — in **August 2026**, and it has no citations because most of the sources are
-individual accounts rather than anything durable. Read every company-specific claim as "candidates
-have reported", not as policy. Interview processes change without announcement, and §6 says more
-about how much to trust each part.
+engineering blogs — in **August 2026**. Read every company-specific claim as "candidates have
+reported", not as policy. Interview processes change without announcement, and §6 says more about
+how much to trust each part.
+
+The first pass carried no citations. **Two later passes do**, and they are committed in
+[`research/`](../research/) — each with a source table giving URL, source type, date, companies
+covered, and a per-source reliability grade, plus an explicit "what I couldn't find" section. Where
+this document and a report disagree, the report is newer and says so in its own §1. Anything in
+Part I marked as confirmed, corrected or downgraded below traces to one of those files.
 
 ---
 
@@ -124,10 +130,14 @@ Three objections recur, and each has a concrete answer:
 | "Lives in frameworks, can't write tight C or reason about memory" | Register-level C on GitHub, a from-scratch ring buffer, fluent live answers on volatile and pointers |
 | "Will get bored and leave for web" | A credible, specific reason for working on hardware |
 
-**What helps:** Python, Docker, and CI/CD map directly onto firmware test automation and HIL
-infrastructure. A representative embedded test-automation posting asks for Python and Bash test
-development, pytest, CI/CD, and hardware-in-the-loop testing with custom rigs — four of those
-five are ordinary web-backend skills wearing different vocabulary.
+**What helps, and the part of this that was wrong.** Docker, CI/CD and framework design map
+directly onto firmware test automation and HIL infrastructure, and they transfer cleanly. The
+original version of this section said the same of Python. **A second research pass found that
+half wrong, and it is the half that matters:** Tesla schedules a standalone 90-minute Python
+assessment for QA and test roles, Qualcomm runs a live round on decorators, lambda and
+map/filter/reduce, and a candidate reported being cut in round two on a written Python exam.
+Framework thinking transfers. Live syntax under observation does not. That finding is why the
+**Y** group exists and why Python is drilled from week 1 rather than week 7.
 
 **What hurts:** a resume reading as pure web/SaaS with no low-level signal, and leading with
 "LLM integration," which reads as prompt engineering unless it sits under systems depth.
@@ -175,6 +185,21 @@ evidence bar that counts as proof. `plan/COVERAGE.md` says who owns each one.
 | C11 | Handle unsigned timer rollover correctly | Code | Correct across the wrap, not `if (now > next)` |
 | C12 | Write the ten linked-list and array problems that recur in embedded screens | Live coding | In C, not Python |
 
+## Y — Python fluency
+
+The T&I track's live-coding group, and the one this repo was originally wrong about. The earlier
+research assumed Python transferred wholesale from web work and scheduled it from week 7. It
+half-transfers: framework design, Docker and CI carry over cleanly, and raw syntax under
+observation does not. Tesla schedules a standalone 90-minute Python assessment for QA and test
+roles; Qualcomm runs a live round on decorators, lambda and map/filter/reduce. This group is to
+Python what C1–C12 are to C, and it is drilled from week 1 for the same reason.
+
+| ID | I can... | Tested by | Evidence bar |
+|---|---|---|---|
+| Y1 | Explain Python's trap-level internals — mutable default arguments, `is` vs `==` and the small-int cache, generators vs lists, closure late binding, the GIL for CPU- vs I/O-bound work, `functools.wraps`, context managers, shallow vs deep copy — and say *why*, not just what | Live rapid-fire "what does this print and why" | Said aloud with the trap named, across spaced sessions |
+| Y2 | Parse and build binary telemetry on the host: correct `struct` format and endianness, length validated before unpacking, signed vs unsigned, frames reassembled across read boundaries | Take-home, live decode-this-packet | Three consecutive clean reps at target, three variants |
+| Y3 | Write domain scripting under time pressure: stream-parse a file larger than RAM, reduce it, and exit with the right code — without loading it all | Live coding, take-home | Three consecutive clean reps at target, three variants |
+
 ## E — Embedded concepts (verbal)
 
 | ID | I can explain... | Tested by | Evidence bar |
@@ -207,6 +232,12 @@ evidence bar that counts as proof. `plan/COVERAGE.md` says who owns each one.
 | E26 | What a linker script does, and read a `.map` file to see where code and data landed | Verbal | Names which sections live in flash and which in RAM |
 | E27 | Field firmware update: A/B partitions, integrity check, rollback | Verbal | Handles power loss mid-update |
 | E28 | MCU low-power modes, wake sources, and how you'd measure real current draw | Verbal | Says what stops running in each mode |
+| E29 | Choose bare-metal super-loop vs RTOS, and name the concrete costs an RTOS adds | Verbal, asked directly | Three specific costs, with a worked example each way |
+| E30 | **Architect an embedded subsystem out loud in 45 minutes**: ISR vs main, RAM/flash budget, comms topology, power states, failure handling, testability | The dedicated design round (Google, Meta RL), and design items inside Tesla and Medtronic take-homes | Three prompts, each scored against the fixed rubric, each surviving one round of pushback |
+| E31 | Design a firmware update and bootloader path: A/B partitions, signed image, anti-rollback, power-loss safety | Standalone design prompt | Drawn from memory, with the power-loss failure point named at each step |
+| E32 | Explain functional safety — ISO 26262 ASIL, DO-178C DAL, IEC 61508 — and how an integrity level drives coverage up to MC/DC | Automotive and aerospace loops | Said aloud with the trap named |
+| E33 | Explain embedded cybersecurity: secure boot vs encryption, root of trust, signed updates, and the §524B premarket requirement | Folded into the update-design question for connected medical | Authenticity vs confidentiality stated cold |
+| E34 | Debug a hard fault: fault status registers, the stacked frame, the faulting PC, stack overflow vs wild pointer | Debugging scenario | Said aloud with the trap named |
 
 ## H — Hardware, signals, and debugging
 
@@ -222,6 +253,7 @@ evidence bar that counts as proof. `plan/COVERAGE.md` says who owns each one.
 | H8 | Explain what a pull-up resistor does and what floating causes | Verbal | — |
 | H9 | Explain JTAG vs SWD and what a debugger actually does | Verbal | — |
 | H10 | Use a multimeter and a logic analyzer competently at a bench | Practical, possible | — |
+| H11 | Reason about cache coherency and memory barriers with DMA: why the CPU reads stale data and what fixes it | The stock "DMA completed but data is stale" scenario | Invalidate-before-read and clean-before-DMA stated cold |
 
 ## T — Test and integration
 
@@ -250,6 +282,11 @@ evidence bar that counts as proof. `plan/COVERAGE.md` says who owns each one.
 | T21 | Trace each test to a requirement | Portfolio | Requirement IDs in test names or markers |
 | T22 | Test firmware C on the host: build the logic without hardware and fake what it talks to | Take-home, portfolio | Names the seam the fake goes at |
 | T23 | Explain static analysis and coding standards (MISRA-C): what they catch and what they don't | Verbal | Not "it finds the bugs for you" |
+| T24 | Drive lab instruments from Python over SCPI and PyVISA — scopes, supplies, SMUs — with error-queue checking and results logged against firmware version | Hardware and HIL test rounds | An instrument driver in the harness repo with timeout and error handling |
+| T25 | Explain measurement quality: calibration intervals and traceability, measurement uncertainty, out-of-tolerance handling, Gauge R&R | Probed in hardware-test rounds and by auditor-adjacent questions | Said aloud: why an uncalibrated rig invalidates recorded results |
+| T26 | Execute and document regulated computerised-system validation: IQ, OQ and PQ protocols, GAMP 5 risk-based validation, 21 CFR Part 11 | Scenario questions at Medtronic, Abbott, Intuitive | One drafted OQ protocol with pass/fail criteria traced to a named requirement |
+| T27 | Read and modify a C#/.NET test harness well enough to be productive on manufacturing-test code | Skills screen and code reading at Intuitive and Medtronic manufacturing | Deferred — see `plan/COVERAGE.md` |
+| T28 | Reduce and visualise test data — rolling statistics, pass/fail bands, a plot — and turn a raw capture into a written engineering conclusion | Project deep-dives at Rocket Lab and Blue Origin | A raw capture turned into a summary, one plot and a written verdict |
 
 ## B — Behavioural and narrative
 
@@ -265,23 +302,28 @@ evidence bar that counts as proof. `plan/COVERAGE.md` says who owns each one.
 | B8 | Tell a "my tests caught a bug I'd have missed" story | Behavioural | Specific bug, specific test |
 | B9 | Tell a "I was wrong about a root cause" story | Behavioural | — |
 | B10 | Present a project in 10 minutes to a panel | Rocket Lab, SpaceX | Rehearsed, timed |
+| B11 | Defend a from-scratch architecture decision under live pushback — hold a position, take a correction, revise in real time | The design round grades this behaviourally as much as technically | Three takes rated strong on three different days |
 
 ---
 
 ## Known gaps in this list
 
-Two things the research above says matter, which nothing in this repo currently measures. They
-are written down here rather than added as capabilities, because a numbered capability with no
-mechanism behind it is worse than an admitted hole:
+One thing the research above says matters which nothing in this repo measures, and one that is
+now covered. Written down here rather than added as capabilities, because a numbered capability
+with no mechanism behind it is worse than an admitted hole:
 
-- **Debugging C you did not write.** Tesla's take-home is reported to include "debugging existing
-  code", and take-homes generally hand you a codebase rather than a blank file. Every mechanism
-  here starts from an empty editor. Week 10's mock take-home is the only exposure, and it is one
-  day out of seventy. Closing this needs a corpus of broken C to read, and writing that corpus is
-  the human's job under the AI rule — an AI-written bug is an AI-written exercise.
-- **Whiteboard and paper.** Still reported for C traps and "draw the state machine". The only
-  mechanism is one constraint card, drawn on roughly one rep in ten of the third that draw a card
-  at all.
+- **Whiteboard and paper.** *Still open.* Reported for C traps and "draw the state machine". The
+  only mechanism is one constraint card, drawn on roughly one rep in ten of the third that draw
+  a card at all.
+- **Debugging code you did not write.** *Now covered, by `make hunt`.* Tesla's take-home is
+  reported to include "debugging existing code", and Intel runs a dedicated debug round. The
+  problem was that a corpus of broken C would have to be written by a human under the AI rule —
+  an AI-written bug is an AI-written exercise. `make hunt` sidesteps it: a machine mutates *your
+  own* solution from an earlier rep, mechanically, and you find the change. Works in both
+  languages, and the Python mutation set is chosen for the bugs that never raise — a flipped
+  struct endianness prefix, `H` read as `h`.
+- **Designing something from scratch.** *Now covered, by `make design`.* This was not on the
+  original list at all and turned out to be a dedicated interview round. See E30.
 
 ## Scoring yourself
 
@@ -289,12 +331,21 @@ A capability is **done** when the evidence bar is met and logged — not when yo
 
 - **C items:** logged in `logs/log.tsv` via `make done`. Three consecutive clean reps at or under
   target across three different variants retires the kata. C1 is the exception: it is the
-  clean-first-compile rate itself, across every module, over at least twenty reps.
+  clean-first-compile rate itself, across every **C** module, over at least twenty reps.
+  Python reps are excluded from it — see the Y bullet.
+- **Y items:** the same kata bar for Y2 and Y3, against `binary_frame_py` and `log_parser_py`.
+  Y1 is the deck. "Clean" for a Python rep means it ran first try with no traceback — a
+  different claim from clean-first-compile, which is why `make report` prints the two rates
+  separately and neither is averaged into the other.
 - **E items:** in box 4 or 5 of the deck via `make review`, meaning you've said it correctly
-  across several spaced sessions including the trap.
+  across several spaced sessions including the trap. E30 is the exception: its bar is three
+  scored architecture drills via `make design`.
 - **H items:** a mix — some are deck cards, some need a real capture or bench session.
 - **T items:** deck cards, the design-prompt rubric for T1, or artifacts in the harness repo.
+  T27 is deferred by decision — see `plan/COVERAGE.md`.
 - **B items:** written in STAR form, then three takes rated strong on three different days.
+  B11 is a drill rather than a story: run it straight after `make design`, on the design you
+  just wrote.
 
 `plan/COVERAGE.md` says which system is responsible for getting you there, and `make progress`
 scores it. A capability whose mechanism lives outside this repo is reported as *tracked

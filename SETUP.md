@@ -1,9 +1,10 @@
 # Setup
 
-**Do not build all twelve katas before you start.** Build the ones week 1 needs, start on day 1,
+**Do not build all fifteen katas before you start.** Build the ones week 1 needs, start on day 1,
 and take the rest in three sessions across the first three weeks.
 
-Twelve katas, each needing a compiling header and a real test suite, is around twelve hours.
+Fifteen katas, each needing a real test suite — and for the C ones a compiling header too —
+is around fifteen hours.
 Spent up front that is two weeks of building the gym before lifting anything, which is the most
 common way a plan like this dies. Spread one-per-week instead and you get the opposite problem: a
 running dependency where one missed Sunday leaves the next week with nothing to drill. A batch
@@ -27,7 +28,7 @@ mean `make check-generated` failing on every machine but yours. `make dates` wri
 dated view to a gitignored file beside it. `make calendar` regenerates the committed one
 and you only need it after editing `tools/schedule.py`.
 
-One dependency, needed from week 7 when `test_harness_py` starts:
+One dependency, needed **from day 0**, because the Python katas are drilled from week 1:
 
 ```bash
 python3 -m pip install pytest      # or: sudo apt install python3-pytest
@@ -94,17 +95,21 @@ Sunday and the next week's rotation has nothing to draw from. Weeks 1 to 3 are t
 of the ten, and after week 3 there is nothing left to build. The generated calendar prints the
 real hours per week; don't trust a number typed into a document, including this one.
 
-**Every kata ships with a written `BRIEF.md` and `VARIANTS.md`.** For all twelve you owe exactly
-two things: the header and the tests. Read the BRIEF's "What to test" section — it lists the
+**Every kata ships with a written `BRIEF.md` and `VARIANTS.md`.** For each one you owe the
+tests, and for the C ones the header as well. Read the BRIEF's "What to test" section — it lists the
 cases, in prose. Turning that list into actual test cases is your job and nobody else's; it is
 the single most-interviewed skill in both tracks.
 
-Two katas do not follow the standard build:
+Some katas do not follow the standard build:
 
 - **`concurrency_sim`** compiles under ThreadSanitizer rather than ASan, because the two cannot
   coexist in one binary. `make test` handles the switch for you.
-- **`test_harness_py`** has no build session at all. Week 7's main block is five consecutive
-  days of pytest from zero, and this kata is the artifact those days produce — giving it a
+- **The three `*_py` katas** — `binary_frame_py`, `log_parser_py`, `cli_tool_py` — have no
+  header. There is no `include/` directory and nothing to compile: the contract is the API
+  written out in the BRIEF, and the frozen pytest suite is what enforces it. `make
+  check-frozen` skips them; `make test MODULE=<name>` runs them under pytest.
+- **`test_harness_py`** has no build session at all. Week 7's main block is the harness work,
+  and this kata is the artifact those days produce — giving it a
   separate slot would mean writing the same suite twice. It is the one module whose build *is*
   the main work. `make check-calendar` still checks it, and at day resolution rather than week
   resolution: the exemption fails if the kata is ever scheduled on or before the Friday its

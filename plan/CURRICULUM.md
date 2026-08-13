@@ -13,10 +13,12 @@ the calendar and the daily prompt cannot disagree.
 
 ## Hours
 
-**Just over 11 hours a week once the build sessions are done.** Five weekdays at 90 minutes,
-a Saturday of about two and a quarter hours, and a Sunday of about an hour and a half.
+**About 12.6 hours a week once the build sessions are done.** Three weekdays at 115 minutes
+and two at 90, a Saturday of about two and a quarter hours, and a Sunday of about an hour
+and a half. The weekdays differ because Monday, Wednesday and Friday carry a Python rep
+alongside the C one.
 
-**Weeks 1–3 are heavier** — roughly 14, 14 and 12 hours — because they carry the kata build
+**Weeks 1–3 are heavier** — roughly 15, 15 and 15 hours — because they carry the kata build
 sessions. That is deliberate: building one kata a week for five weeks is a running
 dependency, and a single missed Sunday leaves the following week's rotation with nothing to
 draw from. Three front-loaded weekends, then it is over and there is nothing left to build.
@@ -28,13 +30,16 @@ If you can only give 60 minutes on a weekday, cut the main block — never the k
 never the deck. Those two are what produce interview performance, and they are under half an
 hour combined.
 
-### The two kata modes
+### The three kata modes
 
 A ring buffer does not fit in ten minutes, and pretending it does just teaches you to abandon
-reps halfway. So there are two day shapes:
+reps halfway. So there are three block shapes:
 
-- **Sprint days — Mon, Tue, Thu, Fri.** A short module, in a block sized to beat its target.
-- **Long-rep days — Wed, Sun.** The modules that need real time.
+- **Sprint blocks — Mon, Tue, Thu, Fri.** A short C module, in a block sized to beat its target.
+- **Long-rep blocks — Wed, Sun.** The C modules that need real time.
+- **Python blocks — Mon, Wed, Fri.** 25 minutes, alongside the C rep rather than instead of
+  it. Interleaved on purpose: an interview loop does not block by language, and working out
+  which kind of problem you are looking at before solving it is part of the skill.
 - **Saturday** is adaptive: no assigned module, a long block, and `make drill` with no
   arguments picks by worst recent time, then longest since last rep, then never attempted.
   It is the day that catches what you have been quietly avoiding, and it is where every
@@ -49,8 +54,8 @@ kind of quiet contradiction this repo is supposed to catch.
 
 | Weeks | Mimic | This repo |
 |---|---|---|
-| 1–3 | weekday main blocks + Saturday | kata, deck, log, review, **build session** |
-| 4–6 | weekday main blocks + Saturday | kata, deck, log, review, prompt, rehearsal |
+| 1–3 | weekday main blocks + Saturday | C kata, **Python kata**, deck, log, review, **build session** |
+| 4–6 | weekday main blocks + Saturday | C kata, Python kata, deck, log, review, prompt, **architecture drill**, rehearsal |
 | 7–10 | paused | all of it |
 
 **Weeks 1–6: Mimic gets roughly 42 hours.** That is what Stage 0 realistically costs given
@@ -90,11 +95,15 @@ names a number from the log rather than a feeling.
 
 Mimic pauses. The main block moves to this repo.
 
-**Week 7 — test engineering from zero.** Five consecutive days of pytest: discovery,
-assertions and exit codes; fixtures, scope and teardown that survives a failing test;
-`parametrize`; then verification vs validation, traceability and IEC 62304. Those five days
-are also what build the `test_harness_py` kata, which is why that one module has no separate
-build session.
+**Week 7 — test engineering.** Five consecutive days of pytest: discovery, assertions and
+exit codes; fixtures, scope and teardown that survives a failing test; `parametrize`; then
+verification vs validation, traceability and IEC 62304. Those five days are also what build
+the `test_harness_py` kata, which is why that one module has no separate build session.
+
+It is no longer *from zero*. The Python katas have been running in their own daily block
+since week 1, so week 7 starts from someone who can already write the language and is
+learning the test framework — which is the right order, and was the point of moving Python
+earlier.
 
 **Week 8 — the harness, against your own Stage 0 board.** pyserial, a fixture that resets
 the device between tests, flashing from the harness, fault injection, requirement IDs in

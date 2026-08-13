@@ -4,8 +4,9 @@ A measured training system for embedded and test-and-integration engineering —
 from interview research, run as a daily practice, and scored against evidence rather
 than against how much I feel I have learned.
 
-Ten weeks. Twelve C katas, a spoken deck, design prompts, behavioural rehearsal, and one
-hardware-in-the-loop project. Everything is timed and logged.
+Ten weeks. Fifteen katas in C and Python, a spoken deck, design prompts, architecture
+drills, behavioural rehearsal, and one hardware-in-the-loop project. Everything is timed
+and logged.
 
 **[START_HERE.md](START_HERE.md)** explains how it fits together in five minutes.
 **[DAILY.md](DAILY.md)** is the daily checklist: how to read a calendar line, and what
@@ -33,14 +34,14 @@ Two findings shaped the design:
   rounds more often than the technical one.** So concepts are rehearsed *out loud*,
   and "how would you test this" is its own repeating exercise with a fixed rubric.
 
-Only twelve capabilities are katas. Drilling code and then failing the verbal round is the
+Only the C and Y groups are katas. Drilling code and then failing the verbal round is the
 failure mode this is built to avoid.
 
 ## Layout
 
 ```
 plan/          the program: the research, the capability list, coverage, the calendar
-practice/      the daily mechanics: katas, decks, design prompts, rehearsal
+practice/      the daily mechanics: katas, decks, design prompts, architecture, rehearsal
 reference/     material to consult, not drill: question bank, commands, architecture
 projects/      specs for the one-shot portfolio artifacts
 tools/         the machinery behind the make targets
@@ -50,7 +51,7 @@ logs/          the record — the only place that decides whether this is workin
 | Directory | What is in it |
 |---|---|
 | **`plan/`** | `INTERVIEW_REQUIREMENTS.md` is the specification: the research plus every capability. `COVERAGE.md` maps each one to the mechanism that owns it. `CALENDAR.md` is all 70 days, generated. `CURRICULUM.md` is why the ten weeks are shaped as they are. `REPOS.md` is the disk layout. |
-| **`practice/`** | `PRACTICE_SYSTEM.md` explains the five formats and the rules for using AI. `katas/` holds twelve C modules. `decks/` holds the spoken deck as TSV. `design-prompts/` holds 40 subjects and the fixed rubric. `rehearsal/` holds the ten behavioural stories. |
+| **`practice/`** | `PRACTICE_SYSTEM.md` explains the seven formats and the rules for using AI. `katas/` holds twelve C modules and three Python ones. `decks/` holds the spoken deck as TSV, including the Python trap cards. `design-prompts/` holds 40 test subjects and 8 architecture prompts, each with its own fixed rubric. `rehearsal/` holds the behavioural stories. |
 | **`reference/`** | `COMMANDS.md` documents every command. `ARCHITECTURE.md` covers repo internals. `question-bank/` holds 76 coding exercises, the verbal set with trap answers, and the T&I track. |
 | **`projects/`** | `hil-harness/BRIEF.md` — the week 8 flagship spec. The project itself lives in its own public repo. |
 | **`logs/`** | Every rep, every phase split, every story take, every AI use, and the generated progress report. |
@@ -93,12 +94,12 @@ finding it. `make help` lists everything and [DAILY.md](DAILY.md) explains what 
 
 | Day | Shape | Total |
 |---|---|---|
-| Mon, Tue, Thu, Fri | 15 kata (short) · 55 main · 12 deck · 8 log | 90 min |
-| Wed | 28 kata (long) · 42 main · 12 deck · 8 log | 90 min |
-| Sat | 28 kata (adaptive) · 100 main · 10 rehearsal | 138 min |
+| Mon, Wed, Fri | C kata · **25 Python kata** · main · 12 deck · 8 log | 115 min |
+| Tue, Thu | 15 C kata · 55 main · 12 deck · 8 log | 90 min |
+| Sat | 28 kata (adaptive, either language) · 100 main · 10 rehearsal | 138 min |
 | Sun | 28 kata · 20 review · 15 deck · 10 prompt · 20 rehearsal | 93 min |
 
-Just over 11 hours a week; weeks 1–3 are heavier because they carry the kata build sessions.
+About 12.6 hours a week; weeks 1–3 are heavier because they carry the kata build sessions.
 The generated calendar prints the real figures. Every kata block is at least as long as that
 kata's target time, and CI fails if that stops being true.
 
@@ -114,7 +115,8 @@ its evidence bar is met and logged:
 
 | Group | Bar |
 |---|---|
-| **C** — C fluency | Three consecutive clean reps at or under target, across three variants. C1 is the clean-first-compile rate itself, over 20+ reps |
+| **C** — C fluency | Three consecutive clean reps at or under target, across three variants. C1 is the clean-first-compile rate itself, over 20+ reps — C modules only |
+| **Y** — Python fluency | The same kata bar for Y2 and Y3. Y1 is the deck. "Clean" for a Python rep means it ran first try with no traceback, and is reported apart from C |
 | **E** — concepts | Every tagged deck card in Leitner box 4 or higher, said aloud with the trap |
 | **T** — test & integration | Deck boxes, the design-prompt rubric for T1, or artifacts in the harness repo |
 | **B** — behavioural | Three takes rated strong, on three different days |

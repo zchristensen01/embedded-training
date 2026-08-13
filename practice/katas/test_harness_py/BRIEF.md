@@ -13,9 +13,10 @@ against a simulated device, then against real hardware over serial.
 
 ## Why this is the wedge
 A representative embedded test-automation posting asks for Python and Bash test development,
-pytest, CI/CD, and hardware-in-the-loop testing with custom test rigs. Four of those five are
-ordinary backend skills wearing different vocabulary. This kata plus the week 8 harness is the
-fifth — and it is the one that cannot be claimed without having built it.
+pytest, CI/CD, and hardware-in-the-loop testing with custom test rigs. The framework and CI
+half of that transfers from backend work; the raw-Python half does not, which is what the
+**Y** group and the three `*_py` katas exist to fix. This kata plus the week 8 harness is the
+hardware half — the one that cannot be claimed without having built it.
 
 It is a kata rather than only a project because the *structure* — fixture, device abstraction,
 parametrised cases, deterministic teardown — is a pattern you should be able to reproduce cold

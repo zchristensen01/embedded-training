@@ -66,7 +66,7 @@ question bank, the curriculum, the decks, the log. Four reasons:
 - **One habit surface.** A daily practice that requires `cd`-ing between four repos is a
   practice you stop doing in nine days.
 - **One CI config.** The Actions workflow running gcc and clang under sanitizers is the
-  expensive part. Write it once; all twelve katas ride on it.
+  expensive part. Write it once; all fifteen katas ride on it.
 - **Cross-links resolve.** `reference/question-bank/embedded-concepts.md` can say "see kata
   `register_map`" as a relative link that works. Across repos it is a dead URL.
 - **The log is only meaningful if it is global.** `logs/log.tsv` tracks one time curve across

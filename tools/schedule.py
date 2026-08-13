@@ -56,6 +56,13 @@ TARGETS = _targets()
 # never drift apart silently again.
 SPRINT_BLOCK = 15     # Mon, Tue, Thu, Fri — katas with a target of 12 min or less
 LONG_BLOCK = 28       # Wed, Sun, and Saturday's adaptive rep — everything else
+PY_BLOCK = 25         # the Python rep, every weekday, alongside the C one
+
+# A weekday is this long, and the main block is whatever is left after the fixed slots.
+# Writing it as a total rather than hardcoding "90 - BLOCK - 20" in two places means
+# adding a slot changes one number instead of silently making every day longer.
+WEEKDAY_TOTAL = 115
+FIXED_TAIL = 20       # Deck (12) + Log and commit (8)
 
 MIMIC = {
     1: "S0 bench, toolchain, repo · S1 motor forensics and bolting it down",
@@ -95,11 +102,11 @@ MAIN_LATE = {
         "Tue": "README: what it verifies, what it cannot catch, how tests trace to requirements",
         "Wed": "make prompt x4. Then the full protocol and hardware verbal set",
         "Thu": "make rehearse x4. Sourced from Mimic's NOTES and the tuning history",
-        "Fri": "make rehearse B3, B4, B10. Record one. Watch it back"},
+        "Fri": "make rehearse S=B3, then S=B4, then S=B10. Record one. Watch it back"},
     10: {"Mon": "Timed 2-hour mock take-home, AI-free: state machine, debugging, bit masking",
          "Tue": "Debrief the take-home out loud as if defending it. Record. Watch it back",
          "Wed": "Full deck pass. Every card box 4+ or it goes back to daily",
-         "Thu": "make rehearse B10 twice, timed. Then --stats: every story ready?",
+         "Thu": "make rehearse S=B10 twice, timed. Then --stats: every story ready?",
          "Fri": "Mock verbal round: 20 cards cold, out loud, no reveal. Then make prompt x2"},
 }
 
@@ -144,6 +151,29 @@ KATA = {
      "Thu":("rollover_timer","v4"),"Fri":("debouncer","v6"),"Sun":("concurrency_sim","v2")},
 10: {"Mon":("mem_primitives","v6"),"Tue":("register_map","v4"),"Wed":("test_harness_py","v3"),
      "Thu":("rollover_timer","v5"),"Fri":("bitops","v6"),"Sun":("concurrency_sim","v3")},
+}
+
+# The Python rotation, running alongside KATA on weekdays from week 1.
+#
+# Two modules own an evidence bar and therefore need three slots ending in three distinct
+# variants, exactly like the C katas: binary_frame_py (Y2) and log_parser_py (Y3).
+# cli_tool_py owns no bar — it reinforces T17 and T20, whose bars sit on the HIL project —
+# so it gets fewer slots, the same way protocol_parser does on the C side.
+#
+# Three days a week, not five. The Python block exists every weekday, but Wednesday's long
+# C rep and Friday's are heavy enough already; leaving two weekdays clear is what keeps the
+# day at 115 minutes rather than turning it into a second full rotation.
+KATA_PY = {
+ 1: {"Mon":("binary_frame_py","v1"),"Wed":("log_parser_py","v1"),"Fri":("binary_frame_py","v2")},
+ 2: {"Mon":("log_parser_py","v2"),"Wed":("binary_frame_py","v3"),"Fri":("log_parser_py","v3")},
+ 3: {"Mon":("binary_frame_py","v4"),"Wed":("log_parser_py","v4"),"Fri":("binary_frame_py","v5")},
+ 4: {"Mon":("log_parser_py","v5"),"Wed":("binary_frame_py","v6"),"Fri":("log_parser_py","v6")},
+ 5: {"Mon":("binary_frame_py","v7"),"Wed":("log_parser_py","v7"),"Fri":("binary_frame_py","v1")},
+ 6: {"Mon":("log_parser_py","v1"),"Wed":("cli_tool_py","v1"),"Fri":("binary_frame_py","v2")},
+ 7: {"Mon":("log_parser_py","v2"),"Wed":("cli_tool_py","v2"),"Fri":("binary_frame_py","v3")},
+ 8: {"Mon":("log_parser_py","v3"),"Wed":("cli_tool_py","v3"),"Fri":("binary_frame_py","v4")},
+ 9: {"Mon":("log_parser_py","v4"),"Wed":("cli_tool_py","v4"),"Fri":("binary_frame_py","v5")},
+10: {"Mon":("log_parser_py","v5"),"Wed":("cli_tool_py","v5"),"Fri":("binary_frame_py","v6")},
 }
 
 PHASE = {**{w: "MIMIC STAGE 0" for w in range(1, 7)},
@@ -209,15 +239,31 @@ def block_for(day):
     return LONG_BLOCK if day in LONG_DAYS or day == "Sat" else SPRINT_BLOCK
 
 
-def first_use():
-    """(week, weekday) each kata is first drilled, derived from KATA. {kata: (w, d)}."""
-    seen = {}
-    for week in sorted(KATA):
+def all_slots():
+    """[(week, day_index, kata, variant, block)] across BOTH rotations, in order.
+
+    KATA and KATA_PY both key on weekday and a weekday holds one of each, so they cannot
+    be merged into a single day-keyed dict — the Python rep would overwrite the C one.
+    Every check that used to walk KATA walks this instead, or it silently stops seeing
+    half the schedule the moment a Python kata is the thing that is wrong.
+    """
+    out = []
+    for week in sorted(set(KATA) | set(KATA_PY)):
         for i, day in enumerate(DAYS):
-            if day not in KATA[week]:
-                continue
-            k, _ = KATA[week][day]
-            seen.setdefault(k, (week, i))
+            if day in KATA.get(week, {}):
+                k, v = KATA[week][day]
+                out.append((week, i, k, v, block_for(day)))
+            if day in KATA_PY.get(week, {}):
+                k, v = KATA_PY[week][day]
+                out.append((week, i, k, v, PY_BLOCK))
+    return out
+
+
+def first_use():
+    """(week, weekday) each kata is first drilled. {kata: (w, d)}."""
+    seen = {}
+    for week, i, k, _, _ in all_slots():
+        seen.setdefault(k, (week, i))
     return seen
 
 
@@ -280,15 +326,23 @@ def timers(day, week):
             blocks.append(("Rehearsal", 20, "make rehearse x2  (two stories, out loud, timed)"))
         return blocks
     k, v = KATA[week][day]
-    if day in LONG_DAYS:
-        return [("Kata — LONG rep", LONG_BLOCK, f"make drill KATA={k} VARIANT={v}"),
-                ("Main block", 90 - LONG_BLOCK - 20, main_for(week, day)),
-                ("Deck", 12, f"make review  ({DECK[week]})"),
-                ("Log and commit", 8, "make done, log the session, git commit")]
-    return [("Kata — sprint", SPRINT_BLOCK, f"make drill KATA={k} VARIANT={v}"),
-            ("Main block", 90 - SPRINT_BLOCK - 20, main_for(week, day)),
-            ("Deck", 12, f"make review  ({DECK[week]})"),
-            ("Log and commit", 8, "make done, log the session, git commit")]
+    kblock = LONG_BLOCK if day in LONG_DAYS else SPRINT_BLOCK
+    label = "Kata — LONG rep" if day in LONG_DAYS else "Kata — sprint"
+    blocks = [(label, kblock, f"make drill KATA={k} VARIANT={v}")]
+    # The Python rep sits next to the C one, every weekday, from week 1. Not a separate
+    # track and not a later phase: the two languages are interleaved deliberately, because
+    # an interview loop does not block by language and identifying which problem you are
+    # looking at before solving it is part of the skill.
+    if day in KATA_PY.get(week, {}):
+        pk, pv = KATA_PY[week][day]
+        blocks.append(("Kata — Python", PY_BLOCK, f"make drill KATA={pk} VARIANT={pv}"))
+    # The main block is the remainder either way, so a day without a Python rep is simply
+    # 25 minutes shorter rather than handing that time to Mimic.
+    main = WEEKDAY_TOTAL - kblock - PY_BLOCK - FIXED_TAIL
+    blocks += [("Main block", main, main_for(week, day)),
+               ("Deck", 12, f"make review  ({DECK[week]})"),
+               ("Log and commit", 8, "make done, log the session, git commit")]
+    return blocks
 
 
 def variants_in(kata):
@@ -348,13 +402,12 @@ def check():
         problems.append(f"{kata}: scheduled but there is no practice/katas/{kata}/")
 
     # 4. Every variant the rotation names exists in that kata's VARIANTS.md.
-    for week in sorted(KATA):
-        for day, (kata, variant) in KATA[week].items():
-            if variant not in variants_in(kata):
-                problems.append(
-                    f"week {week} {day}: {kata} {variant} is not in "
-                    f"practice/katas/{kata}/VARIANTS.md"
-                )
+    for week, i, kata, variant, _ in all_slots():
+        if variant not in variants_in(kata):
+            problems.append(
+                f"week {week} {DAYS[i]}: {kata} {variant} is not in "
+                f"practice/katas/{kata}/VARIANTS.md"
+            )
 
     # 5. An exemption must name a kata that is actually scheduled, or it is stale.
     for kata in sorted(EXEMPT):
@@ -377,19 +430,21 @@ def check():
     # 7. The timer block must be at least as long as the target you are trying to
     # beat. Otherwise the calendar asks for a rep the timer rule forbids finishing,
     # and the retirement bar becomes unreachable without breaking the rules.
-    for week in sorted(KATA):
-        for day, (kata, _) in KATA[week].items():
-            block, target = block_for(day), TARGETS.get(kata)
-            if target is not None and target > block:
-                problems.append(
-                    f"week {week} {day}: {kata} has a {target}-minute target in a "
-                    f"{block}-minute block. Move it to a long day, or change its target."
-                )
-    for kata, target in sorted(TARGETS.items()):
-        if target > LONG_BLOCK:
+    for week, i, kata, _, block in all_slots():
+        target = TARGETS.get(kata)
+        if target is not None and target > block:
             problems.append(
-                f"{kata}: target {target} min exceeds the longest block ({LONG_BLOCK} min), "
-                f"so no day in the calendar can hold it"
+                f"week {week} {DAYS[i]}: {kata} has a {target}-minute target in a "
+                f"{block}-minute block. Move it to a long day, or change its target."
+            )
+    for kata, target in sorted(TARGETS.items()):
+        # A Python kata only ever appears in the Python block, so its ceiling is that
+        # block and not the longest C one.
+        ceiling = PY_BLOCK if kata.endswith("_py") else LONG_BLOCK
+        if target > ceiling:
+            problems.append(
+                f"{kata}: target {target} min exceeds the longest block it can be given "
+                f"({ceiling} min), so no day in the calendar can hold it"
             )
 
     # 8. Any kata that owns a capability's evidence bar must be schedulable to
@@ -397,10 +452,9 @@ def check():
     # capabilities are scored some other way are exempt from this and are listed as
     # informational only.
     owning = _katas_that_own_a_bar()
+    slots = all_slots()
     for kata in sorted(owning):
-        seq = [v for w in sorted(KATA) for d in DAYS
-               if d in KATA[w] and KATA[w][d][0] == kata
-               for v in [KATA[w][d][1]]]
+        seq = [v for _, _, k, v, _ in slots if k == kata]
         if len(seq) < 3:
             problems.append(
                 f"{kata}: owns the evidence bar for {', '.join(owning[kata])} but has "

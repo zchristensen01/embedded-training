@@ -10,6 +10,11 @@ this question is always verbal in the real thing.
 
 ## Rubric — never changes
 
+> **This is the *testing* rubric, out of 16.** There is a second 16-point rubric in
+> [`ARCHITECTURE.md`](ARCHITECTURE.md) for `make design`, which scores a different exercise on
+> different axes. Same denominator so one parser reads both; not the same rubric. If you are
+> being asked to *invent* the thing rather than test it, you want that one.
+
 Score 0, 1, or 2 on each. 16 possible. Log the score in `logs/design-prompts/`.
 
 | # | Criterion | 2 points looks like |
