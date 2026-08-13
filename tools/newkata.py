@@ -53,7 +53,7 @@ question-bank/embedded-concepts.md. If none map, ask why you're building this.
 
 VARIANTS = """# {name} — variants
 
-Each variant changes a real constraint, not just a parameter. Every shipped module has seven,
+Each variant changes a real constraint, not just a parameter. Every shipped module has at least seven,
 and `make check-calendar` fails if the rotation names one that is not written here. Four is
 enough to start drilling; add the rest as you find the edges.
 

@@ -3,8 +3,10 @@
 The Week 8 flagship. Its own public repo (`~/embedded/mimic-hil`), not a folder in here — this
 BRIEF is the spec, the repo is the artifact.
 
-**Owns capabilities T16–T21.** Those are the six items in `plan/INTERVIEW_REQUIREMENTS.md` that no
-kata and no deck card can produce, because they only exist as a working system.
+**Owns capabilities T16–T21, T24, T26 and T28.** Those are the nine items in
+`plan/INTERVIEW_REQUIREMENTS.md` that no kata and no deck card can produce, because they only
+exist as a working system. The last three came from the second research pass: instrument control,
+regulated validation, and turning a capture into a written conclusion.
 
 ---
 
@@ -45,7 +47,7 @@ the rig that regression-tests it on every commit.**
 
 ## Acceptance criteria
 
-Seven criteria covering the six capabilities. The project is done when all seven are true and
+Ten criteria covering the nine capabilities. The project is done when all ten are true and
 demonstrable.
 
 | # | Criterion | Capability | Evidence |
@@ -57,6 +59,15 @@ demonstrable.
 | 5 | `git push` triggers a CI run that flashes real hardware and reports pass/fail | T19 | **Screenshot of a green run** |
 | 6 | Every test names the Stage 0 requirement it verifies | T21 | Requirement IDs in test names or markers |
 | 7 | Bash script handles device wrangling — find, reset, unlock the port | T20 | In the repo |
+| 8 | An instrument driver class drives at least one SCPI instrument over PyVISA — a scope, supply or meter — with an explicit read termination, an explicit timeout, and `SYST:ERR?` drained to empty after every operation | T24 | A test that fails when the instrument logs an error, not just when the measurement is wrong |
+| 9 | A one-page OQ protocol for the rig itself: what it must do, the pass/fail criterion for each, traced to a named requirement, with a place to record the result and who ran it | T26 | The protocol executed once, signed and dated, in `docs/` |
+| 10 | A raw capture reduced to a written engineering conclusion — a summary table, one plot, and a stated pass/fail with the reason | T28 | One worked example in the README |
+
+Criteria 8–10 are what separate a harness that runs tests from a harness a regulated employer
+recognises. Criterion 9 is the one candidates never have: **qualifying your own test equipment is
+itself a regulated activity**, and being able to say you wrote and executed an OQ for your rig is
+a direct answer to the question Medtronic and Abbott actually ask. It is also the cheapest of the
+three — an afternoon, mostly writing.
 
 Criterion 5's screenshot is the most useful single image this project produces: a CI run that
 flashed a real board and reported pass/fail. It belongs at the top of the README.

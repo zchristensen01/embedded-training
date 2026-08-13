@@ -47,7 +47,7 @@ Every mechanism is repeatable and recorded, not just the katas:
 |---|---|---|---|
 | Kata | Frozen tests, deleted `src/`, variants | `logs/log.tsv`, `logs/splits.tsv` | `make drill` |
 | Deck | Leitner boxes, 1/2/4/8/16 days | `practice/decks/.state.json` | `make review` |
-| Design prompt | 40 rotating subjects, one fixed rubric | `logs/design-prompts/` | `make prompt` |
+| Design prompt | 60 rotating subjects, one fixed rubric | `logs/design-prompts/` | `make prompt` |
 | Architecture drill | 8 rotating prompts, a different fixed rubric | `logs/architecture/` | `make design` |
 | Bug hunt | Your own old solution, mutated | `logs/bughunt.tsv` | `make hunt` |
 | Rehearsal | Re-tell until three strong takes on three days | `logs/rehearsal.tsv` | `make rehearse` |
@@ -110,7 +110,7 @@ which is why all three bars sit here.
 
 | ID | Owner | Notes |
 |---|---|---|
-| Y1 python internals | **D** | The deck is the bar: these are "what does this print and why" answers, and the mechanism that proves you can produce one cold across spaced sessions is box 4. Cards live in `practice/decks/python.tsv` |
+| Y1 python internals | **D** | The deck is the bar, and it carries both halves of the research's stated bar. The prose cards are "explain the mechanism"; the **snippet cards** are "here are five lines, what does it print and why" — the half that actually tests live syntax under observation, which is the whole reason this group exists. Box 4 on a snippet card means you predicted it right across spaced sessions with no interpreter. Cards live in `practice/decks/python.tsv`; `tools/review.py:render()` is what lets a one-line TSV field carry a multi-line snippet |
 | Y2 binary telemetry | **K** `binary_frame_py` | The host side of `protocol_parser` — same framing problem seen from the test harness rather than the firmware. Do them close together on purpose |
 | Y3 domain scripting | **K** `log_parser_py` | Stream-parse, reduce, exit code. The shape of every reported T&I live-coding task and of the SpaceX telemetry take-home |
 
@@ -220,6 +220,40 @@ it. This is the single most important reason not to let the robot absorb all you
 | B5–B9 STAR stories | **R**, sourced from **M0** | Mimic's failures are your stories. Log them as they happen |
 | B10 10-minute presentation | **R** | Stage 0 exit artifacts make the deck |
 | B11 defend an architecture | **R**, sourced from **`make design`** | Rehearsal owns the bar, because what is being graded is whether you hold a position under pressure. The material comes from the architecture drill — take the design you just defended on paper and defend it again out loud |
+
+---
+
+## What the research asked for and this repo did not do
+
+Every row here is a deliberate decision, not an oversight. It exists because the alternative —
+quietly implementing the cheap half of a two-part evidence bar and letting `make progress` report
+it as met — is exactly the self-deception this whole system is built to prevent. If you disagree
+with a call, change it; but change it here first.
+
+### Evidence bars scoped down
+
+| Bar | The research asked for | What is implemented | Why |
+|---|---|---|---|
+| **Y2, Y3** | the decoder written against an **unseen** packet spec / **unseen** parse prompts | three clean reps across three known variants | "Unseen" is not available in a solo repo: you write the frozen suite yourself, so you have seen every spec here. The variants are the nearest honest substitute. The genuinely unseen version is a take-home, and that is what week 10's mock is for |
+| **Y3** | three prompts back to back in **45 minutes total** | three separate reps at 20 minutes each | Back-to-back-under-one-clock is a different exercise — endurance rather than fluency. Worth adding once the individual reps are at target; not worth blocking the capability on |
+| **E29** | deck card **and** a written super-loop-vs-RTOS comparison for a real system | deck card | The written comparison belongs to Mimic, which is where you actually make that decision. Recorded here so nobody thinks the deck card alone was the whole ask |
+| **E31, E33** | deck card **and** a diagram drawn from memory (bootloader handoff / signed-boot chain) | deck card | A flashcard cannot verify a drawing. Drawing these is genuinely worth doing — do it in a `make design` session, where the rubric already scores a labelled diagram |
+| **E34** | a fault handler **written cold**, plus recovering a faulting PC on real hardware | deck card, with the hardware half handed to Mimic | Writing a hard-fault handler cold needs a target to fault. There is no Cortex-M kata here and adding one for a single LOW-confidence capability is not proportionate |
+| **T26, T28** | 5 of 5 / 10 of 10 logged samples | one artifact each, in the harness repo | These are artifacts, not reps. The tenth OQ protocol teaches nothing the first did not; volume was the research's proxy for "you actually did it", and the artifact is better evidence than the count |
+| **B11** | takes **recorded** and logged alongside the E30 rubric score | three strong takes on three days | `make rehearse` already tells you to record every third take. The E30 linkage is in the workflow — `make design` ends by telling you to run `make rehearse S=B11` — rather than enforced in the tooling |
+
+Three more were scoped down and are recorded in their own rows above: **E32** (deck only — 0 of 32
+postings named DO-178C), **T25** (deck only — a Gauge R&R study is metrology coursework), and
+**T27** (deferred — the research gates it on Intuitive or Medtronic manufacturing being live).
+
+### Recommendations declined
+
+| Recommendation | Decision | Why |
+|---|---|---|
+| Merge **E3 + E4** ("your most over-drilled cluster relative to how often it decides an outcome") | **Declined** | `make check-coverage` requires each group numbered `1..n` with no gaps, so merging E3 and E4 renumbers E5–E34. That invalidates every deck card tag, every coverage row and every research reference to an E number. The cost is a repo-wide renumber; the benefit is two fewer cards in one cluster |
+| Merge **T7 into T5** ("vocabulary rather than judgement; never appears standalone") | **Declined** | Same renumbering cost, smaller benefit |
+| **Practise every kata twice — once with AI, then once cold, and only count the cold rep** | **Declined** | It contradicts the one rule this repo has. The rule is not "cold reps are what count", it is "AI does not write the things you get interviewed on" — and a first pass with AI means the design decisions were not yours to make cold the second time. Doing the rep twice yourself is strictly better and is what Saturday's adaptive slot is for |
+| Re-scope **C12** as a target-gated LeetCode track rather than deferring it globally | **Accepted** — see the C12 row above | |
 
 ---
 

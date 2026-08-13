@@ -1024,7 +1024,7 @@
       "bar": "architecture drills",
       "done": false,
       "detail": [
-        "0 scored, bar is 3 at 12+/16"
+        "0 scored, bar is 3 at 12+/16 with axis 8 non-zero"
       ],
       "cards": 2
     },
@@ -1801,19 +1801,19 @@
     {
       "id": "Y1",
       "group": "Y",
-      "statement": "Explain Python's trap-level internals \u2014 mutable default arguments, `is` vs `==` and the small-int cache, generators vs lists, closure late binding, the GIL for CPU- vs I/O-bound work, `functools.wraps`, context managers, shallow vs deep copy \u2014 and say *why*, not just what",
+      "statement": "Explain Python's trap-level internals \u2014 mutable default arguments, `is` vs `==` and the small-int cache, generators vs lists, closure late binding, the GIL for CPU- vs I/O-bound work, `functools.wraps`, context managers, shallow vs deep copy \u2014 **and predict the output of an unseen snippet cold**",
       "owners": [
         "D"
       ],
       "mechanisms": [
-        "deck (11 cards)"
+        "deck (20 cards)"
       ],
       "bar": "deck",
       "done": false,
       "detail": [
-        "boxes 0,0,0,0,0,0,0,0,0,0,0"
+        "boxes 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
       ],
-      "cards": 11
+      "cards": 20
     },
     {
       "id": "Y2",
@@ -1824,14 +1824,14 @@
       ],
       "mechanisms": [
         "kata (binary_frame_py)",
-        "deck (11 cards, reinforcement)"
+        "deck (14 cards, reinforcement)"
       ],
       "bar": "kata",
       "done": false,
       "detail": [
         "binary_frame_py: 0 rep(s)"
       ],
-      "cards": 11
+      "cards": 14
     },
     {
       "id": "Y3",

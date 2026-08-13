@@ -61,6 +61,38 @@ PY_BLOCK = 25         # the Python rep, every weekday, alongside the C one
 # A weekday is this long, and the main block is whatever is left after the fixed slots.
 # Writing it as a total rather than hardcoding "90 - BLOCK - 20" in two places means
 # adding a slot changes one number instead of silently making every day longer.
+# Rehearsal starts in week 3: STORIES.md is written at the end of week 2 (see WEEKEND[2]),
+# and a take against an unwritten story is not a take.
+#
+# The B group's bar is three takes rated strong on three DIFFERENT days, per story. With
+# 11 stories that is 33 takes minimum, and check #9 fails the build if the calendar stops
+# providing them. Adding B11 without adding slots is exactly how this broke the first time:
+# the arithmetic had closed at ten stories and nothing was watching it.
+REHEARSAL_FROM = 3
+SUNDAY_TAKES = 3
+SAT_TAKES = 1
+SAT_TAKES_LATE = 2      # weeks 8-10: the run-up to the interview-simulation week
+SAT_LATE_FROM = 8
+
+
+def rehearsal_takes(day, week):
+    """How many behavioural takes a given day schedules. One place, so check #9 and the
+    rendered calendar can never disagree about the total."""
+    if week < REHEARSAL_FROM:
+        return 0
+    if day == "Sun":
+        return SUNDAY_TAKES
+    if day == "Sat":
+        return SAT_TAKES_LATE if week >= SAT_LATE_FROM else SAT_TAKES
+    return 0
+
+
+def rehearse_text(n):
+    if n == 1:
+        return "make rehearse  (one story, out loud, timed)"
+    return f"make rehearse x{n}  ({n} stories, out loud, timed)"
+
+
 WEEKDAY_TOTAL = 115
 FIXED_TAIL = 20       # Deck (12) + Log and commit (8)
 
@@ -160,9 +192,8 @@ KATA = {
 # cli_tool_py owns no bar — it reinforces T17 and T20, whose bars sit on the HIL project —
 # so it gets fewer slots, the same way protocol_parser does on the C side.
 #
-# Three days a week, not five. The Python block exists every weekday, but Wednesday's long
-# C rep and Friday's are heavy enough already; leaving two weekdays clear is what keeps the
-# day at 115 minutes rather than turning it into a second full rotation.
+# Three days a week, not five. Python runs Mon/Wed/Fri; Tuesday and Thursday are left clear
+# at 90 minutes. That is what keeps this a second rep rather than a second full rotation.
 KATA_PY = {
  1: {"Mon":("binary_frame_py","v1"),"Wed":("log_parser_py","v1"),"Fri":("binary_frame_py","v2")},
  2: {"Mon":("log_parser_py","v2"),"Wed":("binary_frame_py","v3"),"Fri":("log_parser_py","v3")},
@@ -303,8 +334,9 @@ def timers(day, week):
         blocks = [("Kata — adaptive", LONG_BLOCK,
                    "make drill   (no argument — picks your weakest built module)"),
                   ("Main block", 100, main_for(week, day))]
-        if week >= 3:
-            blocks.append(("Rehearsal", 10, "make rehearse  (one story, out loud, timed)"))
+        n = rehearsal_takes("Sat", week)
+        if n:
+            blocks.append(("Rehearsal", 10 * n, rehearse_text(n)))
         return blocks
     if day == "Sun":
         k, v = KATA[week]["Sun"]
@@ -312,18 +344,20 @@ def timers(day, week):
                   ("Weekly review", 20, "make report, then fill logs/WEEKLY_REVIEW.md"),
                   ("Deck — full pass", 15, "make review 30")]
         if week in plan:
-            # The build Sundays are already the heavy ones; don't stack more on them.
             mins, katas = plan[week]
             blocks.append(("Kata build", mins, build_text(katas)))
         else:
-            # T1 and the B group were the two thinnest-covered things in the plan.
             # T1 — "how would you test X" — is the highest-frequency T&I question and
-            # one of the four listed reasons candidates get rejected. The B group is
-            # where the research says T&I candidates fail MORE often than on the
-            # technical round, and ten stories at three takes each is thirty takes.
-            # Two takes here plus one on Saturday plus week 9-10's blocks clears it.
+            # one of the four listed reasons candidates get rejected.
             blocks.append(("Design prompt", 10, "make prompt  (T1 — ask for requirements first)"))
-            blocks.append(("Rehearsal", 20, "make rehearse x2  (two stories, out loud, timed)"))
+        # Rehearsal runs on EVERY Sunday from REHEARSAL_FROM, build week or not. It used
+        # to sit in the non-build branch only, which is part of how the B group quietly
+        # became unreachable: the research says T&I candidates fail the behavioural round
+        # more often than the technical one, so this is the wrong block to sacrifice to a
+        # heavy Sunday. Check #9 proves the totals still close.
+        n = rehearsal_takes("Sun", week)
+        if n:
+            blocks.append(("Rehearsal", 10 * n, rehearse_text(n)))
         return blocks
     k, v = KATA[week][day]
     kblock = LONG_BLOCK if day in LONG_DAYS else SPRINT_BLOCK
@@ -466,7 +500,46 @@ def check():
                 f"needs three DIFFERENT variants"
             )
 
+    # 9. The B group must be reachable, for the same reason check #8 exists for katas.
+    # A story is ready at three takes rated strong on three DIFFERENT days, so N stories
+    # need at least 3N takes across at least 3 days. This check is the one that was
+    # missing when B11 was added: the arithmetic had closed at ten stories, nobody
+    # recounted, and the calendar silently stopped being able to finish the group.
+    stories = _story_ids()
+    if stories:
+        takes = sum(rehearsal_takes(d, w) for w in range(1, 11) for d in DAYS)
+        days = sum(1 for w in range(1, 11) for d in DAYS if rehearsal_takes(d, w))
+        need = 3 * len(stories)
+        if takes < need:
+            problems.append(
+                f"rehearsal: {len(stories)} stories need {need} takes to reach three "
+                f"strong takes each, but the calendar schedules {takes}. Add takes in "
+                f"rehearsal_takes(), or the B group cannot be finished."
+            )
+        if days < 3:
+            problems.append(
+                f"rehearsal: only {days} day(s) carry a take; a story needs three "
+                f"different days."
+            )
+
     return problems
+
+
+def _story_ids():
+    """The B-group story ids, read from STORIES.md via rehearse.py.
+
+    Same principle as _katas_that_own_a_bar(): ask the tool that owns the definition
+    rather than keeping a second count here that can drift.
+    """
+    try:
+        spec = importlib.util.spec_from_file_location(
+            "_rehearse", os.path.join(ROOT, "tools", "rehearse.py"))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return [s[0] for s in mod.load()]
+    except Exception as exc:                                  # pragma: no cover
+        print(f"note: could not read stories from rehearse.py ({exc})", file=sys.stderr)
+        return []
 
 
 def _katas_that_own_a_bar():

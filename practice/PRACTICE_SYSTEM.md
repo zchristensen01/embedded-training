@@ -49,7 +49,7 @@ What accumulates across reps is the *lesson* and the *time*, not the code. That'
 
 Three sources that multiply:
 
-**1. Variants.** Same kata, different constraint. Every module has seven, written up in its
+**1. Variants.** Same kata, different constraint. Every module has at least seven, written up in its
 `VARIANTS.md` — `ring_buffer`'s run from count-based full/empty through lock-free
 single-producer/single-consumer, power-of-two masking, overwrite-oldest, generic element size,
 bulk transfer, and peek. You cannot muscle-memory seven.
@@ -195,10 +195,10 @@ their own — write them the same day, while you still remember which part actua
 "How would you test this" is the highest-frequency test & integration question and the one
 candidates most often fail. It repeats because the **subject rotates** and the **rubric is fixed**.
 
-`make prompt` draws one of 40 subjects and starts a 10-minute clock. Write into
+`make prompt` draws one of 60 subjects and starts a 10-minute clock. Write into
 `logs/design-prompts/`, then score against the eight-category rubric already in the generated file.
 
-Your score across 40 different subjects is a real measurement of one skill. Two automatic
+Your score across 60 different subjects is a real measurement of one skill. Two automatic
 failures regardless of score: proposing solutions before asking for requirements, and stopping
 before you're told to stop.
 
@@ -244,7 +244,7 @@ catching you, and that list is a reading list.
 
 ## Format F — Rehearsal
 
-The B group: ten narrative capabilities, in `practice/rehearsal/STORIES.md`. The research is
+The B group: eleven narrative capabilities, in `practice/rehearsal/STORIES.md`. The research is
 blunt that test-and-integration candidates fail the behavioural round *more often* than the
 technical one, which makes this the least optional part of the plan and the easiest to skip.
 
@@ -254,9 +254,16 @@ afternoon is one rehearsal, not three, and the point is that the story survives 
 `tools/rehearse.py:ready()` is the single definition of that; `make progress` imports it rather
 than keeping a second opinion.
 
-Ten stories at three takes each is thirty takes. The calendar schedules one on Saturday and two
-on Sunday from week 3 on, plus heavier blocks in weeks 9 and 10 — which is how the arithmetic
-closes. Fill in `STORIES.md` before the first take; an unwritten story wanders.
+Eleven stories at three takes each is thirty-three takes. The calendar schedules three on
+Sunday and one on Saturday from week 3 on, rising to two on Saturday from week 8 — thirty-five
+in total, which is how the arithmetic closes with a little slack.
+
+**Do not take that number on trust.** It stopped closing once, silently, when B11 was added to
+a schedule sized for ten stories and nothing recounted. `make check-calendar` now proves it:
+check #9 reads the story list out of `STORIES.md`, multiplies by three, and fails the build if
+the calendar schedules fewer takes than that. Add a story and the check tells you to add slots.
+
+Fill in `STORIES.md` before the first take; an unwritten story wanders.
 
 Record every third take and watch it back. You cannot hear your own filler.
 
@@ -331,7 +338,7 @@ for.
 | Thing | File | Written by |
 |---|---|---|
 | Every kata rep: date, module, variant, minutes, clean, note | `logs/log.tsv` | `make done` |
-| Phase splits: design, write, compile, debug | `logs/splits.tsv` | `make lap` + `make done` |
+| Phase splits: design, write, compile/run, debug | `logs/splits.tsv` | `make lap` + `make done` |
 | One design decision or bug per rep | `practice/katas/*/NOTES.md` | `make done` |
 | Every AI use | `logs/ai-use.tsv` | you, by hand |
 | Deck scheduling and box state | `practice/decks/.state.json` | `make review` |

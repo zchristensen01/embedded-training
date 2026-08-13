@@ -149,8 +149,42 @@ able to reason about the system a device attaches to or measures is a real diffe
 ## 5. Timeline
 
 **Realistic:** 6–12 months of consistent work to be genuinely competitive for junior roles, with
-test & integration the faster door — it rewards existing Python/CI/test skills and is less gated
-on raw C fluency.
+test & integration the faster door.
+
+The second research pass corrected *why* it is the faster door, and the correction matters: not
+because Python transfers — it half does, see §4 — but because **the live-Python bar is lower in
+regulated medical and the process vocabulary is learnable in weeks rather than months.** That
+splits the target list in two, and the two halves reward different preparation:
+
+- **Camp A — software-heavy hardware firms** (Tesla, SpaceX, Qualcomm, Rocket Lab). These test
+  raw Python live and hard. Y1 and Y3 are the gate; a 90-minute assessment decides it.
+- **Camp B — regulated medical** (Medtronic, Intuitive, Abbott, Stryker). Weight shifts to
+  process, traceability and framework vocabulary: IEC 62304, ISO 13485, IQ/OQ/PQ, GAMP 5. T26 is
+  the gate, and the behavioural round rejects more people than the technical one.
+
+## 5b. A gate that has nothing to do with how well you interview
+
+**Several companies named throughout this document cannot hire you regardless of the outcome of
+any interview.** ITAR and EAR restrict a large share of US defence, space and aerospace work to
+"U.S. Persons" — citizens and lawful permanent residents. Both research passes found this
+independently:
+
+- **Rocket Lab's own posting states US citizenship is required.**
+- The same gate covers **Anduril**, and large parts of **SpaceX**, **Blue Origin** and
+  **Northrop Grumman**.
+
+This document names SpaceX repeatedly as a target, and B10's "tested by" column says "Rocket Lab,
+SpaceX", because the first research pass gathered evidence without regard to eligibility. **Read
+every company name here as an example of a format, not as a shortlist.** The formats are real and
+the questions are real; whether you can take the job is a separate question, and this repo does
+not answer it.
+
+Where that leaves the practice is nowhere, deliberately — nothing below changes. A ring buffer is
+a ring buffer. Where it does land is the applications file, which `.gitignore` reserves at
+`plan/APPLICATIONS.md`, and which is the right place for eligibility, sequencing and the go/no-go
+threshold the research proposed: **if after 20 logged reps you are below 15/20 on Y3, do not yet
+apply to the Camp A live-Python roles — prioritise Camp B instead.** That threshold is checkable
+against `make report`, which is why it is worth writing down somewhere you will see it.
 
 ## 6. Evidence quality
 
@@ -196,7 +230,7 @@ Python what C1–C12 are to C, and it is drilled from week 1 for the same reason
 
 | ID | I can... | Tested by | Evidence bar |
 |---|---|---|---|
-| Y1 | Explain Python's trap-level internals — mutable default arguments, `is` vs `==` and the small-int cache, generators vs lists, closure late binding, the GIL for CPU- vs I/O-bound work, `functools.wraps`, context managers, shallow vs deep copy — and say *why*, not just what | Live rapid-fire "what does this print and why" | Said aloud with the trap named, across spaced sessions |
+| Y1 | Explain Python's trap-level internals — mutable default arguments, `is` vs `==` and the small-int cache, generators vs lists, closure late binding, the GIL for CPU- vs I/O-bound work, `functools.wraps`, context managers, shallow vs deep copy — **and predict the output of an unseen snippet cold** | Live rapid-fire "what does this print and why" | Every tagged card in box 4+, including the snippet cards, said aloud with the trap named — no interpreter, no reference |
 | Y2 | Parse and build binary telemetry on the host: correct `struct` format and endianness, length validated before unpacking, signed vs unsigned, frames reassembled across read boundaries | Take-home, live decode-this-packet | Three consecutive clean reps at target, three variants |
 | Y3 | Write domain scripting under time pressure: stream-parse a file larger than RAM, reduce it, and exit with the right code — without loading it all | Live coding, take-home | Three consecutive clean reps at target, three variants |
 
@@ -308,9 +342,9 @@ Python what C1–C12 are to C, and it is drilled from week 1 for the same reason
 
 ## Known gaps in this list
 
-One thing the research above says matters which nothing in this repo measures, and one that is
-now covered. Written down here rather than added as capabilities, because a numbered capability
-with no mechanism behind it is worse than an admitted hole:
+One thing the research says matters which nothing here measures, and two that are now covered.
+Written down rather than added as capabilities, because a numbered capability with no mechanism
+behind it is worse than an admitted hole:
 
 - **Whiteboard and paper.** *Still open.* Reported for C traps and "draw the state machine". The
   only mechanism is one constraint card, drawn on roughly one rep in ten of the third that draw
@@ -322,6 +356,14 @@ with no mechanism behind it is worse than an admitted hole:
   own* solution from an earlier rep, mechanically, and you find the change. Works in both
   languages, and the Python mutation set is chosen for the bugs that never raise — a flipped
   struct endianness prefix, `H` read as `h`.
+- **Making a suite of red tests green.** *Still open.* `make hunt` finds one planted token in
+  code you wrote. Take-homes increasingly ship with a full failing suite you have to satisfy —
+  SpaceX's is described that way — which is a different exercise: you read someone else's
+  intent out of their assertions rather than diffing against your own memory. Week 10's mock
+  take-home is the only exposure and it is one day.
+- **C++.** Scoped out at §2 and worth naming here rather than leaving in an aside: the research
+  says Anduril prefers it, and Mimic gives volume in C++ rather than C. Out of scope is a
+  decision, not an oversight, but it is a real edge of what these ten weeks buy.
 - **Designing something from scratch.** *Now covered, by `make design`.* This was not on the
   original list at all and turned out to be a dedicated interview round. See E30.
 

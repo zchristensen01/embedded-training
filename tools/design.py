@@ -47,10 +47,14 @@ RUBRIC = """
 | 7 | Testability: where the seams are, what you would fake | |
 | 8 | Held the position under one round of pushback | |
 
+**Pushback (axis 8): __ / 2**
+
 **Total: __ / 16**
 
-Fill the total in. `make progress` reads this line, and E30 is met on the score rather than
-on the number of files — three unscored designs prove nothing.
+Fill in BOTH lines. `make progress` reads them, and E30 needs the total at 12+ **and axis 8
+at 1 or more** — because seven perfect axes come to 14/16, so without that second gate you could
+meet a bar whose stated point is surviving pushback while never being pushed. Three unscored
+designs prove nothing.
 
 Automatic fail if: you started drawing before asking what the constraints were, or you
 produced a block diagram with no numbers on it. "Some RAM" is not a budget.
@@ -100,7 +104,8 @@ def stats():
     scored = [s for _, _, s in done if s is not None]
     print(f"\n  {len(done)} design(s) written, {len(scored)} scored.\n")
     for path, name, score in done:
-        print(f"  {os.path.basename(path):<48}  {str(score) + '/16' if score else '—'}")
+        print(f"  {os.path.basename(path):<48}  "
+              f"{'—' if score is None else str(score) + '/16'}")
     if scored:
         print(f"\n  mean {sum(scored) / len(scored):.1f}/16, last {scored[-1]}/16")
     print("\n  E30 is met at three scored 12+/16. Axis 1 and axis 8 are the two that")

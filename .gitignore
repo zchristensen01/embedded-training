@@ -1,14 +1,18 @@
 # The whole point: your implementation is disposable, the tests are not.
 practice/katas/*/src/
 
-# drill state, deck scheduling, and your start date — local, not the repo's
+# drill state and your start date — local, not the repo's.
+#
+# practice/decks/.state.json is NOT here on purpose: a card's Leitner box is the
+# evidence bar for the whole E group and for Y1, so it is proof, not preference.
+# It is the only evidence artifact that used to be untracked, and losing it would
+# lose every capability the deck scores.
 logs/.drill_state.json
 logs/.bughunt_state.json
 # Snapshots of your own passing solutions, kept only so `make hunt` has something to
 # mutate. Still your code, still disposable, still never committed.
 logs/.snapshots/
 logs/.start_date
-practice/decks/.state.json
 
 # the calendar with your real dates stamped in. plan/CALENDAR.md is the committed
 # one and carries relative day labels, because the start date is not a repo fact.

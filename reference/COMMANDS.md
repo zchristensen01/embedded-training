@@ -129,7 +129,7 @@ or got wrong out loud. Same day, while it still stings. `make done` offers the p
 automatically at the end of every rep, which is the moment it is most likely to apply.
 
 ### `make prompt`
-Draws one of the 40 "how would you test X" subjects and opens a pre-scored answer file in
+Draws one of the 60 "how would you test X" subjects and opens a pre-scored answer file in
 `logs/design-prompts/`. Ten minutes, written, then said aloud. **Fill in the rubric total**
 when you score it — T1 is met on the score, not on the number of files, and an unscored
 answer counts for nothing.
@@ -233,6 +233,26 @@ or — for T1 — enough scored design prompts with the recent ones clearing 12/
 Capabilities whose mechanism lives elsewhere — bench work in Mimic, artifacts in the
 harness repo — are reported as **tracked outside this repo** and left out of the score.
 That is not a claim the work is done; it is a statement that this repo cannot see it.
+
+### `make log`
+The per-module time curve, straight out of `logs/log.tsv`, plus which modules have met their
+bar and how many reps each has had. Clean rates are reported **per language** — a C rep's
+"clean" means it compiled first try under `-Werror` with the sanitizers silent, a Python rep's
+means it ran first try with no traceback, and averaging the two measures neither.
+
+Faster than `make report` and useful mid-week. `make report` is the Sunday version.
+
+### `make status`
+What rep is in flight right now: module, variant, elapsed minutes, the laps recorded so far,
+which phase you are in, and the constraint card if you drew one. Prints "Nothing in progress"
+if the clock is not running.
+
+Use it when you have lost track of whether you called `make drill`, or which lap comes next.
+
+### `make snapshots`
+Which modules have a solution old enough to hunt in, and when each was written. `make hunt`
+picks from this list. Empty until you have finished a few reps — snapshots are taken by
+`make done`.
 
 ### `make calendar`
 Regenerates `plan/CALENDAR.md` — all seventy days, always with **relative** day labels

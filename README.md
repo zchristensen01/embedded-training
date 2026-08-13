@@ -51,7 +51,7 @@ logs/          the record — the only place that decides whether this is workin
 | Directory | What is in it |
 |---|---|
 | **`plan/`** | `INTERVIEW_REQUIREMENTS.md` is the specification: the research plus every capability. `COVERAGE.md` maps each one to the mechanism that owns it. `CALENDAR.md` is all 70 days, generated. `CURRICULUM.md` is why the ten weeks are shaped as they are. `REPOS.md` is the disk layout. |
-| **`practice/`** | `PRACTICE_SYSTEM.md` explains the seven formats and the rules for using AI. `katas/` holds twelve C modules and three Python ones. `decks/` holds the spoken deck as TSV, including the Python trap cards. `design-prompts/` holds 40 test subjects and 8 architecture prompts, each with its own fixed rubric. `rehearsal/` holds the behavioural stories. |
+| **`practice/`** | `PRACTICE_SYSTEM.md` explains the seven formats and the rules for using AI. `katas/` holds eleven C modules and four Python ones. `decks/` holds the spoken deck as TSV, including the Python trap cards. `design-prompts/` holds 60 test subjects and 8 architecture prompts, each with its own fixed rubric. `rehearsal/` holds the behavioural stories. |
 | **`reference/`** | `COMMANDS.md` documents every command. `ARCHITECTURE.md` covers repo internals. `question-bank/` holds 76 coding exercises, the verbal set with trap answers, and the T&I track. |
 | **`projects/`** | `hil-harness/BRIEF.md` — the week 8 flagship spec. The project itself lives in its own public repo. |
 | **`logs/`** | Every rep, every phase split, every story take, every AI use, and the generated progress report. |
@@ -63,7 +63,7 @@ The unusual part, and the reason a solved kata stays practisable:
 ```
 practice/katas/ring_buffer/
 ├── BRIEF.md      committed   what it is, the API, how to think about it, what to test
-├── VARIANTS.md   committed   the seven variants the drill draws from
+├── VARIANTS.md   committed   the variants the drill draws from (seven or more)
 ├── NOTES.md      committed   one decision or bug per rep
 ├── include/      committed   the API contract.  FROZEN during a rep
 ├── tests/        committed   the test suite.    FROZEN during a rep

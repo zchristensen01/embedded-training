@@ -1,7 +1,7 @@
 # (c) Design and "explain your design" prompts
 
 These are repeatable because the **subject rotates** and the **rubric is fixed**. Your score
-across 40 different subjects measures one skill.
+across 60 different subjects measures one skill.
 
 Run with `make prompt`. Ten minutes, written, then score yourself. Speak the answer aloud too —
 this question is always verbal in the real thing.
@@ -90,6 +90,35 @@ Robotics:
 38. A robot arm joint encoder
 39. An emergency stop circuit
 40. A LiDAR-based obstacle stop
+
+**Embedded subsystems.** Subjects 1–40 are objects you can hold — deliberately, because the
+question is asked about consumer products as often as about instruments, and an object with no
+datasheet forces you to ask for requirements. These twenty are the other half: subsystems inside
+the devices these employers actually build, drawn from the second research pass. They are harder,
+they assume the vocabulary the first forty teach, and they are where the medical, space and
+robotics interviewers live. Rotate into them once you are scoring 12+ consistently on the first
+forty.
+
+41. An implantable pacemaker telemetry uplink over BLE
+42. A surgical robot instrument force-feedback sensor channel
+43. An insulin pump occlusion-detection subsystem
+44. A UAV flight controller IMU sampling path
+45. A satellite reaction wheel motor-control loop
+46. A CubeSat watchdog and safe-mode controller
+47. A brake-by-wire CAN node
+48. An EV battery management system cell-balancing controller
+49. A coulomb-counting battery fuel gauge
+50. A keypad matrix scanner
+51. An eight-channel analog-mux acquisition front end
+52. A BLE smart bulb with over-the-air update
+53. A smart door lock with signed firmware update
+54. An always-on wearable accelerometer sampler
+55. A subsea ROV tether serial link
+56. A firmware over-the-air update subsystem with A/B partitions and rollback
+57. A ventilator flow sensor and alarm path
+58. A radiation-tolerant memory scrubber for a satellite payload
+59. A cryogenic tank level sensor
+60. A robot joint brake release interlock
 
 ---
 

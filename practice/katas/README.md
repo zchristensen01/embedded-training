@@ -83,7 +83,7 @@ is scheduled into. The table below is a reading copy.
 | `test_harness_py` | 25 min | long |
 | `binary_frame_py` | 20 min | Python block |
 | `log_parser_py` | 20 min | Python block |
-| `cli_tool_py` | 25 min | Python block |
+| `cli_tool_py` | 22 min | Python block |
 
 Targets are meant to fall. A kata that is comfortable at its target is a different exercise
 three minutes lower — but lower the number in `drill.py`, not in your head, so the log still

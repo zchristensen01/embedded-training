@@ -15,3 +15,8 @@ v6  Bulk transfer. `rb_write(rb, const uint8_t *, n)` and `rb_read(rb, uint8_t *
     returning how many it moved, and each doing at most two `memcpy` calls across the wrap.
 v7  Peek without pop, plus `rb_discard(n)`. Add both without breaking the frozen tests for
     the variant you started from.
+v8  Interrupt-driven UART, both directions. Two buffers behind an ISR: RX pushes a byte and
+    returns, TX pops one. The trap is the TX-empty interrupt — enable it when you queue data,
+    and **disable it the moment the buffer drains**, or the ISR re-fires forever on an empty
+    buffer and the device livelocks. Do no parsing in the ISR. State which side owns head and
+    which owns tail, and why that is what makes it safe without a lock.

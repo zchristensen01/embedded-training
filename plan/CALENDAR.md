@@ -20,8 +20,8 @@ picks by worst recent time, then longest since last rep, then never attempted �
 so Saturday is the day that catches whatever you have been avoiding. It is also
 the slack in the rotation: every kata's spare reps live here.
 
-Weekly load: about 12.6 hours, every week from week 4 on.
-Weeks 1, 2, 3 carry the build sessions on top of that — 15.4, 14.9, 14.6 hours. They are the
+Weekly load: about 12.8 hours, every week from week 4 on.
+Weeks 1, 2, 3 carry the build sessions on top of that — 15.4, 14.9, 15.1 hours. They are the
 heavy weeks of the ten, and they are heavy once instead of a little heavy for five.
 
 ---
@@ -254,7 +254,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **100 min** | Main block | S3/S4 overflow. First logic-analyzer capture goes in docs/. |
 | **10 min** | Rehearsal | make rehearse  (one story, out loud, timed) |
 
-### **Day 21 · Sun**  (213 min)
+### **Day 21 · Sun**  (243 min)
 
 | Timer | Block | What |
 |---|---|---|
@@ -262,6 +262,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **20 min** | Weekly review | make report, then fill logs/WEEKLY_REVIEW.md |
 | **15 min** | Deck — full pass | make review 30 |
 | **150 min** | Kata build | BUILD x2: cli_tool_py, concurrency_sim (builds under -fsanitize=thread, not address). Write the header first, then list the cases in the BRIEF, then write them. Every BRIEF ships with a 'What to test' section. |
+| **30 min** | Rehearsal | make rehearse x3  (3 stories, out loud, timed) |
 
 ---
 
@@ -326,7 +327,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **100 min** | Main block | SWAP: Mimic M4.1 — EMG features on public datasets. Python, no hardware. |
 | **10 min** | Rehearsal | make rehearse  (one story, out loud, timed) |
 
-### **Day 28 · Sun**  (93 min)
+### **Day 28 · Sun**  (103 min)
 
 | Timer | Block | What |
 |---|---|---|
@@ -334,7 +335,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **20 min** | Weekly review | make report, then fill logs/WEEKLY_REVIEW.md |
 | **15 min** | Deck — full pass | make review 30 |
 | **10 min** | Design prompt | make prompt  (T1 — ask for requirements first) |
-| **20 min** | Rehearsal | make rehearse x2  (two stories, out loud, timed) |
+| **30 min** | Rehearsal | make rehearse x3  (3 stories, out loud, timed) |
 
 ---
 
@@ -399,7 +400,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **100 min** | Main block | S8/S9 tuning runs. Save every plot, including the bad ones. |
 | **10 min** | Rehearsal | make rehearse  (one story, out loud, timed) |
 
-### **Day 35 · Sun**  (93 min)
+### **Day 35 · Sun**  (103 min)
 
 | Timer | Block | What |
 |---|---|---|
@@ -407,7 +408,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **20 min** | Weekly review | make report, then fill logs/WEEKLY_REVIEW.md |
 | **15 min** | Deck — full pass | make review 30 |
 | **10 min** | Design prompt | make prompt  (T1 — ask for requirements first) |
-| **20 min** | Rehearsal | make rehearse x2  (two stories, out loud, timed) |
+| **30 min** | Rehearsal | make rehearse x3  (3 stories, out loud, timed) |
 
 ---
 
@@ -476,7 +477,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **100 min** | Main block | S12 tests + exit gate evidence. Tag v0.0-stage0-exit. |
 | **10 min** | Rehearsal | make rehearse  (one story, out loud, timed) |
 
-### **Day 42 · Sun**  (93 min)
+### **Day 42 · Sun**  (103 min)
 
 | Timer | Block | What |
 |---|---|---|
@@ -484,7 +485,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **20 min** | Weekly review | make report, then fill logs/WEEKLY_REVIEW.md |
 | **15 min** | Deck — full pass | make review 30 |
 | **10 min** | Design prompt | make prompt  (T1 — ask for requirements first) |
-| **20 min** | Rehearsal | make rehearse x2  (two stories, out loud, timed) |
+| **30 min** | Rehearsal | make rehearse x3  (3 stories, out loud, timed) |
 
 ---
 
@@ -548,7 +549,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **100 min** | Main block | Device abstraction over a fake transport. Same tests pass on both. |
 | **10 min** | Rehearsal | make rehearse  (one story, out loud, timed) |
 
-### **Day 49 · Sun**  (93 min)
+### **Day 49 · Sun**  (103 min)
 
 | Timer | Block | What |
 |---|---|---|
@@ -556,7 +557,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **20 min** | Weekly review | make report, then fill logs/WEEKLY_REVIEW.md |
 | **15 min** | Deck — full pass | make review 30 |
 | **10 min** | Design prompt | make prompt  (T1 — ask for requirements first) |
-| **20 min** | Rehearsal | make rehearse x2  (two stories, out loud, timed) |
+| **30 min** | Rehearsal | make rehearse x3  (3 stories, out loud, timed) |
 
 ---
 
@@ -612,15 +613,15 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (test infra, pytest) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 55 · Sat**  (138 min)
+### **Day 55 · Sat**  (148 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **28 min** | Kata — adaptive | make drill   (no argument — picks your weakest built module) |
 | **100 min** | Main block | Dockerise the harness. GitHub Actions, self-hosted runner. |
-| **10 min** | Rehearsal | make rehearse  (one story, out loud, timed) |
+| **20 min** | Rehearsal | make rehearse x2  (2 stories, out loud, timed) |
 
-### **Day 56 · Sun**  (93 min)
+### **Day 56 · Sun**  (103 min)
 
 | Timer | Block | What |
 |---|---|---|
@@ -628,7 +629,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **20 min** | Weekly review | make report, then fill logs/WEEKLY_REVIEW.md |
 | **15 min** | Deck — full pass | make review 30 |
 | **10 min** | Design prompt | make prompt  (T1 — ask for requirements first) |
-| **20 min** | Rehearsal | make rehearse x2  (two stories, out loud, timed) |
+| **30 min** | Rehearsal | make rehearse x3  (3 stories, out loud, timed) |
 
 ---
 
@@ -684,15 +685,15 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (hardware, debug) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 62 · Sat**  (138 min)
+### **Day 62 · Sat**  (148 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **28 min** | Kata — adaptive | make drill   (no argument — picks your weakest built module) |
 | **100 min** | Main block | Harness repo published. README states what it verifies and what it cannot. |
-| **10 min** | Rehearsal | make rehearse  (one story, out loud, timed) |
+| **20 min** | Rehearsal | make rehearse x2  (2 stories, out loud, timed) |
 
-### **Day 63 · Sun**  (93 min)
+### **Day 63 · Sun**  (103 min)
 
 | Timer | Block | What |
 |---|---|---|
@@ -700,7 +701,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **20 min** | Weekly review | make report, then fill logs/WEEKLY_REVIEW.md |
 | **15 min** | Deck — full pass | make review 30 |
 | **10 min** | Design prompt | make prompt  (T1 — ask for requirements first) |
-| **20 min** | Rehearsal | make rehearse x2  (two stories, out loud, timed) |
+| **30 min** | Rehearsal | make rehearse x3  (3 stories, out loud, timed) |
 
 ---
 
@@ -756,15 +757,15 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **12 min** | Deck | make review  (full deck, no filter) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
-### **Day 69 · Sat**  (138 min)
+### **Day 69 · Sat**  (148 min)
 
 | Timer | Block | What |
 |---|---|---|
 | **28 min** | Kata — adaptive | make drill   (no argument — picks your weakest built module) |
 | **100 min** | Main block | make report. Compare the week 1 and week 10 curves. Write the retro. |
-| **10 min** | Rehearsal | make rehearse  (one story, out loud, timed) |
+| **20 min** | Rehearsal | make rehearse x2  (2 stories, out loud, timed) |
 
-### **Day 70 · Sun**  (93 min)
+### **Day 70 · Sun**  (103 min)
 
 | Timer | Block | What |
 |---|---|---|
@@ -772,7 +773,7 @@ So it is built by week 7 Fri and first drilled in week 7 — inside the same wee
 | **20 min** | Weekly review | make report, then fill logs/WEEKLY_REVIEW.md |
 | **15 min** | Deck — full pass | make review 30 |
 | **10 min** | Design prompt | make prompt  (T1 — ask for requirements first) |
-| **20 min** | Rehearsal | make rehearse x2  (two stories, out loud, timed) |
+| **30 min** | Rehearsal | make rehearse x3  (3 stories, out loud, timed) |
 
 ---
 

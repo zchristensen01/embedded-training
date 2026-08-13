@@ -37,8 +37,8 @@ No reps logged yet. `make drill` starts the first one.
 
 | ID | Capability | Practised by | Status |
 |---|---|---|---|
-| Y1 | Explain Python's trap-level internals — mutable default arguments, `is` vs `==` and the small-int cache, generators vs lists, closure late binding, the GIL for CPU- vs I/O-bound work, `functools.wraps`, context managers, shallow vs deep copy — and say *why*, not just what | deck (11 cards) | in progress |
-| Y2 | Parse and build binary telemetry on the host: correct `struct` format and endianness, length validated before unpacking, signed vs unsigned, frames reassembled across read boundaries | kata (binary_frame_py), deck (11 cards, reinforcement) | in progress |
+| Y1 | Explain Python's trap-level internals — mutable default arguments, `is` vs `==` and the small-int cache, generators vs lists, closure late binding, the GIL for CPU- vs I/O-bound work, `functools.wraps`, context managers, shallow vs deep copy — **and predict the output of an unseen snippet cold** | deck (20 cards) | in progress |
+| Y2 | Parse and build binary telemetry on the host: correct `struct` format and endianness, length validated before unpacking, signed vs unsigned, frames reassembled across read boundaries | kata (binary_frame_py), deck (14 cards, reinforcement) | in progress |
 | Y3 | Write domain scripting under time pressure: stream-parse a file larger than RAM, reduce it, and exit with the right code — without loading it all | kata (log_parser_py), deck (1 card, reinforcement) | in progress |
 
 ## E — Embedded concepts

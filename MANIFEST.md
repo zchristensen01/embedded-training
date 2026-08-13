@@ -40,7 +40,7 @@ Every file, what it's for, whether you edit it.
 | `decks/embedded.tsv` | `topic <TAB> question <TAB> answer <TAB> trap <TAB> caps` | `make card` |
 | `decks/test-integration.tsv` | Same format, the T&I half of the deck | `make card` |
 | `decks/python.tsv` | Same format, the Python fluency deck — the Y group's bar | `make card` |
-| `design-prompts/SUBJECTS.md` | 40 "how would you test X" subjects + the fixed 8-category rubric | No |
+| `design-prompts/SUBJECTS.md` | 60 "how would you test X" subjects + the fixed 8-category rubric | No |
 | `design-prompts/ARCHITECTURE.md` | 8 "design this subsystem" prompts + a different 8-axis rubric | No |
 | `rehearsal/README.md` | How takes work, what "ready" means | No |
 | `rehearsal/STORIES.md` | The behavioural stories | **Yes — fill before your first take** |
@@ -94,10 +94,10 @@ The project itself lives in its own repo, `~/embedded/mimic-hil`. This is only t
 | File | What it holds | Written by |
 |---|---|---|
 | `log.tsv` | Every rep: date, module, variant, minutes, clean, note | `make done` |
-| `splits.tsv` | Phase breakdown: design, write, compile, debug | `make lap` + `make done` |
+| `splits.tsv` | Phase breakdown: design, write, compile/run, debug | `make lap` + `make done` |
 | `rehearsal.tsv` | Story takes: date, story, seconds, rating, note | `make rehearse` |
 | `bughunt.tsv` | Bug hunts: date, module, mutation kind, minutes, found | `make hunt-done` |
-| `.snapshots/` | Copies of your passing solutions, so `make hunt` has something to break. **Gitignored** | `make done` |
+| `.snapshots/` | Copies of your solutions, so `make hunt` has something to break. **Gitignored** | `make done` |
 | `ai-use.tsv` | Every AI use: date, what for, which rule | You, by hand |
 | `WEEKLY_REVIEW.md` | The Sunday honesty check template | You, Sundays |
 | `design-prompts/` | Prompt answers with rubric scores | `make prompt`, then you |

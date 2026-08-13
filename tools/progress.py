@@ -77,6 +77,7 @@ PROMPT_RECENT = 3         # the most recent N answers must all clear the bar
 # them scored at the bar is a real claim. Same rubric denominator, same recency rule.
 DESIGNS_FOR_E30 = 3
 DESIGN_SCORE_BAR = 12
+DESIGN_PUSHBACK_MIN = 1   # axis 8 must be non-zero — see designs_met()
 
 
 def _load(name, path):
@@ -226,14 +227,18 @@ def scored_answers(directory):
     """
     out = []
     for path in sorted(glob.glob(os.path.join(directory, "*.md"))):
-        score = None
+        score, gate = None, None
         try:
-            m = re.search(r"Total:\s*(\d+)\s*/\s*16", open(path).read())
+            text = open(path).read()
+            m = re.search(r"Total:\s*(\d+)\s*/\s*16", text)
             if m:
                 score = int(m.group(1))
+            g = re.search(r"axis 8\):\s*(\d+)\s*/\s*2", text)
+            if g:
+                gate = int(g.group(1))
         except OSError:
             pass
-        out.append((path, score))
+        out.append((path, score, gate))
     return out
 
 
@@ -355,16 +360,22 @@ def score():
                 kata_retired(reps.get(k, []), targets.get(k, 15)) for k in katas)
 
         def prompts_met():
-            scored = [s for _, s in prompts[-PROMPT_RECENT:] if s is not None]
+            scored = [s for _, s, _ in prompts[-PROMPT_RECENT:] if s is not None]
             return (len(prompts) >= PROMPTS_FOR_T1
                     and len(scored) == PROMPT_RECENT
                     and all(s >= PROMPT_SCORE_BAR for s in scored))
 
         def designs_met():
-            scored = [s for _, s in designs[-DESIGNS_FOR_E30:] if s is not None]
+            # Two gates, not one. Seven perfect axes total 14/16, so a total-only bar can
+            # be met with axis 8 — "held the position under pushback" — scored zero, which
+            # is the half of E30 the research actually calls out as the rejection point.
+            recent = designs[-DESIGNS_FOR_E30:]
+            scored = [s for _, s, _ in recent if s is not None]
+            pushed = [g for _, _, g in recent if g is not None and g >= DESIGN_PUSHBACK_MIN]
             return (len(designs) >= DESIGNS_FOR_E30
                     and len(scored) == DESIGNS_FOR_E30
-                    and all(s >= DESIGN_SCORE_BAR for s in scored))
+                    and all(s >= DESIGN_SCORE_BAR for s in scored)
+                    and len(pushed) == DESIGNS_FOR_E30)
 
         if bar == "deferred":
             mechanisms.append("deferred")
@@ -383,14 +394,14 @@ def score():
             done = reh.ready(cid, takes)
         elif bar == "design prompts":
             done = prompts_met()
-            scored = [s for _, s in prompts if s is not None]
+            scored = [s for _, s, _ in prompts if s is not None]
             detail.append(f"{len(scored)} scored, bar is the last {PROMPT_RECENT} "
                           f"at {PROMPT_SCORE_BAR}+/16")
         elif bar == "architecture drills":
             done = designs_met()
-            scored = [s for _, s in designs if s is not None]
-            detail.append(f"{len(scored)} scored, bar is {DESIGNS_FOR_E30} "
-                          f"at {DESIGN_SCORE_BAR}+/16")
+            scored = [s for _, s, _ in designs if s is not None]
+            detail.append(f"{len(scored)} scored, bar is {DESIGNS_FOR_E30} at "
+                          f"{DESIGN_SCORE_BAR}+/16 with axis 8 non-zero")
         else:
             done = None                # tracked outside this repo, or nothing owns it
 
@@ -430,6 +441,20 @@ def consistency():
     by_group = defaultdict(list)
     for cid in caps:
         by_group[cid[0]].append(int(cid[1:]))
+    # Every group heading in the spec must be a group this file knows about. Deriving GRP
+    # from GROUPS stopped the five ID regexes drifting apart, but it does NOT catch the
+    # inverse: add a `## Z — ...` section to the spec and forget GROUPS, and Z is invisible
+    # to every regex, so it is absent from BOTH sides of the comparison below and --check
+    # passes while scoring nothing. Verified: injecting Z1 into both files still reported
+    # "all 99 capabilities are in both files". This assertion is the missing direction.
+    headings = set(re.findall(r"^##\s+([A-Z])\s+—\s", open(REQ).read(), re.M))
+    unknown = headings - set(GROUPS)
+    if unknown:
+        problems.append(
+            f"group heading(s) {', '.join(sorted(unknown))} in the spec are not in "
+            f"tools/progress.py:GROUPS, so nothing can see them. Add them there."
+        )
+
     for g in sorted(GROUPS):
         nums = sorted(by_group.get(g, []))
         if not nums:

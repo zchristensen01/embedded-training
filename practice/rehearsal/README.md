@@ -1,6 +1,6 @@
 # Rehearsal
 
-The B group in `plan/INTERVIEW_REQUIREMENTS.md` — ten narrative capabilities. Behavioural rounds
+The B group in `plan/INTERVIEW_REQUIREMENTS.md` — eleven narrative capabilities. Behavioural rounds
 reject more test & integration candidates than technical rounds do, so this is not the soft part
 of the plan.
 

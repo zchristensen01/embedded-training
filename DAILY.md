@@ -55,7 +55,8 @@ interrupts"`.
 `make drill`, back to back, from week 1. They are interleaved rather than phased on purpose:
 an interview loop does not block by language, and identifying which kind of problem you are
 looking at before solving it is part of what is being trained. Tuesday and Thursday are C
-only, which is what keeps the day at 115 minutes rather than becoming two full rotations.
+only, at 90 minutes; the three days that carry a Python rep are 115. Keeping two weekdays
+clear is what stops this becoming two full rotations.
 
 **"Main block" is not in this repo.** For weeks 1–6 it is the Mimic robotics project in its
 own repo; from week 7 it is the harness work. (Week 7 used to be "pytest from zero" — it is
@@ -150,7 +151,7 @@ which is where a module's fourth and fifth reps come from.
 
 **Week 4 onward — a design prompt and rehearsal:**
 
-- [ ] `make prompt` — draws one of the 40 "how would you test X" subjects and opens a
+- [ ] `make prompt` — draws one of the 60 "how would you test X" subjects and opens a
       pre-scored answer file. Ten minutes written, then said aloud. **Fill in the rubric
       total**; an unscored answer counts for nothing. Two things fail you automatically
       regardless of the rest: proposing solutions before asking for requirements, and

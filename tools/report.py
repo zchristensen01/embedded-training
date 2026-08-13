@@ -71,6 +71,11 @@ def read_splits():
     return rows
 
 
+# Both phase lists, in order, so the report renders either kind of rep. drill.py owns the
+# definition; this is the union of the two, C first.
+PHASE_ORDER = ("design", "write", "compile", "run", "debug")
+
+
 def phase_report(rows):
     if not rows:
         print("\n  (no phase splits yet — call `make lap` during a rep to get this)\n")
@@ -88,23 +93,37 @@ def phase_report(rows):
             agg[r["phase"]] += r["minutes"]
         print(f"\n  {label}")
         shares = {}
-        for ph in ("design", "write", "compile", "debug"):
+        for ph in PHASE_ORDER:
             if ph in agg:
                 pct = 100 * agg[ph] / tot
                 shares[ph] = pct
                 print(f"    {ph:<8} {agg[ph]:>7.1f} min  {pct:>4.0f}%  {'#' * int(pct / 3)}")
-        for ph in sorted(k for k in agg if k not in ("design", "write", "compile", "debug")):
+        for ph in sorted(k for k in agg if k not in PHASE_ORDER):
             pct = 100 * agg[ph] / tot
             print(f"    {ph:<8} {agg[ph]:>7.1f} min  {pct:>4.0f}%")
         return shares
 
-    all_shares = block(rows, "All reps")
+    # C and Python are reported apart for the same reason their clean rates are: a C rep's
+    # third phase is `compile` and a Python rep's is `run`, and pooling them put `run` in the
+    # unlabelled bucket while diluting the C shares with Python typing time. The headline
+    # "write + compile" number silently excluded every Python rep.
+    c_rows = [r for r in rows if not r["module"].endswith("_py")]
+    py_rows = [r for r in rows if r["module"].endswith("_py")]
 
-    recent = sorted(rows, key=lambda r: r["date"])[-40:]
-    first = sorted(rows, key=lambda r: r["date"])[:40]
-    if len(rows) > 60:
-        block(first, "First reps")
-        block(recent, "Recent reps")
+    all_shares = block(c_rows, "All C reps") if c_rows else None
+    py_shares = block(py_rows, "All Python reps") if py_rows else None
+
+    for subset, tag in ((c_rows, "C"), (py_rows, "Python")):
+        if len(subset) > 60:
+            ordered = sorted(subset, key=lambda r: r["date"])
+            block(ordered[:40], f"First {tag} reps")
+            block(ordered[-40:], f"Recent {tag} reps")
+
+    for shares, tag, third in ((all_shares, "C", "compile"), (py_shares, "Python", "run")):
+        if shares and "write" in shares and third in shares:
+            wc = shares["write"] + shares[third]
+            print(f"\n    {tag}: write + {third} = {wc:.0f}% of your time. That combined number")
+            print(f"    IS your {tag} syntax fluency. Watch it fall. Under 40% by week 10.")
 
     if not all_shares:
         return
@@ -119,12 +138,10 @@ def phase_report(rows):
                    "           typing — a 20%% slower first pass usually beats three compile cycles.",
         "debug":  "Most time after it compiles. Logic and edge cases. Try writing the test you'd\n"
                   "           add BEFORE the implementation on the next rep.",
+        "run":    "Most time getting it to run at all — imports, indentation, typos. The Python\n"
+                  "           equivalent of fighting the compiler. Slow the first pass down.",
     }
     print(f"    Largest share: {top} ({all_shares[top]:.0f}%). {verdicts[top]}")
-    if "write" in all_shares and "compile" in all_shares:
-        wc = all_shares["write"] + all_shares["compile"]
-        print(f"\n    write + compile = {wc:.0f}% of your time. That combined number IS your")
-        print("    syntax fluency. Watch it fall. Under 40% by week 10 is the target.")
 
 
 def sparkline(values):

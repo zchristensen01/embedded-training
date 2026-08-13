@@ -48,7 +48,7 @@ TARGETS = {
     "bitops": 8, "mem_primitives": 10, "register_map": 12, "debouncer": 12,
     "rollover_timer": 12, "ring_buffer": 15, "fsm": 15, "pool_allocator": 20,
     "protocol_parser": 20, "fixed_point_pid": 20, "concurrency_sim": 25,
-    "binary_frame_py": 20, "log_parser_py": 20, "cli_tool_py": 25,
+    "binary_frame_py": 20, "log_parser_py": 20, "cli_tool_py": 22,
     "test_harness_py": 25,
 }
 
@@ -59,6 +59,10 @@ TARGETS = {
 # would put a column in logs/splits.tsv that means two different things.
 PHASES = ["design", "write", "compile", "debug"]
 PHASES_PY = ["design", "write", "run", "debug"]
+
+# The placeholder case newkata.py scaffolds. While it is the only case in a suite, the
+# module is not drillable — see is_built().
+STUB_MARKER = "TODO_rename_me"
 
 
 def is_python(kata):
@@ -129,11 +133,20 @@ def is_built(kata):
     tests = os.path.join(KATAS, kata, "tests")
     if not os.path.isdir(tests) or not os.listdir(tests):
         return False
+    ext = ".py" if kata.endswith("_py") else ".c"
+    suites = [f for f in os.listdir(tests) if f.endswith(ext)]
+    if not suites:
+        return False
+    # A scaffolded suite is not a suite. newkata.py writes a single placeholder case named
+    # test_TODO_rename_me that asserts False, and the refusal below exists precisely so you
+    # cannot do a rep against an empty suite — which is what the placeholder is. Without
+    # this the refusal never fired for a freshly scaffolded module.
+    if all(STUB_MARKER in open(os.path.join(tests, f)).read() for f in suites):
+        return False
     if kata.endswith("_py"):
-        return any(f.endswith(".py") for f in os.listdir(tests))
+        return True
     inc = os.path.join(KATAS, kata, "include")
-    return (os.path.isdir(inc) and any(f.endswith(".h") for f in os.listdir(inc))
-            and any(f.endswith(".c") for f in os.listdir(tests)))
+    return os.path.isdir(inc) and any(f.endswith(".h") for f in os.listdir(inc))
 
 
 def built_katas():

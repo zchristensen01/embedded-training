@@ -40,6 +40,8 @@ help:
 	@echo "    make hunts    bug-hunt history: which bug kinds catch you out"
 	@echo "    make designs  architecture drills written, and what they scored"
 	@echo "    make stats    deck box distribution"
+	@echo "    make status   what rep is in flight right now"
+	@echo "    make snapshots which modules have code old enough to hunt in"
 	@echo ""
 	@echo "  occasional"
 	@echo "    make hunt-done  stop the hunt clock, reveal the mutation, log it"
@@ -131,10 +133,15 @@ BUILD := build
 # grows as you build each module.
 ALL_MODULES := $(sort $(patsubst $(KATAS)/%/src/,%,$(dir $(wildcard $(KATAS)/*/src/*.c))))
 
-# The Python kata is run by pytest, not compiled. MODULE= filters both lists rather
-# than being trusted blindly, so `make test MODULE=test_harness_py` doesn't try to
-# hand a directory full of .py files to the C compiler.
-ALL_PY := $(sort $(patsubst $(KATAS)/%/tests/,%,$(dir $(wildcard $(KATAS)/*/tests/*.py))))
+# Python katas are run by pytest, not compiled. MODULE= filters both lists rather than
+# being trusted blindly, so `make test MODULE=test_harness_py` doesn't try to hand a
+# directory full of .py files to the C compiler.
+#
+# Keyed on src/*.py, exactly like ALL_MODULES is keyed on src/*.c — a kata is testable
+# once it has an implementation. It used to key on tests/*.py, which meant every Python
+# kata was always in the list: a bare `make test` during an unrelated C rep would build
+# and pass that rep, then hard-fail on a scaffolded stub suite it had no reason to run.
+ALL_PY := $(sort $(patsubst $(KATAS)/%/src/,%,$(dir $(wildcard $(KATAS)/*/src/*.py))))
 
 MODULES    := $(if $(MODULE),$(filter $(MODULE),$(ALL_MODULES)),$(ALL_MODULES))
 PY_MODULES := $(if $(MODULE),$(filter $(MODULE),$(ALL_PY)),$(ALL_PY))

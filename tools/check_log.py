@@ -159,10 +159,11 @@ def parse():
             errors.append(f"{where}: minutes '{minutes}' must be a number")
 
         if clean.strip() not in ("y", "n"):
-            errors.append(
-                f"{where}: clean '{clean}' must be y or n "
-                f"(y = compiled first try under -Werror and both sanitizers stayed silent)"
-            )
+            meaning = ("y = ran first try with no traceback"
+                       if module.endswith("_py")
+                       else "y = compiled first try under -Werror and both sanitizers "
+                            "stayed silent")
+            errors.append(f"{where}: clean '{clean}' must be y or n ({meaning})")
 
         if row_date and mins is not None:
             rows.append({
@@ -215,10 +216,19 @@ def summarise(rows):
         at_target += retired
         print(f"  {'BAR MET — three clean at target, three variants' if retired else 'in progress'}\n")
 
-    clean_rate = 100 * sum(r["clean"] for r in kata_rows) / len(kata_rows) if kata_rows else 0
+    # Split by language. "clean" means compiled-first-try for C and ran-first-try for
+    # Python, so one averaged percentage is evidence for neither. progress.py:clean_rate()
+    # and report.py draw the same line; this was the last place that did not.
+    c_rows = [r for r in kata_rows if not r["module"].endswith("_py")]
+    py_rows = [r for r in kata_rows if r["module"].endswith("_py")]
     other = [r for r in rows if r["module"] in FREEFORM_MODULES]
     print(f"{len(kata_rows)} kata rep(s), {rows[0]['date']} to {rows[-1]['date']}   "
-          f"clean-first-compile {clean_rate:.0f}%   bar met on {at_target}")
+          f"bar met on {at_target}")
+    for subset, label in ((c_rows, "clean-first-compile (C)"),
+                          (py_rows, "clean-first-run (Python)")):
+        if subset:
+            pct = 100 * sum(r["clean"] for r in subset) / len(subset)
+            print(f"  {label:<28} {pct:.0f}%   over {len(subset)} rep(s)")
     if other:
         hours = sum(r["minutes"] for r in other) / 60
         print(f"{len(other)} hand-logged session(s) ({hours:.1f} hr) "

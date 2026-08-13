@@ -16,7 +16,7 @@ Inside each kata module:
 ```
 practice/katas/ring_buffer/
 ├── BRIEF.md          committed   what it is, the API, how to think about it, what to test
-├── VARIANTS.md       committed   the seven variants of this kata
+├── VARIANTS.md       committed   the variants of this kata (seven or more)
 │                                (a *_py kata has no include/ — its contract is the BRIEF
 │                                 and the frozen pytest suite that enforces it)
 ├── NOTES.md          committed   design decisions and bugs, one line per rep
@@ -92,7 +92,7 @@ Six, all run by CI on every push and all runnable together with `make check`.
 | `check-calendar` | Schedule, derived build plan, timer blocks, variants and retirement feasibility all agree |
 | `check-coverage` | The spec and the coverage map describe exactly the same set of capabilities, each group numbered from 1 with no gaps |
 | `check-decks` | Every card tag names a real capability, and every deck-scored capability has a card |
-| `check-generated` | The three generated files match their generators |
+| `check-generated` | `plan/CALENDAR.md` matches its generator. The score files are deliberately excluded — see the note in `tools/check_generated.py` |
 
 **CI deliberately does not run the katas.** `src/` is gitignored and deleted every rep, so
 there is nothing to link — the only thing that could be tested is an implementation that is

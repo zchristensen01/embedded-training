@@ -42,9 +42,9 @@ verbal round is the most common way this kind of preparation goes wrong.
 
 | Mechanism | Covers | How it repeats | Command |
 |---|---|---|---|
-| **Kata** | C and Python fluency — the C and Y groups | Frozen tests, deleted `src/`, 7 variants each | `make drill` |
+| **Kata** | C and Python fluency — the C and Y groups | Frozen tests, deleted `src/`, 7+ variants each | `make drill` |
 | **Deck** | Concepts and verbal — the whole E group, most of T, and Y1 | Leitner boxes at 1/2/4/8/16 days, spoken aloud | `make review` |
-| **Design prompt** | "How would you test X", the core T&I question | 40 rotating subjects, one fixed rubric | `make prompt` |
+| **Design prompt** | "How would you test X", the core T&I question | 60 rotating subjects, one fixed rubric | `make prompt` |
 | **Architecture drill** | "Design this subsystem", the embedded design round | 8 rotating prompts, a different fixed rubric | `make design` |
 | **Bug hunt** | Debugging code you did not write today | Your own old solution, silently mutated | `make hunt` |
 | **Rehearsal** | Behavioural, 11 stories | Re-told to three strong takes on three days | `make rehearse` |
@@ -62,7 +62,7 @@ Inside every kata directory:
 ```
 practice/katas/ring_buffer/
 ├── BRIEF.md      committed   what it is, the API, how to think about it, what to test
-├── VARIANTS.md   committed   the seven variants the drill draws from
+├── VARIANTS.md   committed   the variants the drill draws from (seven or more)
 ├── NOTES.md      committed   one decision or bug per rep, appended automatically
 ├── include/      committed   the API contract.  FROZEN — never edited during a rep
 │                          (a *_py kata has none: its contract is the BRIEF, and the

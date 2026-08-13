@@ -72,6 +72,18 @@ def due(card, st):
     return date.today() >= last + timedelta(days=INTERVALS.get(rec.get("box", 1), 1))
 
 
+def render(field, indent="  "):
+    r"""Expand the literal two-character sequence \n into real newlines, indented.
+
+    A deck card is one TSV line, so a card that carries a code snippet — "what does this
+    print, and why" — has to escape its newlines. Y1's evidence bar is predicting the
+    output of an unseen snippet cold, and that is not a question you can pose on one line.
+    Cards without a \n are unaffected.
+    """
+    parts = field.split("\\n")
+    return ("\n" + indent).join(parts)
+
+
 def stats(cards, st):
     boxes = {b: 0 for b in range(1, 6)}
     unseen = 0
@@ -125,11 +137,11 @@ def main():
     for i, c in enumerate(pool, 1):
         print("=" * 66)
         print(f"[{i}/{len(pool)}] ({c['topic']})")
-        print(f"\n  {c['q']}\n")
+        print(f"\n  {render(c['q'])}\n")
         input("  ...say it out loud, then press Enter. ")
-        print(f"\n  ANSWER: {c['a']}")
+        print(f"\n  ANSWER: {render(c['a'], indent='          ')}")
         if c["trap"]:
-            print(f"  TRAP:   {c['trap']}")
+            print(f"  TRAP:   {render(c['trap'], indent='          ')}")
         v = input("\n  Did you say all of it? [y/N]: ").strip().lower()
         ok = v in ("y", "yes")
         right += ok

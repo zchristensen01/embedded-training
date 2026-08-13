@@ -15,3 +15,11 @@ v6  Hierarchical: a `FAULT` superstate that any state can enter, which remembers
     from and can return there on a clear event.
 v7  Event queue. `fsm_post(ev)` enqueues and `fsm_run()` drains, so an action can post an event
     without recursing into `fsm_handle`. State the queue depth and what happens when it fills.
+v8  Cooperative scheduler. Register tasks as {callback, period_ms, next_run} in a fixed table;
+    the main loop dispatches whatever is due off one `millis()` counter and advances
+    `next_run += period`. Use the rollover-safe `(now - next_run)` comparison — the naive
+    `now >= next_run` is the bug this variant exists to make you feel. No `delay()` anywhere.
+v9  Analog-mux acquisition sequencer. Read eight channels through one ADC: select the channel,
+    wait the settling time, sample, store, advance. Two things are the point — honouring the
+    mux settling delay without blocking, and handing the consumer a consistent snapshot of all
+    eight rather than a mix of this scan and the last one.

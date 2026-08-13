@@ -58,7 +58,7 @@ kind of quiet contradiction this repo is supposed to catch.
 | 4–6 | weekday main blocks + Saturday | C kata, Python kata, deck, log, review, prompt, **architecture drill**, rehearsal |
 | 7–10 | paused | all of it |
 
-**Weeks 1–6: Mimic gets roughly 42 hours.** That is what Stage 0 realistically costs given
+**Weeks 1–6: Mimic gets roughly 36 hours.** That is what Stage 0 realistically costs given
 the depth of the workbook, and it is the whole reason the split is weighted this way.
 
 **Weeks 7–10: Mimic pauses.** Not abandoned — paused. Stage 1 restarts afterwards. The
@@ -152,7 +152,7 @@ Worth being explicit about, because a plan that claims to produce everything pro
 - **LeetCode.** Ten problems, in C, deferred by decision — see C12 in
   [`COVERAGE.md`](COVERAGE.md). Largely absent outside FAANG-scale embedded teams and the
   lowest-value hour available here.
-- **Debugging unfamiliar C.** The research says take-homes hand you a codebase; every mechanism
+- **Debugging unfamiliar C.** *Closed — `make hunt` is the mechanism.* The research says take-homes hand you a codebase; every mechanism
   here starts from an empty editor. It is written up as a known gap in
   [`INTERVIEW_REQUIREMENTS.md`](INTERVIEW_REQUIREMENTS.md) rather than quietly ignored.
 - **Firmware-role depth.** Ten weeks of drilling produces fluency and evidence, not years of
