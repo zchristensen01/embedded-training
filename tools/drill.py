@@ -126,9 +126,13 @@ def is_built(kata):
     """A kata is drillable once its frozen test suite exists — and, for C, a header.
 
     Every kata directory ships with a BRIEF and VARIANTS from day zero, so "the
-    directory exists" is not the same as "you can do a rep against it". The adaptive
-    picker used to rank never-attempted katas first, which meant Saturday of week 1
-    would happily hand you a module whose header and tests you had not written yet.
+    directory exists" is not the same as "you can do a rep against it". Without this
+    gate, Saturday of week 1 would happily hand you a module whose header and tests you
+    had not written yet.
+
+    This gate is not the same thing as the ranking, and reading it as though it were is
+    what let the ranking stay wrong: the picker went on returning never-attempted katas
+    first for years after this was added. See the tier-2 return in pick():score().
     """
     tests = os.path.join(KATAS, kata, "tests")
     if not os.path.isdir(tests) or not os.listdir(tests):
@@ -227,7 +231,19 @@ def pick(rows, lang=None):
     def score(kata):
         mine = [r for r in rows if r["module"] == kata]
         if not mine:
-            return (0, 0)           # never attempted -> highest priority
+            # LAST, not first. This returned (0, 0) — top priority — for years, against
+            # eight documents that all said never-attempted ranks below worst-recent-time
+            # and staleness. The code won, and it cost the plan its only slack.
+            #
+            # Every kata already has a scheduled first rep in the rotation, so an
+            # unattempted-but-built kata on a Saturday is one the calendar is about to hand
+            # you anyway — usually the next day. Week 1 Saturday drew `fsm`, whose first
+            # scheduled rep is week 1 Sunday: two cold reps of the same module back to back,
+            # and the ring_buffer rep that had just run 12 minutes over target left alone.
+            # Saturday is the only slack in the rotation and it was spending it on
+            # duplicates for the first five weeks, which is exactly the stretch where the
+            # katas with no spare slots need a second attempt.
+            return (2, 0)
         last = mine[-1]
         target = TARGETS.get(kata, 15)
         over = last["minutes"] / target
@@ -241,6 +257,10 @@ def pick(rows, lang=None):
         # where a nearly-there kata gets finished off.
         close = 0.4 if near_bar(mine, target) else 0.0
         return (1, -(over + dirty + close + days / 14.0))
+    # Attempted katas are tier 1 and sort ahead of the never-attempted tier 2, worst
+    # first. `close` only does its job now: while never-attempted outranked everything,
+    # a kata one good rep from its bar could never win a Saturday in the weeks that
+    # mattered.
 
     pool.sort(key=score)
     kata = pool[0]

@@ -247,19 +247,18 @@ check-frozen:
 # collectable. Without this a suite with a syntax error passed every check and shipped green,
 # and you found out mid-rep with the clock running.
 #
-# --collect-only imports the module and enumerates its tests without running them, which is
-# the closest analogue to compiling a C suite without linking it. A suite that collects zero
-# tests is a suite that is not there.
-FROZEN_PY := $(sort $(patsubst $(KATAS)/%/tests/,%,$(dir $(wildcard $(KATAS)/*/tests/*.py))))
-
+# This used to be a shell loop that put src/ on PYTHONPATH and ran --collect-only. That is
+# NOT the analogue of compiling a C suite without linking it, which is what the comment here
+# used to claim: --collect-only *imports* the test module, which imports the implementation,
+# so it is the analogue of LINKING. It passed only while every Python suite was still the
+# scaffolded stub that imports nothing but pytest, and would have gone red — permanently, in
+# CI, where src/ never exists — on the first real suite written in the day-0 build session.
+#
+# tools/check_frozen_py.py supplies the missing half: it generates a stand-in for whatever
+# the suite imports and cannot resolve, then collects against that. The stand-in is what
+# stands where a C header stands. See that file's docstring.
 check-frozen-py:
-	@if [ -z "$(FROZEN_PY)" ]; then echo "no Python test suites yet — see SETUP.md"; fi
-	@for m in $(FROZEN_PY); do \
-	    echo "=== $$m (frozen, pytest) ==="; \
-	    PYTHONPATH=$(KATAS)/$$m/src $(PY) -B -m pytest -q -p no:cacheprovider \
-	        --collect-only $(KATAS)/$$m/tests > /dev/null || exit 1; \
-	done
-	@echo "frozen Python suites collect"
+	@$(PY) tools/check_frozen_py.py
 
 list:
 	@echo "with an implementation: $(if $(ALL_MODULES),$(ALL_MODULES),none yet)"

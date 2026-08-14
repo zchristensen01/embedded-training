@@ -97,7 +97,7 @@ Seven, all run by CI on every push and all runnable together with `make check`.
 | Check | Proves |
 |---|---|
 | `check-frozen` | Every frozen C header parses standalone and every frozen C suite compiles against it, gcc and clang. Python modules have no header and are not compiled — `make test` runs them under pytest instead |
-| `check-frozen-py` | Every frozen Python suite imports and collects under pytest. src/ is gitignored so nothing can be run — collection is the closest analogue to compiling a C suite without linking it |
+| `check-frozen-py` | Every frozen Python suite imports and collects under pytest, against a generated stand-in for the kata's own module. src/ is gitignored so there is nothing to import; the stand-in is what stands where a C header stands, which is what makes this the real analogue of compiling a C suite without linking it |
 | `check-log` | `logs/log.tsv` is well formed: header, fields, date order, known modules, real variants |
 | `check-calendar` | Schedule, derived build plan, timer blocks, variants and retirement feasibility all agree |
 | `check-coverage` | The spec and the coverage map describe exactly the same set of capabilities, each group numbered from 1 with no gaps |

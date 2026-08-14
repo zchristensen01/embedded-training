@@ -9,7 +9,7 @@
   compile. `write + compile` as a share of total is your C syntax fluency in one number, and
   `write + run` is the Python one. `make report` prints them apart, never combined.
 - `ai-use.tsv` — one line every time you use AI. date, used_for, rule, note. Review it weekly.
-  If this file is growing in week 6, the rules in PRACTICE_SYSTEM.md aren't being followed.
+  If this file is growing in week 8, the rules in PRACTICE_SYSTEM.md aren't being followed.
 - `WEEKLY_REVIEW.md` — copy the block every Sunday.
 - `rehearsal.tsv` — every behavioural take: date, story, seconds, rating, note. Written by
   `make rehearse`. Three takes rated 1 on three different days is a ready story.

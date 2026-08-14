@@ -1,7 +1,7 @@
 # Kata 11 — test_harness_py
 
 > **Before your first rep you owe this module its test suite** in `tests/`, in pytest,
-> written by you. It is the one module with no build session — week 7's main block is five
+> written by you. It is the one module with no build session — week 9's main block is five
 > days on pytest itself and this kata is the artifact those days produce. `make drill`
 > refuses a module whose tests do not exist. Frozen once written: you do not edit it during
 > a rep, only your `src/`, which is deleted each time. See
@@ -15,7 +15,7 @@ against a simulated device, then against real hardware over serial.
 A representative embedded test-automation posting asks for Python and Bash test development,
 pytest, CI/CD, and hardware-in-the-loop testing with custom test rigs. The framework and CI
 half of that transfers from backend work; the raw-Python half does not, which is what the
-**Y** group and the three `*_py` katas exist to fix. This kata plus the week 8 harness is the
+**Y** group and the three `*_py` katas exist to fix. This kata plus the weeks 10–11 harness is the
 hardware half — the one that cannot be claimed without having built it.
 
 It is a kata rather than only a project because the *structure* — fixture, device abstraction,

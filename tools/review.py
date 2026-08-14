@@ -116,7 +116,15 @@ def main():
     topic = None
     if "--topic" in args:
         topic = args[args.index("--topic") + 1].lower()
-        cards = [c for c in cards if topic in c["topic"].lower()]
+        matched = [c for c in cards if topic in c["topic"].lower()]
+        # A topic no card carries is not the same fact as a topic with nothing due, and
+        # reporting both as "Nothing due" made a typo — or a stale name off the calendar's
+        # weekly focus — read as "you have finished this one".
+        if not matched:
+            known = sorted({c["topic"] for c in cards})
+            sys.exit(f"No card carries the topic '{topic}'.\n"
+                     f"Topics in the decks: {', '.join(known)}")
+        cards = matched
 
     limit = 20
     for a in args:

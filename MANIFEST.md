@@ -24,9 +24,9 @@ Every file, what it's for, whether you edit it.
 |---|---|---|
 | `INTERVIEW_REQUIREMENTS.md` | The research findings + every numbered capability. The spec | No |
 | `COVERAGE.md` | Who owns each capability — Mimic vs a mechanism in here | No |
-| `CALENDAR.md` | All 70 days: timers, katas, main blocks. Relative labels, committed | `make calendar` |
-| `CALENDAR.dated.md` | The same 70 days with your real dates. **Gitignored** | `make dates` |
-| `CURRICULUM.md` | Why the ten weeks are shaped this way, and the week 6 gate | No |
+| `CALENDAR.md` | All 98 days: timers, katas, main blocks. Relative labels, committed | `make calendar` |
+| `CALENDAR.dated.md` | The same 98 days with your real dates. **Gitignored** | `make dates` |
+| `CURRICULUM.md` | Why the fourteen weeks are shaped this way, and the week 8 gate | No |
 | `REPOS.md` | The three-repo layout on disk, naming, what `mimic-hil` is | No |
 
 ## `practice/` — the daily mechanics
@@ -70,7 +70,7 @@ rotation — `make check-calendar` prints it.
 
 | File | What it is |
 |---|---|
-| `hil-harness/BRIEF.md` | Week 8 flagship spec: acceptance criteria for T16–T21, structure, build order |
+| `hil-harness/BRIEF.md` | Weeks 10–11 flagship spec: acceptance criteria for T16–T21, structure, build order |
 
 The project itself lives in its own repo, `~/embedded/mimic-hil`. This is only the spec.
 
@@ -91,6 +91,7 @@ The project itself lives in its own repo, `~/embedded/mimic-hil`. This is only t
 | `bughunt.py` | Plants one mutation in an old solution of yours, and times you finding it |
 | `today.py` | Prints today's assignment, entirely from `schedule.py` |
 | `check_log.py` | Validates `logs/log.tsv` against the schema `make done` writes. CI runs it |
+| `check_frozen_py.py` | Collects every frozen Python suite against a generated stand-in, so it can be checked without an implementation. CI runs it |
 | `check_decks.py` | Validates every deck tag against the capability list. CI runs it |
 | `check_generated.py` | Proves the generated files still match their generators. CI runs it |
 
@@ -116,6 +117,6 @@ The project itself lives in its own repo, `~/embedded/mimic-hil`. This is only t
 | What | Where | Why |
 |---|---|---|
 | Mimic | `~/embedded/mimic` — its own repo | This repo schedules it and tracks what it covers; it contains none of it. Capabilities owned there are reported as *tracked outside this repo*, not as done |
-| The HIL harness | `~/embedded/mimic-hil` — its own repo, week 8 | Public portfolio piece; needs its own clean front page |
+| The HIL harness | `~/embedded/mimic-hil` — its own repo, weeks 10–11 | Public portfolio piece; needs its own clean front page |
 | Throwaway C | `~/embedded/scratch` — not in git | So there is never a reason to commit junk to a real repo |
 | Job-search material | `plan/APPLICATIONS.md`, `plan/private/` — both gitignored | This repo measures capability. It contains nothing about where to apply or what to ask for |

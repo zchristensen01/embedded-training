@@ -51,16 +51,15 @@ argument — picks your weakest built module)` is the command `make drill`, with
 it. If you genuinely want to pin the deck to one topic, that is `make review N="--topic
 interrupts"`.
 
-**Two katas, two languages, most weekdays.** The C rep and the Python rep are both
-`make drill`, back to back, from week 1. They are interleaved rather than phased on purpose:
-an interview loop does not block by language, and identifying which kind of problem you are
-looking at before solving it is part of what is being trained. Tuesday and Thursday are C
-only, at 90 minutes; the three days that carry a Python rep are 115. Keeping two weekdays
-clear is what stops this becoming two full rotations.
+**Two katas every weekday.** Both are `make drill`, back to back, from week 1. On Monday,
+Wednesday, Thursday and Friday that is a C rep beside a Python one — interleaved rather than
+phased on purpose, because an interview loop does not block by language and identifying which
+kind of problem you are looking at before solving it is part of what is being trained.
+Tuesday is two short C reps instead. Every weekday is 115 minutes.
 
-**"Main block" is not in this repo.** For weeks 1–6 it is the Mimic robotics project in its
-own repo; from week 7 it is the harness work. (Week 7 is pytest, not Python — the language has
-been drilled in its own daily block since week 1, so week 7 starts from someone who can already
+**"Main block" is not in this repo.** For weeks 1–8 it is the Mimic robotics project in its
+own repo; from week 9 it is the harness work. (Week 9 is pytest, not Python — the language has
+been drilled in its own daily block since week 1, so week 9 starts from someone who can already
 write it and is learning the test framework.) This repo *schedules*
 those hours and tracks what they cover — it does not contain them. See
 [`plan/REPOS.md`](plan/REPOS.md).
@@ -119,8 +118,8 @@ This is the part that decides whether any of it counted.
 - [ ] **Log anything the tools could not see, by hand.** Mimic hours, bench work, project
       time: one row in `logs/log.tsv` in the same format. `make check-log` validates it.
 - [ ] **Log any AI use** in `logs/ai-use.tsv` — date, what for, which rule it fell under.
-      Every use, including this repo's tooling. The count should fall over ten weeks; if it
-      is growing by week 6, the rule is not being followed.
+      Every use, including this repo's tooling. The count should fall over the fourteen weeks;
+      if it is growing by week 8, the rule is not being followed.
 - [ ] **`git commit`.** The log files are the deliverable. An uncommitted week of practice
       is an unmeasured week of practice.
 
@@ -133,11 +132,11 @@ the calendar, so they live in exactly one place and are not repeated here.
 
 | Day | Blocks, in order | Notes |
 |---|---|---|
-| **Mon, Fri** | kata (sprint) → **Python kata** → main → deck → log and commit | Short C modules only |
-| **Tue, Thu** | kata (sprint, assigned) → main → deck → log and commit | C only. The two short days |
+| **Mon, Thu, Fri** | kata (sprint) → **Python kata** → main → deck → log and commit | Short C modules only |
+| **Tue** | kata (sprint) → **a second sprint kata** → main → deck → log and commit | C only, twice |
 | **Wed** | kata (**long**) → **Python kata** → main → deck → log and commit | The modules that need real time |
 | **Sat** | kata (**adaptive**, no argument) → main → rehearsal *(from week 3)* | **No deck.** The only day with no assigned module |
-| **Sun** | kata (long, assigned) → weekly review → full deck pass → **then see below** | Light, except during a build session. Tuesday and Thursday are the two shortest days |
+| **Sun** | **two** long katas → weekly review → full deck pass → **then see below** | The long-kata day. Heavier during a build session |
 
 Saturday's rep has no assigned module on purpose. `make drill` with no arguments picks by
 worst recent time, then longest since the last rep, then never attempted — so one day a week
@@ -148,9 +147,9 @@ which is where a module's fourth and fifth reps come from.
 
 ## Sunday, after the deck pass
 
-**Weeks 1–3 — a kata build session.** The calendar names the modules. See below.
+**Weeks 1–5 — a kata build session.** The calendar names the modules. See below.
 
-**Week 4 onward — a design prompt and rehearsal:**
+**Week 6 onward — a design prompt and rehearsal:**
 
 - [ ] `make prompt` — draws one of the 60 "how would you test X" subjects and opens a
       pre-scored answer file. Ten minutes written, then said aloud. **Fill in the rubric
@@ -161,6 +160,16 @@ which is where a module's fourth and fifth reps come from.
       takes rated strong **on three different days**; three takes in one afternoon is one
       rehearsal. Fill in `practice/rehearsal/STORIES.md` before the first take — the file
       ships as a skeleton and the stories have to be yours.
+
+**Weeks 6, 8, 10 and 12 — an architecture drill as well**, between the two above:
+
+- [ ] `make design` — 45 minutes to invent a subsystem, not to test one. Draw the partition,
+      put numbers on it, name the failure and the safe state, then argue against yourself.
+      **Fill in both the total and the axis-8 pushback line**; E30 needs the total at 12+/16
+      *and* axis 8 non-zero, because seven perfect axes come to 14 and a bar whose point is
+      surviving pushback should not be meetable without being pushed. The command ends by
+      telling you to run `make rehearse S=B11` on the design you just wrote — that is where
+      B11's material comes from, and it is the whole reason the two sit next to each other.
 
 **Every Sunday, either way:**
 

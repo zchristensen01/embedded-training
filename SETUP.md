@@ -18,7 +18,7 @@ The repo is set up and the tooling works. What is left is picking a start date:
 
 ```bash
 date +%F > logs/.start_date        # use the Monday you're starting
-make dates                         # plan/CALENDAR.dated.md — 70 days, real dates
+make dates                         # plan/CALENDAR.dated.md — 98 days, real dates
 make today                         # should now print week 1
 ```
 
@@ -78,7 +78,7 @@ test case. If it does, you have outsourced the exact thing you are selling.
 
 ---
 
-## The rest of the builds — three Sunday sessions, weeks 1 to 3
+## The rest of the builds — five Sunday sessions, weeks 1 to 5
 
 **The build order is not written down here, on purpose.** It is derived from the calendar's
 kata rotation and printed in the **Build plan** section at the top of
@@ -96,10 +96,12 @@ it will not realistically happen, no kata whose target time is longer than the b
 scheduled into, and no kata that owns a capability's evidence bar without enough slots to reach
 it.
 
-Several sessions rather than one a week. A weekly build slot is a running dependency — miss one
-Sunday and the next week's rotation has nothing to draw from. Weeks 1 to 3 are the heavy weeks
-of the ten, and after week 3 there is nothing left to build. The generated calendar prints the
-real hours per week; don't trust a number typed into a document, including this one.
+One session a week for five weeks, and that is a running dependency — miss a Sunday and the
+next week's rotation is short. It is the price of a Sunday that also carries two long reps:
+bigger sessions put the day over its cap, and `make check-calendar` says so. Weeks 1 to 5 are
+the heavy weeks of the fourteen, and after week 5 there is nothing left to build. The
+generated calendar prints the real hours per week; don't trust a number typed into a
+document, including this one.
 
 **Every kata ships with a written `BRIEF.md` and `VARIANTS.md`.** For each one you owe the
 tests, and for the C ones the header as well. Read the BRIEF's "What to test" section — it lists the
@@ -114,7 +116,7 @@ Some katas do not follow the standard build:
   header. There is no `include/` directory and nothing to compile: the contract is the API
   written out in the BRIEF, and the frozen pytest suite is what enforces it. `make
   check-frozen` skips them; `make test MODULE=<name>` runs them under pytest.
-- **`test_harness_py`** has no build session at all. Week 7's main block is the harness work,
+- **`test_harness_py`** has no build session at all. Week 9's main block is the harness work,
   and this kata is the artifact those days produce — giving it a
   separate slot would mean writing the same suite twice. It is the one module whose build *is*
   the main work. `make check-calendar` still checks it, and at day resolution rather than week

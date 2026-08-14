@@ -1,6 +1,6 @@
 # Project · mimic-hil
 
-The Week 8 flagship. Its own public repo (`~/embedded/mimic-hil`), not a folder in here — this
+The weeks 10–11 flagship. Its own public repo (`~/embedded/mimic-hil`), not a folder in here — this
 BRIEF is the spec, the repo is the artifact.
 
 **Owns capabilities T16–T21, T24, T26 and T28.** Those are the nine items in
@@ -95,7 +95,7 @@ mimic-hil/
 └── .github/workflows/hil.yml
 ```
 
-## Build order — Week 8
+## Build order — weeks 10–11
 
 Build against the fake first. A harness you can only run with hardware attached can't be
 developed on a train and can't be reasoned about when the board misbehaves. The fake is the

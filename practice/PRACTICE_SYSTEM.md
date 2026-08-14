@@ -112,7 +112,7 @@ and, once you have enough reps, compares your first reps against your recent one
   implementation on the next rep.
 
 **`write` + `compile` combined is your syntax fluency in one number** (`write` + `run` for a
-Python rep). Watch it fall. Under 40% by week 10 is the target.
+Python rep). Watch it fall. Under 40% by week 14 is the target.
 
 Missing a lap call isn't a problem — `make done` attributes whatever is left to the next phase in
 sequence. Skipping laps entirely just means you get totals without the diagnosis.
@@ -120,9 +120,10 @@ sequence. Skipping laps entirely just means you get totals without the diagnosis
 ### Selection — the default chooses, you can always override
 
 `make drill` with no arguments picks by: worst recent time first, then longest since last rep,
-then never attempted, then closest to meeting its bar. It won't repeat a module within three
-days if alternatives exist. That default is deliberate — left to choose every day, you'd avoid
-`pool_allocator` for ten weeks.
+and a module one good rep from its bar gets a nudge up that order. A module you have never
+attempted comes last, because the rotation already schedules its first rep. It won't repeat a
+module within three days if alternatives exist. That default is deliberate — left to choose every day, you'd avoid
+`pool_allocator` for fourteen weeks.
 
 **But nothing stops you choosing.** `make drill KATA=fsm` runs `fsm` right now, whatever the
 calendar says, and picks the variant you've done least recently. `make drill KATA=fsm VARIANT=v4`
@@ -232,9 +233,17 @@ starts a clock. You find it.
 
 Every other format here starts from an empty file. Real take-homes do not: Tesla's is reported
 to hand you a broken C module and ask you to find the errors, and Intel runs a dedicated
-debug round. This is the only mechanism that practises reading code you did not write today,
-and it uses your own old code because a corpus of broken C written by an AI would be an
-AI-written exercise — which the rules below forbid for good reason.
+debug round. This is the closest thing here to that, and it uses your own old code because a
+corpus of broken C written by an AI would be an AI-written exercise — which the rules below
+forbid for good reason.
+
+**Be clear about what it is not.** The code is yours, so you are diffing against your own
+memory rather than reading a stranger's intent out of their assertions — a related skill and
+the easier one. `plan/INTERVIEW_REQUIREMENTS.md` lists "making a suite of red tests green" as
+still open for exactly this reason, and the weeks 13–14 mock take-homes are the only exposure.
+`make hunt` is also not on the calendar on purpose: it needs a snapshot of a rep you have
+already done, so it belongs to free practice. Run it when `make snapshots` shows something a
+few weeks old — that is when it stops being code you remember.
 
 Mutations are chosen to be *silent*: a `<` becomes `<=`, a `volatile` disappears, a struct
 format's endianness prefix flips. None of them raise. `make hunts` shows which kinds keep
@@ -254,14 +263,22 @@ afternoon is one rehearsal, not three, and the point is that the story survives 
 `tools/rehearse.py:ready()` is the single definition of that; `make progress` imports it rather
 than keeping a second opinion.
 
-Eleven stories at three takes each is thirty-three takes. The calendar schedules three on
-Sunday and one on Saturday from week 3 on, rising to two on Saturday from week 8 — thirty-five
-in total, which is how the arithmetic closes with a little slack.
+Eleven stories at three takes each is thirty-three takes **rated strong**. The calendar
+schedules three on Sunday and one on Saturday from week 3 on, rising to two on Saturday from
+week 11, plus the takes inside the weeks 12, 13 and 14 main blocks.
 
 **Do not take that number on trust.** It stopped closing once, silently, when B11 was added to
 a schedule sized for ten stories and nothing recounted. `make check-calendar` now proves it:
 check #9 reads the story list out of `STORIES.md`, multiplies by three, and fails the build if
 the calendar schedules fewer takes than that. Add a story and the check tells you to add slots.
+
+Two things that check cannot do for you. It counts takes *scheduled*, not takes rated strong,
+so the total only closes the bar if roughly three in four land — `make check-calendar` prints
+the implied rate as a note whenever the margin gets thin, and the shortfall, if there is one,
+comes out of free practice. And it once under-counted in the other direction: the late-week
+takes were written as prose rather than `xN`, so three takes read as one and the calendar
+looked thinner than it was. Both halves of that are why the totals are derived and printed
+rather than typed into this paragraph.
 
 Fill in `STORIES.md` before the first take; an unwritten story wanders.
 
@@ -306,7 +323,7 @@ gap is the whole reason this repo exists.
 ### The log
 
 `logs/ai-use.tsv` — one line per use: date, what for, which rule. Reviewed weekly. If lines are
-appearing under "explanations" three times a day in week 6, you've drifted. The count should fall.
+appearing under "explanations" three times a day in week 8, you've drifted. The count should fall.
 
 ---
 
@@ -319,7 +336,7 @@ appearing under "explanations" three times a day in week 6, you've drifted. The 
 1b. **Phase breakdown.** `write` + `compile` as a share of total. This is the number that most
    directly measures the gap you're fixing.
 2. **Clean-first-compile rate.** The best single proxy for syntax fluency. Above 40% by week 4,
-   above 55% by week 6, above 70% by week 10.
+   above 55% by week 8, above 70% by week 14.
 3. **Reps per week.** Consistency beats intensity. The calendar schedules ten — seven C and
    three Python for most of the plan, shifting to six and four in weeks 7, 8 and 10 when
    `test_harness_py` enters the rotation. Nine is the target, because one missed day a week

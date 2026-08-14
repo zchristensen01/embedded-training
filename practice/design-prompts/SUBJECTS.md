@@ -125,7 +125,7 @@ forty.
 ## "Explain your design" prompts
 
 Different skill: defending decisions on something you built. Rehearse three of these per session
-in Week 8, out loud, recorded.
+in week 12, out loud, recorded.
 
 1. Walk me through your ring buffer. Why that full/empty scheme and not the other one?
 2. Why a power-of-two size? What did that buy you and what did it cost?

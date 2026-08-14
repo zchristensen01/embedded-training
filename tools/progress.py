@@ -15,7 +15,8 @@ in plan/INTERVIEW_REQUIREMENTS.md is met by something in logs/ or by deck state:
 
   C  kata    three consecutive clean reps at or under target, across three variants
   C1 log     the clean-first-compile rate itself, over enough reps to mean something
-  E  deck    every card tagged with that ID is in Leitner box 4 or 5
+  E  deck    80% of the cards tagged with that ID are in box 4 or 5, min 3 (see
+             DECK_PROPORTION — it used to be all of them, which punished adding cards)
   H  deck    same as E, where a card owns it. Bench items are Mimic's and say so
   T  deck    same as E. Project items need the harness repo and say so
   T1 prompts enough scored answers, and the recent ones scoring at the bar
@@ -59,6 +60,20 @@ GROUPS = {"C": "C language and syntax fluency", "Y": "Python fluency",
 GRP = "[" + "".join(GROUPS) + "]"
 
 MASTERED_BOX = 4          # a deck card counts once it reaches box 4
+
+# How many of a capability's cards have to be at MASTERED_BOX for it to be met.
+#
+# This was "all of them", which made the bar wildly uneven and pointed the incentive the
+# wrong way. H7 has one card and needed one; T11 has nine and needed nine; Y1 has twenty
+# and needed twenty. Worse, *adding a good card to a capability made that capability
+# harder to meet* — so the system that tells you to run `make card` whenever something
+# surprises you was quietly punishing you for doing it.
+#
+# A proportion with a floor fixes both. The floor matters because 80% of two cards is two,
+# and a capability resting on one or two cards should not be meetable on a single lucky
+# card; the min() matters because a capability cannot need more cards than it has.
+DECK_PROPORTION = 0.8
+DECK_FLOOR = 3
 
 # C1's bar is stated in the spec as a rate, not as a retired kata: "70%+ clean-first-
 # compile rate over 20 logged reps". It is the only capability measured across every
@@ -197,6 +212,15 @@ def bar_for(cid, owners):
     if owners & {"M0", "M1"}:
         return "Mimic"
     return ""
+
+
+def cards_needed(n):
+    """How many of a capability's n cards must be at MASTERED_BOX for it to be met.
+
+    One definition, because check_decks.py reports it and score() enforces it, and a
+    second copy would drift. See DECK_PROPORTION for why it is a proportion.
+    """
+    return max(min(DECK_FLOOR, n), -(-int(DECK_PROPORTION * 100) * n // 100))
 
 
 def deck_cards():
@@ -366,8 +390,11 @@ def score():
             detail.append("bench evidence lives in Mimic, not here")
 
         def deck_met():
-            return bool(card_ids) and all(
-                st.get(i, {}).get("box", 0) >= MASTERED_BOX for i in card_ids)
+            if not card_ids:
+                return False
+            at_box = sum(1 for i in card_ids
+                         if st.get(i, {}).get("box", 0) >= MASTERED_BOX)
+            return at_box >= cards_needed(len(card_ids))
 
         def kata_met():
             return bool(katas) and all(
@@ -502,9 +529,15 @@ def render_md(results):
       f"{len(deferred)} deferred by decision. {total} total.")
     a("")
     a("A capability is met only when its evidence bar is met and logged — three clean "
-      "kata reps at target across three variants, every tagged deck card in Leitner box "
+      "kata reps at target across three variants, most of a capability's deck cards in box "
       f"{MASTERED_BOX} or higher, or three strong takes of a story on three different "
-      "days. Nothing here is self-assessed.")
+      "days. Nothing here is a rating of how well something is known.")
+    a("")
+    a("The kata and rubric bars are measured: a clock, a compiler and a score out of 16. "
+      f"The deck bar is graded by you, one card at a time — box {MASTERED_BOX} means you "
+      "called yourself correct on four separate days, spaced out, with a wrong answer "
+      "sending the card back to the start. That is real evidence and it is not the same "
+      "kind of evidence. `plan/COVERAGE.md` says which bars are which.")
     a("")
     a("\"Tracked outside this repo\" means exactly that: the mechanism that would prove "
       "it lives somewhere this repo cannot see, so it is reported rather than counted. "

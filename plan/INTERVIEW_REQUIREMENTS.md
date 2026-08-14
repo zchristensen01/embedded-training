@@ -149,7 +149,7 @@ half wrong, and it is the half that matters:** Tesla schedules a standalone 90-m
 assessment for QA and test roles, Qualcomm runs a live round on decorators, lambda and
 map/filter/reduce, and a candidate reported being cut in round two on a written Python exam.
 Framework thinking transfers. Live syntax under observation does not. That finding is why the
-**Y** group exists and why Python is drilled from week 1 rather than week 7.
+**Y** group exists and why Python is drilled from week 1 rather than week 9.
 
 **What hurts:** a resume reading as pure web/SaaS with no low-level signal, and leading with
 "LLM integration," which reads as prompt engineering unless it sits under systems depth. `[INFERRED]` — the first pass flagged the LLM-integration read as
@@ -236,7 +236,7 @@ evidence bar that counts as proof. `plan/COVERAGE.md` says who owns each one.
 ## Y — Python fluency
 
 The T&I track's live-coding group, and the one this repo was originally wrong about. The earlier
-research assumed Python transferred wholesale from web work and scheduled it from week 7. It
+research assumed Python transferred wholesale from web work and scheduled it from week 9. It
 half-transfers: framework design, Docker and CI carry over cleanly, and raw syntax under
 observation does not. Tesla schedules a standalone 90-minute Python assessment for QA and test
 roles; Qualcomm runs a live round on decorators, lambda and map/filter/reduce. This group is to
@@ -244,7 +244,7 @@ Python what C1–C12 are to C, and it is drilled from week 1 for the same reason
 
 | ID | I can... | Tested by | Evidence bar |
 |---|---|---|---|
-| Y1 | Explain Python's trap-level internals — mutable default arguments, `is` vs `==` and the small-int cache, generators vs lists, closure late binding, the GIL for CPU- vs I/O-bound work, `functools.wraps`, context managers, shallow vs deep copy — **and predict the output of an unseen snippet cold** | Live rapid-fire "what does this print and why" | Every tagged card in box 4+, including the snippet cards, said aloud with the trap named — no interpreter, no reference |
+| Y1 | Explain Python's trap-level internals — mutable default arguments, `is` vs `==` and the small-int cache, generators vs lists, closure late binding, the GIL for CPU- vs I/O-bound work, `functools.wraps`, context managers, shallow vs deep copy — **and predict the output of an unseen snippet cold** | Live rapid-fire "what does this print and why" | 80% of its cards in box 4+, the snippet cards included, said aloud with the trap named — no interpreter, no reference |
 | Y2 | Parse and build binary telemetry on the host: correct `struct` format and endianness, length validated before unpacking, signed vs unsigned, frames reassembled across read boundaries | Take-home, live decode-this-packet | Three consecutive clean reps at target, three variants |
 | Y3 | Write domain scripting under time pressure: stream-parse a file larger than RAM, reduce it, and exit with the right code — without loading it all | Live coding, take-home | Three consecutive clean reps at target, three variants |
 
@@ -373,11 +373,11 @@ behind it is worse than an admitted hole:
 - **Making a suite of red tests green.** *Still open.* `make hunt` finds one planted token in
   code you wrote. Take-homes increasingly ship with a full failing suite you have to satisfy —
   SpaceX's is described that way — which is a different exercise: you read someone else's
-  intent out of their assertions rather than diffing against your own memory. Week 10's mock
-  take-home is the only exposure and it is one day.
+  intent out of their assertions rather than diffing against your own memory. The weeks 13
+  and 14 mock take-homes are the only exposure, and week 14's is the one that uses this shape.
 - **C++.** Scoped out at §2 and worth naming here rather than leaving in an aside: the research
   says Anduril prefers it, and Mimic gives volume in C++ rather than C. Out of scope is a
-  decision, not an oversight, but it is a real edge of what these ten weeks buy.
+  decision, not an oversight, but it is a real edge of what these fourteen weeks buy.
 - **Designing something from scratch.** *Now covered, by `make design`.* This was not on the
   original list at all and turned out to be a dedicated interview round. See E30.
 
@@ -393,7 +393,8 @@ A capability is **done** when the evidence bar is met and logged — not when yo
   Y1 is the deck. "Clean" for a Python rep means it ran first try with no traceback — a
   different claim from clean-first-compile, which is why `make report` prints the two rates
   separately and neither is averaged into the other.
-- **E items:** in box 4 or 5 of the deck via `make review`, meaning you've said it correctly
+- **E items:** 80% of the capability's cards in box 4 or 5 via `make review` — all of them
+  where it has fewer than three — meaning you've said it correctly
   across several spaced sessions including the trap. E30 is the exception: its bar is three
   scored architecture drills via `make design`.
 - **H items:** a mix — some are deck cards, some need a real capture or bench session.

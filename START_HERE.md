@@ -86,13 +86,13 @@ What accumulates is the *lesson* and the *time*, not the code.
 
 ```bash
 date +%F > logs/.start_date     # the Monday you're starting
-make dates                      # plan/CALENDAR.dated.md — 70 days with real dates
+make dates                      # plan/CALENDAR.dated.md — 98 days with real dates
 make today                      # what to do right now
 ```
 
 `plan/CALENDAR.md` is committed and carries relative labels (`Day 1 · Mon`), because
-your start date is yours and not the repo's. `make dates` writes the same seventy days
-with real dates to a gitignored file next to it — that is the one to open, or to paste
+your start date is yours and not the repo's. `make dates` writes the same ninety-eight
+days with real dates to a gitignored file next to it — that is the one to open, or to paste
 into a real calendar. `make calendar` regenerates the committed file and is only needed
 after editing `tools/schedule.py`.
 
@@ -102,9 +102,9 @@ Then read, once, in this order — and then stop reading:
 2. **`plan/INTERVIEW_REQUIREMENTS.md`** — the research, and the capability list.
 3. **`plan/COVERAGE.md`** — which mechanism owns each capability.
 4. **`practice/PRACTICE_SYSTEM.md`** — how practice is made repeatable and AI-proof.
-5. **`plan/CURRICULUM.md`** — ten weeks, hour by hour.
+5. **`plan/CURRICULUM.md`** — fourteen weeks, hour by hour.
 
-`plan/CALENDAR.md` then tells you what to do on each of the seventy days. It is
+`plan/CALENDAR.md` then tells you what to do on each of the ninety-eight days. It is
 generated, not written, so it cannot drift out of step with the rest.
 
 ## The daily loop
@@ -136,7 +136,7 @@ AI may write Makefiles, CI config, the tooling in `tools/`, and test *runners*. 
 not write a single **test case**, any kata implementation, or any project code. "How
 would you test this" is a top-three question in both tracks — outsourcing the test
 suite means outsourcing the thing you are selling. Every use gets logged in
-`logs/ai-use.tsv`, and the count should fall over the ten weeks.
+`logs/ai-use.tsv`, and the count should fall over the fourteen weeks.
 
 That log is not just self-discipline. The research found a real company take-home that requires
 candidates to submit a `PROMPTS.md` documenting the AI they used — the industry is moving to
@@ -154,16 +154,18 @@ make progress    every capability scored against its evidence bar
 Four numbers matter, and all four come from the logs rather than from self-assessment:
 
 - **Clean-first-compile rate** — the best single proxy for C syntax fluency. 40% by
-  week 4, 55% by week 6, 70% by week 10. Python reps are excluded from it and reported
+  week 6, 55% by week 8, 70% by week 14. Python reps are excluded from it and reported
   separately: a Python kata has no compile step, so "clean" there is a different claim
   about a different skill, and one number covering both would measure neither.
 - **`write` + `compile` as a share of total rep time** — syntax fluency in one number, and
-  `write` + `run` for a Python rep. Under 40% by week 10. `make report` prints the two apart.
+  `write` + `run` for a Python rep. Under 40% by week 14. `make report` prints the two apart.
 - **Reps per week** — consistency beats intensity. The calendar schedules ten a week: seven C
   and three Python for most of the plan, shifting to six and four in weeks 7, 8 and 10 when
   `test_harness_py` comes into the rotation. Nine is the target, because one missed day is real
   life and two is a drift.
 - **Capabilities met** — `make progress`. Should climb steadily, not in a rush at the end.
+  The kata and rubric bars behind it are measured; the deck bar is graded by you, spaced out
+  so a single generous `y` cannot carry a card. `plan/COVERAGE.md` says which is which.
 
 If all four are flat and you feel like you are improving, you are not. That is what
 the logs are for.

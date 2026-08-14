@@ -97,7 +97,7 @@ judgement (usability, feel, audible or visual defects), or when the interface is
 
 ## Behavioural — often the deciding round
 
-Write these out in STAR form in Week 8. Real examples reported from these interviews:
+Write these out in STAR form in week 12. Real examples reported from these interviews:
 
 1. A time you struggled with a problem and how you got through it.
 2. A time you had a conflict with a coworker.

@@ -12,7 +12,7 @@ Two systems are running at once and they do different jobs:
 - **This repo** builds interview performance. It produces **speed, recall, and evidence**.
   Fast, repeated, measured.
 
-Neither substitutes for the other. The most common way to waste the next ten weeks is to assume
+Neither substitutes for the other. The most common way to waste the next fourteen weeks is to assume
 that because Mimic taught you something, you can perform it cold in fifteen minutes with someone
 watching. You can't. That's a separate skill and it only comes from reps.
 
@@ -61,7 +61,7 @@ Every mechanism is repeatable and recorded, not just the katas:
 
 ## What Mimic Stage 0 covers, and what it therefore replaces
 
-Stage 0 is the target. Six weeks. It replaces four standalone projects from the original plan,
+Stage 0 is the target. Eight weeks. It replaces four standalone projects from the original plan,
 which are now **deleted, not deferred**:
 
 | Deleted project | Replaced by | Why the replacement is better |
@@ -200,7 +200,7 @@ where the robot earns its place in the plan.
 | T22 host-side testing of firmware C | **D** + M0 S12 | The deck is the bar. S12's host-side Unity tests on the PID and encoder table are the worked example, and the harness's fake transport is the same idea one layer up |
 | T23 static analysis and MISRA | **D** | `make analyze` puts `gcc -fanalyzer` in front of you daily, which is the habit. The card is the answer |
 | T24 instrument control | **P** | The bar is an instrument driver class in the harness repo. `cli_tool_py` and the deck cards on SCPI synchronisation are reinforcement — you cannot prove this one without a scope on the bench |
-| T25 measurement quality | **D** | **Scoped to the card deliberately.** Calibration and uncertainty get asked; running a Gauge R&R study is metrology coursework and does not belong in ten weeks of interview prep |
+| T25 measurement quality | **D** | **Scoped to the card deliberately.** Calibration and uncertainty get asked; running a Gauge R&R study is metrology coursework and does not belong in fourteen weeks of interview prep |
 | T26 regulated CSV | **P** | The highest-value T addition for a Canada-based candidate: Medtronic and Abbott name IQ/OQ/PQ, GAMP 5 and 21 CFR Part 11 in 5 of 32 postings. The bar is **P** rather than the deck because the stated evidence is a drafted OQ protocol — an artifact, not an answer. Qualifying your own harness is the exercise. The deck card on the same topic is reinforcement |
 | T27 read a C# harness | **Deferred** | **Not scheduled, by decision.** C# appears in 6 of 32 postings but only on the manufacturing-test side. The second research pass says explicitly it is "only worth doing if Intuitive or Medtronic manufacturing is live". Turning it on means reading fluency, not authoring — deferred rather than dropped so `make progress` reports it honestly |
 | T28 reduce and conclude | **P** | What sits behind B4. A test result nobody turned into a conclusion is not a test result. The harness produces the captures |
@@ -252,6 +252,42 @@ postings named DO-178C), **T25** (deck only — a Gauge R&R study is metrology c
 |---|---|---|
 | CAN log filter and 12-bit signal decode | report 2 §3, **LOW** confidence, sourced to a single Tesla posting | **Dropped.** Motorola-vs-Intel bit ordering on a sub-byte signal is real and worth knowing, but it is one posting and the nearest capability is already covered by `log_parser_py` and `binary_frame_py`. Recorded here so the drop is a decision rather than an omission |
 
+### The deck bar is a proportion, not all of them
+
+**Decision, taken deliberately.** A capability whose bar is the deck is met when **80% of its
+cards are in box 4 or higher, with a floor of three** — or all of them, where it has fewer
+than three. `tools/progress.py:cards_needed()` is that rule, and `make decks` prints the
+number beside every capability.
+
+It used to be *every* card, which was wrong in two ways that pulled against each other. It
+made the bars incomparable: H7 has one card and needed one, T11 has nine and needed nine, Y1
+has twenty and needed twenty, so "met" meant something different in each case while the report
+listed them in the same column. And it pointed the incentive backwards — **adding a good card
+to a capability made that capability harder to meet**, in a system whose whole design is to
+prompt you for a card the moment something surprises you. `make done` offers the prompt at the
+end of every rep. It should not be a tax.
+
+The floor of three is what stops the proportion becoming a loophole: 80% of two cards is two,
+but a capability resting on one or two cards should not be provable on a single lucky answer,
+and where the cards do not exist yet the honest answer is that the capability needs more of
+them. Nineteen capabilities currently rest on a single card — `make decks` lists them, and
+that list is the best guide to where the next `make card` should go.
+
+### What the measurement cannot do
+
+Not decisions about the research — decisions about how much the score is worth. Written down
+because "nothing here is self-assessed" is the claim this repo makes loudest, and it is true
+of some bars and not others. Knowing which is which is the difference between a score you can
+show someone and a score you are telling yourself.
+
+| Limit | What it means |
+|---|---|
+| **The deck bar is self-graded.** `make review` reveals the answer and asks "Did you say all of it? [y/N]". Nothing verifies you said it, or that you said the trap | This is the bar for the whole **E** group, most of **H** and **T**, and **Y1** — 34 of the 84 scorable capabilities. The spacing is real evidence: you cannot fake having answered a card correctly across five sessions a fortnight apart, because a wrong answer sends it to box 1 and the interval resets. What is not evidence is any single `y`. Treat a box-4 card as "I have said this correctly on four separate days", which is what it is, and not as "an examiner passed me" |
+| **Append-only is not enforced.** Editing a row in `logs/log.tsv` passes every check | The logs measure consistency rigorously and capability by proxy. `make check-log` validates shape — dates in order, known modules, real variants — not history. A solo practice log cannot do better, and pretending otherwise would be the exact self-deception the rest of this document exists to prevent |
+| **A met kata capability can become unmet.** `kata_retired()` looks at the *last three* reps, and the calendar keeps scheduling a module after it has retired | Retire `ring_buffer` on rep 8, have a bad rep 9, and C5 flips back to "in progress" — correctly by the letter of the bar, surprisingly by the spirit of it, since `make progress` had already said you could do it. The rehearsal bar does not behave this way: `ready()` counts strong takes ever, so B-group capabilities only ever move forwards |
+| **The deck bar needs about 90% accuracy, and no amount of calendar fixes that.** A card reaches box 4 on three correct answers with 1-, 2- and 4-day gaps, and a wrong answer sends it back to box 1 | Simulated against the real 162 cards and the real day shape: at 100% you finish all of them, at 90% about 154, at 80% about 139, at 70% about 100. **Stretching the plan from 70 days to 98 moved that by one card.** It is not a race you can win with more time — boxes 4 and 5 come back every 8 and 16 days, so a wrong answer costs a card a week whenever it happens, and the fraction sitting at box 4+ settles at an equilibrium set by your accuracy rather than climbing toward the deadline. Nothing checks it, because the number that decides it is the one no tool can know in advance. `make stats` is the in-flight signal: cards stuck in boxes 1–2 by week 5 means the method, not the schedule |
+| **`make hunt` is not "code you did not write".** It mutates your own earlier solution | You are diffing against memory rather than reading a stranger's intent. See the Known gaps section of `plan/INTERVIEW_REQUIREMENTS.md`, which lists the real version — making a suite of red tests green — as still open |
+
 ### Recommendations declined
 
 | Recommendation | Decision | Why |
@@ -290,4 +326,4 @@ It is available now rather than a year out, and it doubles as T&I practice, beca
 with no evaluation methodology is not a result — the evaluation is the artifact, not the model.
 
 Slot it into weekend blocks from around Week 4. It is the only part of Mimic beyond Stage 0 worth
-touching inside these ten weeks.
+touching inside these fourteen weeks.

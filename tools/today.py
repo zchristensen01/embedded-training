@@ -48,12 +48,12 @@ def main():
     week = elapsed // 7 + 1
     today = DAYS[date.today().weekday()]
 
-    if week > 10:
-        print("\n  Ten weeks done. Run `make report` and reread the week 10 checks.\n")
+    if week > SCHED.WEEKS:
+        print(f"\n  {SCHED.WEEKS} weeks done. Run `make report` and reread the week 10 checks.\n")
         return
 
     print("\n" + "=" * 70)
-    print(f"  WEEK {week}  ·  {today}, day {elapsed + 1} of 70  ·  {SCHED.PHASE[week]}")
+    print(f"  WEEK {week}  ·  {today}, day {elapsed + 1} of {SCHED.WEEKS * 7}  ·  {SCHED.PHASE[week]}")
     print("=" * 70)
 
     if start.weekday() != 0:
@@ -61,7 +61,7 @@ def main():
         print(f"        the weekday shape are out of step. Starting on a Monday is cleaner.")
 
     rule("-")
-    if week <= 6:
+    if week <= SCHED.MIMIC_WEEKS:
         print(f"  Mimic        {SCHED.MIMIC[week]}")
     print(f"  Main block   {SCHED.main_for(week, today)}")
     print(f"  Deck focus   {SCHED.DECK[week]}")
@@ -85,8 +85,8 @@ def main():
         print("  !! The header and the test suite. You write every case — that is the point.")
         print("  !! See the Build plan section at the top of plan/CALENDAR.md.")
 
-    if week == 6:
-        print("\n  !! WEEK 6 GATE: Stage 0 exit tagged, 55%+ clean rate, 25+ reps.")
+    if week == SCHED.GATE_WEEK:
+        print(f"\n  !! WEEK {SCHED.GATE_WEEK} GATE: Stage 0 exit tagged, 55%+ clean rate, 25+ reps.")
         print("  !! If the clean rate is short, the kata slot has been getting eaten.")
 
     print("\n  Next:  make drill\n")

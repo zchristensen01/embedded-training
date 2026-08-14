@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""schedule.py — generate CALENDAR.md, all 70 days, with timers and kata assignments.
+"""schedule.py — generate CALENDAR.md, all 98 days, with timers and kata assignments.
 
   python3 tools/schedule.py                 to stdout, dated if logs/.start_date exists
   python3 tools/schedule.py 2026-08-17      to stdout, dated from that Monday
@@ -34,6 +34,16 @@ START_FILE = os.path.join(ROOT, "logs", ".start_date")
 
 DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
+# Fourteen weeks, not ten. The kata bar — three consecutive clean reps at target across
+# three variants — needs 12 to 17 reps on a module, and ten weeks could only ever hand out
+# three to ten. Simulated over the old rotation, no C capability retired in more than 48%
+# of runs and six retired in 0%. Ten weeks bought the time curve and not the bar.
+#
+# The four extra weeks buy reps, and the phases stretch to fill them rather than new
+# material being invented: Mimic Stage 0 gets eight weeks instead of six, the harness two
+# instead of one, and interview simulation two instead of one.
+WEEKS = 14
+
 # Wed and Sun are LONG rep days. Mon/Tue/Thu/Fri are SPRINT. Saturday is adaptive and
 # gets a long block, because the picker may hand you anything.
 LONG_DAYS = {"Wed", "Sun"}
@@ -54,9 +64,14 @@ TARGETS = _targets()
 # calendar is asking for something the timer forbids. `--check` enforces block >=
 # target for every scheduled rep, so these two numbers and drill.py's TARGETS can
 # never drift apart silently again.
-SPRINT_BLOCK = 15     # Mon, Tue, Thu, Fri — katas with a target of 12 min or less
-LONG_BLOCK = 28       # Wed, Sun, and Saturday's adaptive rep — everything else
-PY_BLOCK = 25         # the Python rep, every weekday, alongside the C one
+# Every block is STRICTLY longer than the target of anything scheduled into it, and check #7
+# enforces the strict version. Equal is not good enough and used to be allowed: ring_buffer
+# has a 15-minute target and sat in a 15-minute block, so the timer rang exactly at target.
+# You could never log an over-target rep — the rule says stop when it rings — which censors
+# the time curve at the target for the one kata whose curve matters most.
+SPRINT_BLOCK = 18     # Mon, Tue, Thu, Fri — the short C modules
+LONG_BLOCK = 28       # Wed, Sun, and Saturday's adaptive rep — the ones that need real time
+PY_BLOCK = 28         # the Python rep, beside the C one
 
 # A weekday is this long, and the main block is whatever is left after the fixed slots.
 # Writing it as a total rather than hardcoding "90 - BLOCK - 20" in two places means
@@ -71,8 +86,8 @@ PY_BLOCK = 25         # the Python rep, every weekday, alongside the C one
 REHEARSAL_FROM = 3
 SUNDAY_TAKES = 3
 SAT_TAKES = 1
-SAT_TAKES_LATE = 2      # weeks 8-10: the run-up to the interview-simulation week
-SAT_LATE_FROM = 8
+SAT_TAKES_LATE = 2      # from week 11: the run-up to the simulation weeks
+SAT_LATE_FROM = 11
 
 
 def rehearsal_takes(day, week):
@@ -93,123 +108,260 @@ def rehearse_text(n):
     return f"make rehearse x{n}  ({n} stories, out loud, timed)"
 
 
+# The architecture drill — `make design`, which is E30's bar and B11's material.
+#
+# This had NO slot at all: `make design` appeared zero times in seventy days, so the one
+# capability with a mechanism built for it alone could not be met by anyone following the
+# plan, and B11 had nothing to defend. Check #10 now fails the build if that recurs.
+#
+# FOUR slots, not the three the bar asks for. progress.py:designs_met() scores the LAST
+# three, so the extra one is there to absorb a weak first attempt — the same reasoning
+# that gives the rehearsal arithmetic its slack, applied to the mechanism that had none.
+#
+# 45 minutes because that is the round's real length, and Sunday because at 103 minutes it
+# is the lightest day in the plan. This is genuinely new time — about 18 minutes a week
+# averaged over the ten — rather than something taken off Mimic or the harness, both of
+# which are producing evidence of their own.
+DESIGN_BLOCK = 45
+DESIGN_WEEKS = (6, 8, 10, 12)
+
+
+# Stage 0 runs to week 8 now, so the gate that used to sit at week 6 moves with it. Both
+# are derived from MIMIC rather than typed twice: the gate is the last Mimic week, because
+# it is the week the exit tag has to exist by.
+MIMIC_WEEKS = 8
+GATE_WEEK = MIMIC_WEEKS
+
 WEEKDAY_TOTAL = 115
 FIXED_TAIL = 20       # Deck (12) + Log and commit (8)
 
+# Stage 0 over eight weeks instead of six. The same twelve sessions, given the room the
+# ten-week plan compressed out of them — S3 and S12 were each sharing a week with something
+# else, and they are the two that bite.
 MIMIC = {
     1: "S0 bench, toolchain, repo · S1 motor forensics and bolting it down",
-    2: "S2 power topology and first soldering · S3 encoder, interrupts, x4 decoding",
-    3: "S4 open loop, both directions · S5 the fixed-rate loop, rate proven",
-    4: "S6 units, convert at the boundary · S7 telemetry and the bandwidth budget",
-    5: "S8 P only, stability boundary · S9 step-response metrics · S10 D then I",
-    6: "S11 safety envelope and real PWM · S12 the refactor, tests, exit gate",
+    2: "S2 power topology and first soldering",
+    3: "S3 encoder, interrupts, x4 decoding",
+    4: "S4 open loop, both directions · S5 the fixed-rate loop, rate proven",
+    5: "S6 units, convert at the boundary · S7 telemetry and the bandwidth budget",
+    6: "S8 P only, stability boundary · S9 step-response metrics",
+    7: "S10 D then I · S11 safety envelope and real PWM",
+    8: "S12 the refactor, host-side tests, exit gate",
 }
 
 WEEKEND = {
     1: "S0/S1 overflow. Get the motor bolted down before anything else.",
     2: "S2 power. Draw the topology before you wire it. Solder. Then fill in "
        "practice/rehearsal/STORIES.md — the rehearsal slots start next week.",
-    3: "S3/S4 overflow. First logic-analyzer capture goes in docs/.",
-    4: "SWAP: Mimic M4.1 — EMG features on public datasets. Python, no hardware.",
-    5: "S8/S9 tuning runs. Save every plot, including the bad ones.",
-    6: "S12 tests + exit gate evidence. Tag v0.0-stage0-exit.",
-    7: "Device abstraction over a fake transport. Same tests pass on both.",
-    8: "Dockerise the harness. GitHub Actions, self-hosted runner.",
-    9: "Harness repo published. README states what it verifies and what it cannot.",
-    10: "make report. Compare the week 1 and week 10 curves. Write the retro.",
+    3: "S3 overflow. First logic-analyzer capture goes in docs/.",
+    4: "S4/S5 overflow. Prove the loop rate, measured rather than intended.",
+    5: "SWAP: Mimic M4.1 — EMG features on public datasets. Python, no hardware.",
+    6: "S8/S9 tuning runs. Save every plot, including the bad ones.",
+    7: "S10/S11 overflow. The safety envelope gets its own demonstration.",
+    8: "S12 tests + exit gate evidence. Tag v0.0-stage0-exit.",
+    9: "Device abstraction over a fake transport. Same tests pass on both.",
+    10: "pyserial against the real board. Port discovery by USB serial number.",
+    11: "Dockerise the harness. GitHub Actions, self-hosted runner.",
+    12: "Harness repo published. README states what it verifies and what it cannot.",
+    13: "Full mock loop: take-home, then defend it out loud. Record both.",
+    14: "make report. Compare the week 1 and week 14 curves. Write the retro.",
 }
 
+# Weeks 9-14. Weeks 1-8 are Mimic; these are the ones with a programme of their own.
 MAIN_LATE = {
-    7: {"Mon": "pytest itself: discovery, assertions, exit codes. 20 tests on a pure function",
+    9: {"Mon": "pytest itself: discovery, assertions, exit codes. 20 tests on a pure function",
         "Tue": "Fixtures, scope, teardown that survives a failing test. conftest.py",
         "Wed": "parametrize. Then verification vs validation, test plan structure",
         "Thu": "Traceability, IEC 62304 classes, one test case per requirement",
         "Fri": "make prompt x3. Score each against the rubric"},
-    8: {"Mon": "pyserial: open, write, read with timeout, frame responses. Talk to the board",
-        "Tue": "Fixture that opens/closes the port and resets the device between tests",
-        "Wed": "Flashing from the harness. Test isolation",
-        "Thu": "Fault injection: truncated frames, bad CRC, impossible lengths. Assert recovery",
-        "Fri": "Trace each test to a Stage 0 requirement. Requirement IDs in test names"},
-    9: {"Mon": "Green CI run against real hardware. Screenshot it",
-        "Tue": "README: what it verifies, what it cannot catch, how tests trace to requirements",
-        "Wed": "make prompt x4. Then the full protocol and hardware verbal set",
-        "Thu": "make rehearse x4. Sourced from Mimic's NOTES and the tuning history",
-        "Fri": "make rehearse S=B3, then S=B4, then S=B10. Record one. Watch it back"},
-    10: {"Mon": "Timed 2-hour mock take-home, AI-free: state machine, debugging, bit masking",
+    10: {"Mon": "pyserial: open, write, read with timeout, frame responses. Talk to the board",
+         "Tue": "Fixture that opens/closes the port and resets the device between tests",
+         "Wed": "Flashing from the harness. Test isolation",
+         "Thu": "Fault injection: truncated frames, bad CRC, impossible lengths. Assert recovery",
+         "Fri": "Trace each test to a Stage 0 requirement. Requirement IDs in test names"},
+    11: {"Mon": "Instrument driver over SCPI and PyVISA: timeout, error-queue drain, *OPC?",
+         "Tue": "Log every result against the firmware build hash. T24 and T21 evidence",
+         "Wed": "Green CI run against real hardware. Screenshot it",
+         "Thu": "README: what it verifies, what it cannot catch, how tests trace to requirements",
+         "Fri": "make prompt x3. Then the full protocol and hardware verbal set"},
+    12: {"Mon": "Draft one OQ protocol for the rig: pass/fail criteria traced to a requirement",
+         "Tue": "Reduce a raw capture: summary table, one plot, a written verdict. T28",
+         "Wed": "make prompt x4. Score each",
+         "Thu": "make rehearse x4. Sourced from Mimic NOTES and the tuning history",
+         "Fri": "make rehearse x3  (S=B3, then S=B4, then S=B10). Record one, watch it back"},
+    13: {"Mon": "Timed 2-hour mock take-home, AI-free: state machine, debugging, bit masking",
          "Tue": "Debrief the take-home out loud as if defending it. Record. Watch it back",
          "Wed": "Full deck pass. Every card box 4+ or it goes back to daily",
-         "Thu": "make rehearse S=B10 twice, timed. Then --stats: every story ready?",
+         "Thu": "make rehearse x2  (S=B10, timed). Then --stats: every story ready?",
          "Fri": "Mock verbal round: 20 cards cold, out loud, no reveal. Then make prompt x2"},
+    14: {"Mon": "Second mock take-home, unseen shape: a failing suite you have to make green",
+         "Tue": "Defend it live. Then make hunt on the oldest snapshot you have",
+         "Wed": "Full deck pass, no filter. Anything below box 4 goes back to daily",
+         "Thu": "make rehearse x4 across your weakest stories. Record two",
+         "Fri": "Final mock verbal round, then make progress and read it honestly"},
 }
 
 DECK = {
-    1: "types, pointers, strings", 2: "interrupts, memory", 3: "volatile, static, const",
-    4: "registers, alignment", 5: "protocols, timing", 6: "sync, RTOS",
-    7: "V&V, traceability, test design", 8: "test infra, pytest", 9: "hardware, debug",
-    10: "full deck, no filter",
+    1: "bitops, memory", 2: "interrupts, memory", 3: "volatile, static, const",
+    4: "memory, timing", 5: "protocols, timing", 6: "sync, rtos",
+    7: "state machines, debug", 8: "debug, protocols",
+    9: "v&v, traceability, test design", 10: "test infra, pytest",
+    11: "ci, instruments", 12: "process, defects", 13: "python, bytes",
+    14: "full deck, no filter",
 }
 
-# Deterministic rotation. Sprint katas on Mon/Tue/Thu/Fri, long katas on Wed/Sun.
+# Not topics — the week 10 instruction to stop filtering. Exempt from the check above.
+DECK_NOT_A_TOPIC = {"full deck", "no filter"}
+
+# ------------------------------------------------------------------ rotation ---
 #
-# Two constraints shape this and both are checked:
-#   1. A sprint day's block is SPRINT_BLOCK, so only katas with a target that fits may
-#      appear there. Same for long days.
-#   2. Retirement needs three CONSECUTIVE clean reps at target across three different
-#      variants, so any kata that owns a capability's evidence bar needs at least three
-#      slots ending in three distinct variants. `--check` proves it.
+# THE ROTATION IS GENERATED, not written out. What a human edits is INTRO below — the
+# week each kata is first drilled — plus how many reps each one is owed.
 #
-# `protocol_parser` is the one long kata with two slots rather than three. That is
-# deliberate: E21 is its only capability and E21's bar is the deck, not the kata, so
-# nothing is blocked by not being able to retire it. Saturday's adaptive rep is where
-# the slack for every kata lives.
-KATA = {
- 1: {"Mon":("bitops","v1"),"Tue":("mem_primitives","v1"),"Wed":("ring_buffer","v1"),
-     "Thu":("bitops","v2"),"Fri":("mem_primitives","v2"),"Sun":("fsm","v1")},
- 2: {"Mon":("mem_primitives","v3"),"Tue":("bitops","v3"),"Wed":("ring_buffer","v2"),
-     "Thu":("register_map","v1"),"Fri":("mem_primitives","v4"),"Sun":("protocol_parser","v1")},
- 3: {"Mon":("register_map","v2"),"Tue":("bitops","v4"),"Wed":("fsm","v2"),
-     "Thu":("register_map","v3"),"Fri":("mem_primitives","v5"),"Sun":("pool_allocator","v1")},
- 4: {"Mon":("register_map","v4"),"Tue":("debouncer","v1"),"Wed":("protocol_parser","v2"),
-     "Thu":("register_map","v5"),"Fri":("bitops","v5"),"Sun":("ring_buffer","v3")},
- 5: {"Mon":("debouncer","v2"),"Tue":("register_map","v6"),"Wed":("fixed_point_pid","v1"),
-     "Thu":("rollover_timer","v1"),"Fri":("bitops","v6"),"Sun":("pool_allocator","v2")},
- 6: {"Mon":("register_map","v7"),"Tue":("debouncer","v3"),"Wed":("pool_allocator","v3"),
-     "Thu":("rollover_timer","v2"),"Fri":("mem_primitives","v6"),"Sun":("concurrency_sim","v1")},
- 7: {"Mon":("bitops","v7"),"Tue":("register_map","v1"),"Wed":("fixed_point_pid","v2"),
-     "Thu":("mem_primitives","v7"),"Fri":("debouncer","v4"),"Sun":("test_harness_py","v1")},
- 8: {"Mon":("register_map","v3"),"Tue":("bitops","v3"),"Wed":("test_harness_py","v2"),
-     "Thu":("rollover_timer","v3"),"Fri":("debouncer","v5"),"Sun":("fixed_point_pid","v3")},
- 9: {"Mon":("bitops","v5"),"Tue":("mem_primitives","v5"),"Wed":("fsm","v3"),
-     "Thu":("rollover_timer","v4"),"Fri":("debouncer","v6"),"Sun":("concurrency_sim","v2")},
-10: {"Mon":("mem_primitives","v6"),"Tue":("register_map","v4"),"Wed":("test_harness_py","v3"),
-     "Thu":("rollover_timer","v5"),"Fri":("bitops","v6"),"Sun":("concurrency_sim","v3")},
+# It used to be two hand-written dicts of week -> day -> (kata, variant), and they encoded
+# a rep budget nobody had checked against the bar. Simulating the real rotation showed the
+# result: no C capability retired in more than 48% of runs and six retired in 0%, because
+# three consecutive clean reps at target needs 12-17 reps on a module and the calendar
+# handed out three. Hand-maintaining that arithmetic across 15 katas and 14 weeks is not
+# something anyone should do twice.
+#
+# So: say what each kata is owed, say when it may first appear, and let the generator place
+# them. Variants cycle in order, which is what guarantees any three consecutive reps of a
+# module use three different variants — the other half of the retirement bar.
+
+# Reps owed. A kata that owns a capability's evidence bar needs enough to actually reach
+# it; one that is reinforcement needs enough to be worth having built.
+#
+# 14 is measured, not guessed. Simulating a rep as `target x max(floor, 2.2 x 0.87^n)` with
+# lognormal noise and a clean-first-compile rate rising to 95%, the chance that the last
+# three reps are all clean and at target passes 80% at fourteen reps. It is uniform across
+# katas because the curve is expressed in multiples of each kata's own target. Sensitivity:
+# twelve if you improve fast (-18%/rep), seventeen if you improve slowly (-10%/rep).
+REPS_FOR_BAR = 14
+REPS_REINFORCEMENT = 4
+
+# Overrides, where a kata is reinforcement but still worth more than the floor.
+REPS_OVERRIDE = {"cli_tool_py": 5}
+
+# The week each kata may first be drilled. Hand-authored, and the only ordering decision
+# left: it is what makes week 1 the fundamentals and week 6 the concurrency work, and the
+# build plan is still derived from it exactly as before — a kata cannot be drilled before
+# the session that builds it.
+INTRO = {
+    "bitops": 1, "mem_primitives": 1, "ring_buffer": 1, "fsm": 1,
+    "binary_frame_py": 1, "log_parser_py": 1,
+    "register_map": 2, "protocol_parser": 2,
+    "pool_allocator": 3,
+    "debouncer": 4,
+    "fixed_point_pid": 5, "rollover_timer": 5,
+    "cli_tool_py": 6, "concurrency_sim": 6,
+    "test_harness_py": 10,
 }
 
-# The Python rotation, running alongside KATA on weekdays from week 1.
+# What each weekday holds, as a list of (kind, block). "c" is a C kata, "py" a Python one.
 #
-# Two modules own an evidence bar and therefore need three slots ending in three distinct
-# variants, exactly like the C katas: binary_frame_py (Y2) and log_parser_py (Y3).
-# cli_tool_py owns no bar — it reinforces T17 and T20, whose bars sit on the HIL project —
-# so it gets fewer slots, the same way protocol_parser does on the C side.
-#
-# Three days a week, not five. Python runs Mon/Wed/Fri; Tuesday and Thursday are left clear
-# at 90 minutes. That is what keeps this a second rep rather than a second full rotation.
-KATA_PY = {
- 1: {"Mon":("binary_frame_py","v1"),"Wed":("log_parser_py","v1"),"Fri":("binary_frame_py","v2")},
- 2: {"Mon":("log_parser_py","v2"),"Wed":("binary_frame_py","v3"),"Fri":("log_parser_py","v3")},
- 3: {"Mon":("binary_frame_py","v4"),"Wed":("log_parser_py","v4"),"Fri":("binary_frame_py","v5")},
- 4: {"Mon":("log_parser_py","v5"),"Wed":("binary_frame_py","v6"),"Fri":("log_parser_py","v6")},
- 5: {"Mon":("binary_frame_py","v7"),"Wed":("log_parser_py","v7"),"Fri":("binary_frame_py","v1")},
- 6: {"Mon":("log_parser_py","v1"),"Wed":("cli_tool_py","v1"),"Fri":("binary_frame_py","v2")},
- 7: {"Mon":("log_parser_py","v2"),"Wed":("cli_tool_py","v2"),"Fri":("binary_frame_py","v3")},
- 8: {"Mon":("log_parser_py","v3"),"Wed":("cli_tool_py","v3"),"Fri":("binary_frame_py","v4")},
- 9: {"Mon":("log_parser_py","v4"),"Wed":("cli_tool_py","v4"),"Fri":("binary_frame_py","v5")},
-10: {"Mon":("log_parser_py","v5"),"Wed":("cli_tool_py","v5"),"Fri":("binary_frame_py","v6")},
+# Tuesday carries two short C reps and Sunday two long ones; every other weekday carries a
+# C rep beside a Python rep. That is eight C slots and four Python slots a week, which is
+# what the rep budget above needs — the old shape gave six and three and could not close.
+DAY_SLOTS = {
+    "Mon": [("c", SPRINT_BLOCK), ("py", PY_BLOCK)],
+    "Tue": [("c", SPRINT_BLOCK), ("c", SPRINT_BLOCK)],
+    "Wed": [("c", LONG_BLOCK), ("py", PY_BLOCK)],
+    "Thu": [("c", SPRINT_BLOCK), ("py", PY_BLOCK)],
+    "Fri": [("c", SPRINT_BLOCK), ("py", PY_BLOCK)],
+    "Sun": [("c", LONG_BLOCK), ("c", LONG_BLOCK)],
 }
 
-PHASE = {**{w: "MIMIC STAGE 0" for w in range(1, 7)},
-         7: "TEST ENGINEERING", 8: "THE HARNESS", 9: "FINISH AND WRITE UP",
-         10: "INTERVIEW SIMULATION"}
+
+def is_py(kata):
+    return kata.endswith("_py")
+
+
+def reps_wanted():
+    """{kata: reps owed}. Bar-owners get the measured number, the rest the floor."""
+    owning = set(_katas_that_own_a_bar())
+    out = {}
+    for kata in sorted(TARGETS):
+        out[kata] = REPS_OVERRIDE.get(
+            kata, REPS_FOR_BAR if kata in owning else REPS_REINFORCEMENT)
+    return out
+
+
+def _rotation():
+    """{(week, day_index): [(kata, variant, block)]} for the whole plan.
+
+    Greedy, deterministic and stable: at each slot take the eligible kata furthest behind
+    the pace it needs to finish on time, breaking ties by whichever has waited longest and
+    then by name. Eligible means introduced, the right language, and a target that fits the
+    block. A kata is not repeated within two days if anything else can fill the slot.
+    """
+    want = reps_wanted()
+    done = {k: 0 for k in want}
+    last = {k: -99 for k in want}
+    out = {}
+    for week in range(1, WEEKS + 1):
+        for i, day in enumerate(DAYS):
+            slots = DAY_SLOTS.get(day, [])
+            if not slots:
+                continue
+            placed = []
+            for kind, block in slots:
+                n = (week - 1) * 7 + i
+
+                def eligible(want_py):
+                    return [k for k in want
+                            if INTRO.get(k, 99) <= week
+                            and is_py(k) == want_py
+                            and TARGETS[k] <= block
+                            and done[k] < want[k]
+                            and k not in placed]
+
+                # The slot's language is a preference, not a rule. There are more Python
+                # slots than Python reps owed, and without this the surplus sat empty in
+                # the last three weeks while the C side was still short — 9 wasted slots
+                # and 12 missing reps at the same time. A C kata that fits the block takes
+                # the slot instead.
+                pool = eligible(kind == "py") or eligible(kind != "py")
+                if not pool:
+                    continue
+                fresh = [k for k in pool if n - last[k] >= 2] or pool
+                weeks_left = max(1, WEEKS - week + 1)
+
+                def urgency(k):
+                    # A kata that has just been introduced gets its first rep promptly.
+                    # Without this, need-per-week alone deferred every low-rep module —
+                    # debouncer, protocol_parser, concurrency_sim — to week 11, eight weeks
+                    # after the session that built it. That wastes the build, breaks the
+                    # deck focus it was paired with, and makes `first_use` disagree with
+                    # INTRO, which is what the build plan is derived from.
+                    return (done[k] == 0, (want[k] - done[k]) / weeks_left,
+                            n - last[k], k)
+
+                kata = max(fresh, key=urgency)
+                variants = variants_in(kata) or ["v1"]
+                variant = variants[done[kata] % len(variants)]
+                out.setdefault((week, i), []).append((kata, variant, block))
+                placed.append(kata)
+                done[kata] += 1
+                last[kata] = n
+    return out
+
+
+_ROTATION = None
+
+
+def rotation():
+    """The generated rotation, built once. Lazy because _rotation() reads the bar
+    ownership out of progress.py, which imports this module back."""
+    global _ROTATION
+    if _ROTATION is None:
+        _ROTATION = _rotation()
+    return _ROTATION
+
+PHASE = {**{w: "MIMIC STAGE 0" for w in range(1, 9)},
+         9: "TEST ENGINEERING", 10: "THE HARNESS", 11: "THE HARNESS",
+         12: "FINISH AND WRITE UP",
+         13: "INTERVIEW SIMULATION", 14: "INTERVIEW SIMULATION"}
 
 # --------------------------------------------------------------- build plan ---
 #
@@ -221,15 +373,25 @@ PHASE = {**{w: "MIMIC STAGE 0" for w in range(1, 7)},
 # `python3 tools/schedule.py --check` proves the two agree. CI runs it.
 #
 # Sessions, as (build week, latest first-use this session covers, label). Week 0 is
-# the Day 0 weekend, before the calendar starts. Several sessions rather than one a
-# week on purpose: a weekly build slot is a running dependency, and one missed Sunday
-# leaves the next week's rotation with nothing to draw from. Three sessions after day
-# zero, front-loaded and finite, keeps the heaviest Sunday under the cap below.
+# the Day 0 weekend, before the calendar starts.
+#
+# Five smaller sessions rather than three large ones, and that is a change forced by the
+# arithmetic rather than a preference. Sunday now carries two long reps instead of one, so
+# a session big enough to cover three katas puts the day over the cap below — week 1 came
+# out at 301 minutes against a 300-minute limit, and the check said so. Smaller sessions
+# spread over weeks 1-5 keep every Sunday well under it.
+#
+# The cost is real and worth naming: a build session is a running dependency, and five of
+# them in a row means five Sundays where missing one leaves the next week's rotation short.
+# It is still finite, it is still front-loaded, and after week 5 there is nothing left to
+# build. Fourteen weeks is what makes that affordable; in ten it would not have been.
 SESSIONS = [
     (0, 1, "Day 0 weekend"),
-    (1, 3, "Week 1 Sunday"),
-    (2, 5, "Week 2 Sunday"),
-    (3, 99, "Week 3 Sunday"),
+    (1, 2, "Week 1 Sunday"),
+    (2, 3, "Week 2 Sunday"),
+    (3, 4, "Week 3 Sunday"),
+    (4, 5, "Week 4 Sunday"),
+    (5, 99, "Week 5 Sunday"),
 ]
 
 # Roughly what it costs to write one API contract plus a real test suite. The suite
@@ -241,11 +403,11 @@ BUILD_MIN_DEFAULT = 60
 # Katas that are NOT built in a build session. {kata: (week, weekday, why)} — the
 # point in the calendar by which the build is finished. Exempt from the build-session
 # plan, but NOT from the check: the kata's first rep must fall strictly after that
-# day. Week granularity would not be enough here; week 7's main block runs Mon-Fri
+# day. Week granularity would not be enough here; week 9's main block runs Mon-Fri
 # and the kata does not exist until Friday closes.
 EXEMPT = {
-    "test_harness_py": (7, "Fri",
-        "It is built by week 7's main block rather than by a build session. Week 7 is "
+    "test_harness_py": (9, "Fri",
+        "It is built by week 9's main block rather than by a build session. Week 9 is "
         "five consecutive days on pytest itself — discovery, assertions, fixtures, "
         "conftest.py, parametrize — and this kata is the artifact those five days "
         "produce. Giving it its own build slot would mean writing the same suite "
@@ -271,22 +433,16 @@ def block_for(day):
 
 
 def all_slots():
-    """[(week, day_index, kata, variant, block)] across BOTH rotations, in order.
+    """[(week, day_index, kata, variant, block)] across the whole plan, in order.
 
-    KATA and KATA_PY both key on weekday and a weekday holds one of each, so they cannot
-    be merged into a single day-keyed dict — the Python rep would overwrite the C one.
-    Every check that used to walk KATA walks this instead, or it silently stops seeing
-    half the schedule the moment a Python kata is the thing that is wrong.
+    A weekday holds more than one rep and they are not interchangeable — a Python slot and
+    a C slot have different blocks and different eligible katas — so this walks the
+    generated rotation rather than any per-day dict. Every check consumes this.
     """
     out = []
-    for week in sorted(set(KATA) | set(KATA_PY)):
-        for i, day in enumerate(DAYS):
-            if day in KATA.get(week, {}):
-                k, v = KATA[week][day]
-                out.append((week, i, k, v, block_for(day)))
-            if day in KATA_PY.get(week, {}):
-                k, v = KATA_PY[week][day]
-                out.append((week, i, k, v, PY_BLOCK))
+    for (week, i), slots in sorted(rotation().items()):
+        for kata, variant, block in slots:
+            out.append((week, i, kata, variant, block))
     return out
 
 
@@ -355,10 +511,10 @@ def timers(day, week):
             blocks.append(("Rehearsal", 10 * n, rehearse_text(n)))
         return blocks
     if day == "Sun":
-        k, v = KATA[week]["Sun"]
-        blocks = [("Kata — LONG rep", LONG_BLOCK, f"make drill KATA={k} VARIANT={v}"),
-                  ("Weekly review", 20, "make report, then fill logs/WEEKLY_REVIEW.md"),
-                  ("Deck — full pass", 15, "make review 30")]
+        blocks = [("Kata — LONG rep", block, f"make drill KATA={k} VARIANT={v}")
+                  for k, v, block in rotation().get((week, DAYS.index("Sun")), [])]
+        blocks += [("Weekly review", 20, "make report, then fill logs/WEEKLY_REVIEW.md"),
+                   ("Deck — full pass", 15, "make review 30")]
         if week in plan:
             mins, katas = plan[week]
             blocks.append(("Kata build", mins, build_text(katas)))
@@ -366,6 +522,13 @@ def timers(day, week):
             # T1 — "how would you test X" — is the highest-frequency T&I question and
             # one of the four listed reasons candidates get rejected.
             blocks.append(("Design prompt", 10, "make prompt  (T1 — ask for requirements first)"))
+        # The architecture drill goes after the prompt and before the rehearsal, because
+        # the three are one sequence: test a thing that exists, invent a thing, then
+        # defend the thing you just invented. `make design` ends by telling you to run
+        # `make rehearse S=B11`, and the rehearsal block below is where that take lands.
+        if week in DESIGN_WEEKS:
+            blocks.append(("Architecture drill", DESIGN_BLOCK,
+                           "make design  (E30 — constraints first, numbers on the diagram)"))
         # Rehearsal runs on EVERY Sunday from REHEARSAL_FROM, build week or not. It used
         # to sit in the non-build branch only, which is part of how the B group quietly
         # became unreachable: the research says T&I candidates fail the behavioural round
@@ -375,20 +538,18 @@ def timers(day, week):
         if n:
             blocks.append(("Rehearsal", 10 * n, rehearse_text(n)))
         return blocks
-    k, v = KATA[week][day]
-    kblock = LONG_BLOCK if day in LONG_DAYS else SPRINT_BLOCK
-    label = "Kata — LONG rep" if day in LONG_DAYS else "Kata — sprint"
-    blocks = [(label, kblock, f"make drill KATA={k} VARIANT={v}")]
-    # The Python rep sits next to the C one, every weekday, from week 1. Not a separate
-    # track and not a later phase: the two languages are interleaved deliberately, because
-    # an interview loop does not block by language and identifying which problem you are
-    # looking at before solving it is part of the skill.
-    if day in KATA_PY.get(week, {}):
-        pk, pv = KATA_PY[week][day]
-        blocks.append(("Kata — Python", PY_BLOCK, f"make drill KATA={pk} VARIANT={pv}"))
-    # The main block is the remainder either way, so a day without a Python rep is simply
-    # 25 minutes shorter rather than handing that time to Mimic.
-    main = WEEKDAY_TOTAL - kblock - PY_BLOCK - FIXED_TAIL
+    slots = rotation().get((week, DAYS.index(day)), [])
+    blocks = []
+    for kata, variant, block in slots:
+        if is_py(kata):
+            label = "Kata — Python"
+        elif block >= LONG_BLOCK:
+            label = "Kata — LONG rep"
+        else:
+            label = "Kata — sprint"
+        blocks.append((label, block, f"make drill KATA={kata} VARIANT={variant}"))
+    kata_mins = sum(b[1] for b in blocks)
+    main = WEEKDAY_TOTAL - kata_mins - FIXED_TAIL
     blocks += [("Main block", main, main_for(week, day)),
                ("Deck", 12, f"make review  ({DECK[week]})"),
                ("Log and commit", 8, "make done, log the session, git commit")]
@@ -482,16 +643,18 @@ def check():
     # and the retirement bar becomes unreachable without breaking the rules.
     for week, i, kata, _, block in all_slots():
         target = TARGETS.get(kata)
-        if target is not None and target > block:
+        if target is not None and target >= block:
             problems.append(
                 f"week {week} {DAYS[i]}: {kata} has a {target}-minute target in a "
-                f"{block}-minute block. Move it to a long day, or change its target."
+                f"{block}-minute block. The block has to be strictly longer, or the timer "
+                f"rings exactly at target and no over-target rep can ever be logged. "
+                f"Move it to a long day, or change its target."
             )
     for kata, target in sorted(TARGETS.items()):
         # A Python kata only ever appears in the Python block, so its ceiling is that
         # block and not the longest C one.
         ceiling = PY_BLOCK if kata.endswith("_py") else LONG_BLOCK
-        if target > ceiling:
+        if target >= ceiling:
             problems.append(
                 f"{kata}: target {target} min exceeds the longest block it can be given "
                 f"({ceiling} min), so no day in the calendar can hold it"
@@ -523,14 +686,17 @@ def check():
     # recounted, and the calendar silently stopped being able to finish the group.
     stories = _story_ids()
     if stories:
-        takes = sum(rehearsal_takes(d, w) for w in range(1, 11) for d in DAYS)
-        days = sum(1 for w in range(1, 11) for d in DAYS if rehearsal_takes(d, w))
+        # Counted off the rendered calendar, not off rehearsal_takes() alone. The weeks 9
+        # and 10 main blocks schedule takes too, and counting only the timer blocks made
+        # the check believe the calendar was thinner than it is — 35 takes when it
+        # actually asks for 44.
+        takes, days = rehearsal_schedule()
         need = 3 * len(stories)
         if takes < need:
             problems.append(
-                f"rehearsal: {len(stories)} stories need {need} takes to reach three "
-                f"strong takes each, but the calendar schedules {takes}. Add takes in "
-                f"rehearsal_takes(), or the B group cannot be finished."
+                f"rehearsal: {len(stories)} stories need {need} takes rated STRONG to "
+                f"reach three each, but the calendar schedules {takes} takes in total. "
+                f"Add takes in rehearsal_takes(), or the B group cannot be finished."
             )
         if days < 3:
             problems.append(
@@ -538,7 +704,111 @@ def check():
                 f"different days."
             )
 
+    # 10. A mechanism a capability is SCORED on has to appear in the calendar often enough
+    # to reach its bar. Checks #8 and #9 are this same guard for katas and for rehearsal;
+    # this is the version for the two rubric-scored mechanisms, and it is the one that was
+    # missing. E30's bar is three architecture drills and `make design` appeared ZERO times
+    # in seventy days — the capability was unreachable by anyone following the plan, every
+    # other check passed, and nothing said a word.
+    #
+    # Only the rubric mechanisms are counted. The deck has no per-session unit to count
+    # against a bar expressed in Leitner boxes; katas are #8; rehearsal is #9, where the
+    # count would also have to understand "make rehearse S=B3, then S=B4, then S=B10",
+    # which the counter below reads as one session.
+    sessions = mechanism_sessions()
+    for cmd, (need, cids) in sorted(_rubric_mechanism_needs().items()):
+        have = sessions.get(cmd, 0)
+        if have < need:
+            problems.append(
+                f"`make {cmd}`: the calendar schedules it {have} time(s), but it is the "
+                f"evidence bar for {', '.join(cids)}, which needs {need}. Add slots in "
+                f"timers(), or that capability cannot be met by following the plan."
+            )
+
     return problems
+
+
+def mechanism_sessions():
+    """{make-command: how many times the whole plan asks you to run it}.
+
+    One block can ask for several — `make prompt x3` is three sessions, not one — so this
+    reads the multiplier rather than counting lines. It deliberately does not try to parse
+    a block that lists several invocations in prose; check #10 only consults it for the
+    two mechanisms whose blocks use the `xN` form.
+    """
+    counts = {}
+    for week in range(1, WEEKS + 1):
+        for day in DAYS:
+            for _, _, what in timers(day, week):
+                for cmd, mult in re.findall(r"make ([a-z-]+)(?:\s+x(\d+))?", what):
+                    counts[cmd] = counts.get(cmd, 0) + (int(mult) if mult else 1)
+    return counts
+
+
+def rehearsal_schedule():
+    """(takes, days carrying at least one) across the whole rendered plan."""
+    takes = days = 0
+    for week in range(1, WEEKS + 1):
+        for day in DAYS:
+            n = 0
+            for _, _, what in timers(day, week):
+                for _, mult in re.findall(r"make (rehearse)(?:\s+x(\d+))?", what):
+                    n += int(mult) if mult else 1
+            takes += n
+            days += 1 if n else 0
+    return takes, days
+
+
+# What share of takes you should expect to rate STRONG. The B-group bar is three strong
+# takes on three different days per story, and check #9 can only count takes scheduled —
+# so this is the factor between the two. It is a planning assumption, not a measurement,
+# which is why falling below it is a note rather than a failure.
+STRONG_RATE = 0.75
+
+
+def advisories():
+    """Things worth knowing that are not build failures. Printed by `make check-calendar`.
+
+    Check #9 proves the calendar schedules at least 3N takes for N stories. That is the
+    arithmetic floor and it assumes every single take is rated strong, which no one
+    manages. This says how much real slack there is.
+    """
+    notes = []
+    stories = _story_ids()
+    if stories:
+        takes, _ = rehearsal_schedule()
+        need = 3 * len(stories)
+        comfortable = need / STRONG_RATE
+        if takes < comfortable:
+            notes.append(
+                f"rehearsal: {takes} takes scheduled for {len(stories)} stories. The bar "
+                f"is {need} rated STRONG, so this only closes if {need / takes:.0%} of "
+                f"takes are strong. Budget for ~{comfortable:.0f} — the shortfall comes "
+                f"out of free practice, which `make rehearse` allows any day."
+            )
+    return notes
+
+
+def _rubric_mechanism_needs():
+    """{make-command: (sessions needed, [capability ids])} for the rubric-scored bars.
+
+    Read out of progress.py — the thresholds and the bar assignment both live there, and a
+    second copy here is exactly the kind of drift the rest of this file exists to prevent.
+    """
+    try:
+        mod = _progress_module()
+        need = {"design prompts": ("prompt", mod.PROMPTS_FOR_T1),
+                "architecture drills": ("design", mod.DESIGNS_FOR_E30)}
+        out = {}
+        for cid, rec in sorted(mod.ownership().items()):
+            bar = mod.bar_for(cid, rec["owners"])
+            if bar in need:
+                cmd, n = need[bar]
+                out.setdefault(cmd, [n, []])[1].append(cid)
+        return out
+    except Exception as exc:                                  # pragma: no cover
+        print(f"note: could not read bars from progress.py ({exc})", file=sys.stderr)
+        return {}
 
 
 def _story_ids():
@@ -558,6 +828,16 @@ def _story_ids():
         return []
 
 
+def _progress_module():
+    """progress.py, loaded. It owns which mechanism is a capability's bar, and both
+    check #8 and check #10 ask it rather than keeping a second opinion."""
+    spec = importlib.util.spec_from_file_location(
+        "_progress", os.path.join(ROOT, "tools", "progress.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
 def _katas_that_own_a_bar():
     """{kata: [capability ids]} for katas that a capability is actually scored on.
 
@@ -565,10 +845,7 @@ def _katas_that_own_a_bar():
     scoring rules instead of a second opinion about them.
     """
     try:
-        spec = importlib.util.spec_from_file_location(
-            "_progress", os.path.join(ROOT, "tools", "progress.py"))
-        mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
+        mod = _progress_module()
         own = mod.ownership()
         out = {}
         for cid, rec in sorted(own.items()):
@@ -602,6 +879,8 @@ def report_check():
 
     problems = check()
     print()
+    for n in advisories():
+        print(f"note: {n}")
     if problems:
         print(f"{len(problems)} problem(s):")
         for p in problems:
@@ -614,7 +893,7 @@ def report_check():
 def main_for(week, day):
     if day in ("Sat", "Sun"):
         return WEEKEND[week]
-    if week <= 6:
+    if week <= MIMIC_WEEKS:
         return f"Mimic: {MIMIC[week]}"
     return MAIN_LATE[week][day]
 
@@ -624,7 +903,7 @@ def render(start=None):
     a = L.append
     a("# Calendar")
     a("")
-    a("Seventy days. Every day has a fixed kata, a fixed main block, and timer durations.")
+    a(f"{WEEKS * 7} days. Every day has fixed katas, a fixed main block, and timer durations.")
     a("Set a timer for each block. When it rings, move on even if you aren't finished —")
     a("running over on the main block is how the kata and deck slots get eaten.")
     a("")
@@ -633,7 +912,9 @@ def render(start=None):
     a(f"**Sprint days (Mon, Tue, Thu, Fri):** {SPRINT_BLOCK}-minute kata. Short modules only.")
     a(f"**Long-rep days (Wed, Sun):** {LONG_BLOCK}-minute kata. The modules that need real time.")
     a(f"**Saturday:** a {LONG_BLOCK}-minute adaptive rep, then the main block. Still no deck.")
-    a("**Sunday:** the light day — one long rep, the weekly review, a full deck pass.")
+    a("**Sunday:** one long rep, the weekly review, a full deck pass — then whatever the")
+    a("week owes: a kata build session in weeks 1–3, an architecture drill in weeks "
+      + ", ".join(str(w) for w in DESIGN_WEEKS) + ".")
     a("")
     a("Every block is at least as long as the kata's target time in `tools/drill.py`, and")
     a("`make check-calendar` fails if that ever stops being true. A target you cannot reach")
@@ -645,13 +926,22 @@ def render(start=None):
     a("the slack in the rotation: every kata's spare reps live here.")
     a("")
     plan = build_plan()
-    load = {w: sum(sum(b[1] for b in timers(d, w)) for d in DAYS) for w in range(1, 11)}
-    steady = min(w for w in range(1, 11) if w not in plan)
-    heavy = sorted(w for w in range(1, 11) if w in plan)
-    a(f"Weekly load: about {load[steady] / 60:.1f} hours, every week from week {steady} on.")
-    a("Weeks " + ", ".join(str(w) for w in heavy) + " carry the build sessions on top of "
-      "that — " + ", ".join(f"{load[w] / 60:.1f}" for w in heavy) + " hours. They are the")
-    a("heavy weeks of the ten, and they are heavy once instead of a little heavy for five.")
+    load = {w: sum(sum(b[1] for b in timers(d, w)) for d in DAYS) for w in range(1, WEEKS + 1)}
+    # Derived, not asserted. This used to name one "steady state" week and describe every
+    # week from there on as identical, which stopped being true the moment the weeks
+    # carrying an architecture drill were a different length from the ones that aren't.
+    # Taking the most common load as the baseline and listing the exceptions keeps the
+    # sentence true whatever gets added next.
+    build_weeks = sorted(w for w in plan if w)
+    rest = [w for w in range(1, WEEKS + 1) if w not in build_weeks]
+    lo, hi = min(load[w] for w in rest), max(load[w] for w in rest)
+    a(f"Weekly load: {lo / 60:.1f} to {hi / 60:.1f} hours once the build sessions are done.")
+    a("Weeks " + ", ".join(str(w) for w in build_weeks) + " carry them and run "
+      + ", ".join(f"{load[w] / 60:.1f}" for w in build_weeks) + " hours — heavy once,")
+    a("instead of a little heavy for five. Weeks "
+      + ", ".join(str(w) for w in DESIGN_WEEKS) + " carry a "
+      + f"{DESIGN_BLOCK}-minute architecture drill.")
+    a(f"About {sum(load.values()) / 60:.0f} hours over the {WEEKS * 7} days.")
     a("")
     a("---")
     a("")
@@ -695,14 +985,14 @@ def render(start=None):
     a("---")
     a("")
 
-    for week in range(1, 11):
+    for week in range(1, WEEKS + 1):
         a(f"## Week {week} — {PHASE[week]}")
         a("")
-        if week <= 6:
+        if week <= MIMIC_WEEKS:
             a(f"**Mimic this week:** {MIMIC[week]}")
         a(f"**Deck focus:** {DECK[week]}")
         a("")
-        if week == 6:
+        if week == GATE_WEEK:
             a("> **GATE WEEK.** Stage 0 exit tagged `v0.0-stage0-exit`, clean-first-compile")
             a("> above 55%, 25+ logged reps. If the second one is failing, the kata slot has")
             a("> been getting eaten — that is the exact failure mode this plan exists to stop.")

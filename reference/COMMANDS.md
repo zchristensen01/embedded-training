@@ -214,7 +214,7 @@ Four measurements, all from the logs:
 1. **Time curve per kata.** Should fall, then flatten.
 2. **Phase breakdown.** `write` + `compile` as a share of total — syntax fluency in
    one number.
-3. **Clean-first-compile rate.** 40% by week 4, 55% by week 6, 70% by week 10.
+3. **Clean-first-compile rate.** 40% by week 6, 55% by week 8, 70% by week 14.
 4. **Coverage.** Which katas you are avoiding; flags anything untouched for 14 days.
 
 ### `make progress`
@@ -225,9 +225,11 @@ Scores every capability against the evidence bars in
 - **`logs/progress.json`** — the same data, machine-shaped, for anything that wants
   to render it.
 
-Nothing in it is self-assessed. A capability is met when its bar is met and logged:
-three consecutive clean kata reps at target across three variants, every tagged deck
-card in Leitner box 4 or higher, three strong takes of a story on three different days,
+Nothing in it is a rating of how well something is known — a capability is met when its bar is
+met and logged. The kata and rubric bars are measured; the deck bar is graded by you, spaced
+out. `plan/COVERAGE.md` says which is which. A capability is met when:
+three consecutive clean kata reps at target across three variants, 80% of a capability's
+deck cards in Leitner box 4 or higher, three strong takes of a story on three different days,
 or — for T1 — enough scored design prompts with the recent ones clearing 12/16.
 
 Capabilities whose mechanism lives elsewhere — bench work in Mimic, artifacts in the
@@ -255,18 +257,18 @@ picks from this list. Empty until you have finished a few reps — snapshots are
 `make done`.
 
 ### `make calendar`
-Regenerates `plan/CALENDAR.md` — all seventy days, always with **relative** day labels
+Regenerates `plan/CALENDAR.md` — all ninety-eight days, always with **relative** day labels
 (`Day 1 · Mon`). Also regenerates the **Build plan**, which is derived from the kata
 rotation rather than written by hand.
 
 Run this after changing anything in `tools/schedule.py`. You do not need it otherwise.
 
 ### `make dates`
-Writes the same seventy days to `plan/CALENDAR.dated.md` with **real dates**, read from
+Writes the same ninety-eight days to `plan/CALENDAR.dated.md` with **real dates**, read from
 `logs/.start_date`. Gitignored — this is the one to open daily, or to paste into a real
 calendar.
 
-The split is not fussiness. The shape of the seventy days is a repo fact, identical for
+The split is not fussiness. The shape of the ninety-eight days is a repo fact, identical for
 anyone who clones this. The Monday you started is not: `logs/.start_date` is gitignored
 on purpose. Stamping your dates into the committed file made `make check-generated` fail
 on every machine with a different start date — CI included, since it has none.
@@ -299,6 +301,17 @@ frozen Python suite is that it is valid and collectable.
 
 This exists because it did not, and a suite with a syntax error passed every other check and
 shipped green. You would have found it mid-rep, with the clock running.
+
+**How it imports a suite whose subject does not exist.** The C check compiles a test file
+against the *header*; only linking needs an implementation. Python has no such split —
+collection imports the test module, which imports the implementation — so this check
+generates a stand-in for the kata's own module and collects against that. The stand-in is
+what stands where a C header stands. Nothing here reads `src/`, so the check gives the same
+answer on a clean tree, in CI, and in the middle of a rep.
+
+Only the kata's own module is stood in for. `import pytset` is a typo, not a missing
+implementation, and it fails here rather than mid-rep. If your suite legitimately needs a
+third-party package, it belongs in `SETUP.md`.
 
 ### `make check-log`
 Validates `logs/log.tsv`: header, field count, date order, known modules, variants

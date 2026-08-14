@@ -16,7 +16,7 @@ is drawn where it is.
 │
 ├── mimic/                      REPO 2  the robot. Its own repo, its own layout.
 │
-├── mimic-hil/                  REPO 3  the HIL harness. Created in week 8.
+├── mimic-hil/                  REPO 3  the HIL harness. Created in week 10.
 │
 └── scratch/                    NOT a repo. Throwaway C. Delete freely.
 ```
@@ -121,7 +121,7 @@ The only thing linking them is the harness pointing at Mimic's board, and that l
 
 ## What `mimic-hil` actually is
 
-The week 8 project. Plain version: **a Python program on a PC that tests the robot's firmware
+The weeks 10–11 project. Plain version: **a Python program on a PC that tests the robot's firmware
 automatically.**
 
 1. Flashes new firmware to the Stage 0 board.
@@ -137,7 +137,7 @@ automatically.**
 "HIL" is hardware-in-the-loop: real firmware, on real hardware, exercised by software, in a
 loop. The spec is [`projects/hil-harness/BRIEF.md`](../projects/hil-harness/BRIEF.md).
 
-Don't create the repo until week 8. An empty repo sitting there for two months is worse than
+Don't create the repo until week 10. An empty repo sitting there for two months is worse than
 no repo.
 
 ### What links them, in practice

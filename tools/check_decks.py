@@ -35,12 +35,21 @@ HEADER = ["# topic", "question", "answer", "trap", "caps"]
 THIN = 1
 
 
-def _progress():
-    spec = importlib.util.spec_from_file_location(
-        "_progress", os.path.join(ROOT, "tools", "progress.py"))
+def _load(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
+
+
+def _progress():
+    return _load("_progress", os.path.join(ROOT, "tools", "progress.py"))
+
+
+def _schedule():
+    """The calendar, for its weekly deck focus. That focus names topics, and a topic no
+    card carries is a line the calendar prints every weekday that cannot be acted on."""
+    return _load("_schedule", os.path.join(ROOT, "tools", "schedule.py"))
 
 
 def rows():
@@ -113,6 +122,23 @@ def check():
                 f"{cid}: its evidence bar is the deck, but no card is tagged with it — "
                 f"it can never be met. Add one with `make card`.")
 
+    # The calendar's weekly deck focus has to name topics that exist. It is advisory —
+    # `make review` never filters on it — but it is printed in the command column of every
+    # weekday, and three of the ten weeks named nothing at all: "types, pointers, strings",
+    # "registers, alignment" and "hardware" matched no card in any deck. Anyone acting on
+    # one got `Nothing due`, which reads as "you have finished this".
+    topics = {f[0].strip().lower() for _, _, f in rows() if f and f[0].strip()}
+    for week, focus in sorted(_schedule().DECK.items()):
+        for name in (t.strip().lower() for t in focus.split(",")):
+            if not name or name in _schedule().DECK_NOT_A_TOPIC:
+                continue
+            if not any(name in t for t in topics):
+                errors.append(
+                    f"tools/schedule.py:DECK[{week}]: names the topic '{name}', which no "
+                    f"card carries. The calendar prints it as the week's deck focus. "
+                    f"Known topics: {', '.join(sorted(topics))}"
+                )
+
     thin = [cid for cid, rec in own.items()
             if cid in caps and p.bar_for(cid, rec["owners"]) == "deck"
             and len(tagged.get(cid, [])) <= THIN]
@@ -154,7 +180,8 @@ def summary():
             continue
         n = len(tagged.get(cid, []))
         mark = "  thin" if n <= THIN else ""
-        print(f"    {cid:<5} {n} card(s){mark}   {caps[cid][:58]}")
+        print(f"    {cid:<5} {n} card(s), need {p.cards_needed(n)} at box "
+              f"{p.MASTERED_BOX}+{mark}   {caps[cid][:44]}")
     print("\n  Reinforcement cards (real practice, but not the bar):\n")
     for cid in sorted(tagged, key=lambda c: (c[0], int(c[1:]))):
         if cid not in own or p.bar_for(cid, own[cid]["owners"]) == "deck":

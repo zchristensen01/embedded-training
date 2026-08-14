@@ -336,16 +336,27 @@ def cmd_done():
 
     found = input("\n  Did you find that exact line yourself? [y/N]: ").strip().lower()
     found = "y" if found in ("y", "yes") else "n"
-    note = input("  One line: what led you to it, or what misled you: ").strip()
 
+    # Log before asking for the note, not after. The reveal has already happened by this
+    # point, so the hunt is spent; an interrupt between here and the write would lose the
+    # rep while leaving nothing to redo it against. The note is the optional part, so it is
+    # the part that goes last — the same ordering `make done` uses for its deck-card prompt.
     os.makedirs(os.path.dirname(LOG), exist_ok=True)
     new = not os.path.exists(LOG)
     with open(LOG, "a") as fh:
         if new:
             fh.write("date\tmodule\tkind\tminutes\tfound\tnote\n")
-        fh.write(f"{date.today().isoformat()}\t{kata}\t{rec['kind']}\t{minutes}\t{found}\t{note}\n")
-
+        fh.write(f"{date.today().isoformat()}\t{kata}\t{rec['kind']}\t{minutes}\t{found}\t\n")
     os.remove(STATE)
+
+    note = input("  One line: what led you to it, or what misled you: ").strip()
+    if note:
+        # Rewrite the row we just wrote rather than appending a second one. Cheap: this
+        # file has one line per hunt and will not grow past a few hundred.
+        lines = open(LOG).read().splitlines(True)
+        lines[-1] = lines[-1].rstrip("\n") + note + "\n"
+        with open(LOG, "w") as fh:
+            fh.writelines(lines)
     if found == "y" and minutes <= TARGET_MIN:
         print("\n  Under target and found. That is the shape of a good take-home debrief.\n")
     elif found == "n":

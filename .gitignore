@@ -32,5 +32,9 @@ __pycache__/
 *.pyc
 .venv/
 
-# working notes from the integration audit — delete once the fix list is done
+# Working notes from the audits. Never committed: they are snapshots of the repo at one
+# moment with a fix list attached, and once the list is worked through they describe a repo
+# that no longer exists. Anything in them worth keeping gets folded into the documents it
+# belongs to — plan/COVERAGE.md for decisions, the tool docstrings for why a check exists.
 TMP_AUDIT.md
+AUDIT_TASKS.md
