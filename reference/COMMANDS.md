@@ -36,7 +36,7 @@ then never attempted**, and will not repeat a kata within three days if alternat
 exist. That is deliberate: left to choose, you would avoid `pool_allocator`. The calendar
 names a specific kata on every day except Saturday, which is left adaptive on purpose so
 one day a week catches whatever you have been avoiding — and Saturday is the only slack
-in the rotation, so it is where a module's fourth and fifth reps come from.
+in the rotation: fourteen unassigned reps over the plan, spent wherever you are weakest.
 
 Only katas that actually have a frozen header and test suite are eligible. It will not
 hand you a module you have not built yet, and neither will `KATA=` — a rep against an

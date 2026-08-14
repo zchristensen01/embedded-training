@@ -337,10 +337,9 @@ appearing under "explanations" three times a day in week 8, you've drifted. The 
    directly measures the gap you're fixing.
 2. **Clean-first-compile rate.** The best single proxy for syntax fluency. Above 40% by week 4,
    above 55% by week 8, above 70% by week 14.
-3. **Reps per week.** Consistency beats intensity. The calendar schedules ten — seven C and
-   three Python for most of the plan, shifting to six and four in weeks 7, 8 and 10 when
-   `test_harness_py` enters the rotation. Nine is the target, because one missed day a week
-   is real life and two is a drift.
+3. **Reps per week.** Consistency beats intensity. The calendar schedules thirteen — eight C
+   and four Python on the weekdays and Sunday, plus Saturday's adaptive one. Eleven is the
+   target, because one missed day a week is real life and two is a drift.
 4. **Coverage.** Which katas you're avoiding. The report flags anything untouched for 14 days.
 
 `make stats` gives a fifth: deck box distribution. If most cards are stuck in boxes 1–2 by week 5,

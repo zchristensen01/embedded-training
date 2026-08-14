@@ -363,13 +363,17 @@ behind it is worse than an admitted hole:
 - **Whiteboard and paper.** *Still open.* Reported for C traps and "draw the state machine". The
   only mechanism is one constraint card, drawn on roughly one rep in ten of the third that draw
   a card at all.
-- **Debugging code you did not write.** *Now covered, by `make hunt`.* Tesla's take-home is
-  reported to include "debugging existing code", and Intel runs a dedicated debug round. The
+- **Debugging code you did not write.** *Mechanism exists, but you have to reach for it.* Tesla's
+  take-home is reported to include "debugging existing code", and Intel runs a dedicated debug
+  round. The
   problem was that a corpus of broken C would have to be written by a human under the AI rule —
   an AI-written bug is an AI-written exercise. `make hunt` sidesteps it: a machine mutates *your
   own* solution from an earlier rep, mechanically, and you find the change. Works in both
   languages, and the Python mutation set is chosen for the bugs that never raise — a flipped
-  struct endianness prefix, `H` read as `h`.
+  struct endianness prefix, `H` read as `h`. **It needs an old snapshot, so it cannot be
+  scheduled from day 1, and the calendar names it once — week 14.** Treat it as the standing
+  off-plan option from about week 6: `make snapshots` shows what is old enough to hunt in.
+  Running it once in fourteen weeks does not close this gap.
 - **Making a suite of red tests green.** *Still open.* `make hunt` finds one planted token in
   code you wrote. Take-homes increasingly ship with a full failing suite you have to satisfy —
   SpaceX's is described that way — which is a different exercise: you read someone else's
@@ -393,10 +397,11 @@ A capability is **done** when the evidence bar is met and logged — not when yo
   Y1 is the deck. "Clean" for a Python rep means it ran first try with no traceback — a
   different claim from clean-first-compile, which is why `make report` prints the two rates
   separately and neither is averaged into the other.
-- **E items:** 80% of the capability's cards in box 4 or 5 via `make review` — all of them
-  where it has fewer than three — meaning you've said it correctly
-  across several spaced sessions including the trap. E30 is the exception: its bar is three
-  scored architecture drills via `make design`.
+- **E items:** 80% of the capability's cards in box 4 or 5 via `make review`, with a floor of
+  three — which in practice means **all of them below five cards**, since 80% of four rounds up
+  to four. Most capabilities here have one to four cards, so for most of them the bar is every
+  card. Meaning you've said it correctly across several spaced sessions including the trap.
+  E30 is the exception: its bar is three scored architecture drills via `make design`.
 - **H items:** a mix — some are deck cards, some need a real capture or bench session.
 - **T items:** deck cards, the design-prompt rubric for T1, or artifacts in the harness repo.
   T27 is deferred by decision — see `plan/COVERAGE.md`.

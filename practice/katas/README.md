@@ -11,17 +11,20 @@ timing. Stage 0's PID runs in floating point, so the Q-notation reps are still y
 both katas are cheap reps on topics that get asked.
 
 **They are not all weighted equally, and they should not be.** How many slots a module gets in
-the seventy-day rotation is a consequence of two things, both checked by `make check-calendar`:
+the generated rotation is not written down here — it falls out of `tools/schedule.py`, which
+says how many reps each module is owed and the week it may first appear. `make check-calendar`
+prints and checks the result. Two rules shape it:
 
-- Its target time has to fit the block it is scheduled into, so short modules go on sprint days
-  and long ones on Wednesday and Sunday. There are only twenty long slots.
-- Any module a capability is actually *scored* on needs at least three slots ending in three
-  different variants, because that is the retirement bar.
+- Its target time has to fit — strictly inside — the block it is scheduled into, so short
+  modules can go on sprint days and long ones need Wednesday, Sunday or Saturday.
+- Any module a capability is actually *scored* on gets the full rep budget, because three
+  consecutive clean reps at target across three variants needs twelve to seventeen attempts.
+  Modules that are only reinforcement get the floor.
 
-`protocol_parser` is the one long module with two slots rather than three. That is deliberate:
-its only capability is E21, whose evidence bar is the deck rather than the kata, so nothing is
-blocked by not retiring it. Everything else that owns a bar gets three. Saturday's adaptive rep
-is where the slack lives — it is the only day that can give any module a fourth or fifth go.
+`protocol_parser`, `debouncer` and `concurrency_sim` are reinforcement rather than bar-owners —
+their capabilities (E21, E24, E12–E16) are scored on the deck — so they get the floor and
+nothing is blocked by not retiring them. Saturday's adaptive rep is where the slack lives:
+fourteen unassigned reps that go wherever the picker says you are weakest.
 
 | # | Kata | Topic cluster | Status |
 |---|---|---|---|
@@ -41,14 +44,16 @@ is where the slack lives — it is the only day that can give any module a fourt
 | 14 | `log_parser_py` | streaming parse larger than RAM, reduce, exit codes | **Python** |
 | 15 | `cli_tool_py` | argparse, device discovery by USB serial, retry decorators | **Python** |
 
-The three Python modules run in their own daily block alongside the C rotation, not instead
-of it. `binary_frame_py` is deliberately the same problem as `protocol_parser` seen from the
-test harness rather than the firmware — do them close together.
+The four Python modules — the three above plus `test_harness_py` — run in their own daily block
+alongside the C rotation, not instead of it. `binary_frame_py` is deliberately the same problem
+as `protocol_parser` seen from the test harness rather than the firmware — do them close
+together.
 
 Each module directory holds:
 
 ```
-BRIEF.md      what it is, why firmware needs it, the API, how to think about it, what to test
+BRIEF.md      the lesson: the problem in plain language, a diagram, why firmware needs it,
+              the API line by line, paper questions, and the tests it must pass
 VARIANTS.md   the variants the drill tool draws from
 NOTES.md      one design decision and one bug, per rep. Append only.
 include/      the frozen API contract. Committed. You do not edit this during a rep.
@@ -58,8 +63,17 @@ src/          GITIGNORED. Your implementation. Deleted at the start of every rep
 
 Every module ships with `BRIEF.md` and `VARIANTS.md` written. For each you owe the tests, and
 for the C modules the header as well — a `*_py` module has no header, because its contract is
-the API in the BRIEF and the suite is what enforces it. Read the BRIEF's "What to test" section — it lists the
-cases in prose. Turning that list into actual test cases is the work, and it is yours.
+the API in the BRIEF and the suite is what enforces it.
+
+**Every BRIEF is a lesson, not a spec sheet.** It assumes you have not met the topic before:
+the problem in plain language, an ASCII diagram of the thing itself, the one genuinely
+interesting question the module exists to teach, what you need from the language, the API
+explained line by line, a set of questions to answer *on paper before you type*, and a
+"Tests it must pass" table pairing each case with the bug it protects against. It ends with
+"Once it's boring" — the constraints to add once the base version stops being hard.
+
+Turning that table into actual test cases is the work, and it is yours. The BRIEF never
+contains a test case or a line of implementation, on purpose.
 
 ## Target times
 
@@ -74,13 +88,13 @@ is scheduled into. The table below is a reading copy.
 | `register_map` | 12 min | sprint |
 | `rollover_timer` | 12 min | sprint |
 | `debouncer` | 12 min | sprint |
-| `ring_buffer` | 15 min | long |
-| `fsm` | 15 min | long |
+| `ring_buffer` | 15 min | sprint or long |
+| `fsm` | 15 min | sprint or long |
 | `pool_allocator` | 20 min | long |
 | `protocol_parser` | 20 min | long |
 | `fixed_point_pid` | 20 min | long |
 | `concurrency_sim` | 25 min | long |
-| `test_harness_py` | 25 min | long |
+| `test_harness_py` | 25 min | Python block |
 | `binary_frame_py` | 20 min | Python block |
 | `log_parser_py` | 20 min | Python block |
 | `cli_tool_py` | 22 min | Python block |

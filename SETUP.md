@@ -1,14 +1,14 @@
 # Setup
 
 **Do not build all fifteen katas before you start.** Build the ones week 1 needs, start on day 1,
-and take the rest in three sessions across the first three weeks.
+and take the rest in five Sunday sessions across the first five weeks.
 
 Fifteen katas, each needing a real test suite — and for the C ones a compiling header too —
 is around fifteen hours.
 Spent up front that is two weeks of building the gym before lifting anything, which is the most
 common way a plan like this dies. Spread one-per-week instead and you get the opposite problem: a
 running dependency where one missed Sunday leaves the next week with nothing to drill. A batch
-now, three more batches, then never again.
+now, five more batches, then never again.
 
 ---
 
@@ -33,6 +33,13 @@ One dependency, needed **from day 0**, because the Python katas are drilled from
 ```bash
 python3 -m pip install pytest      # or: sudo apt install python3-pytest
 ```
+
+**One thing to source early, because it has a lead time.** T24's evidence bar is an instrument
+driver class in the harness repo, and criterion 8 of
+[`projects/hil-harness/BRIEF.md`](projects/hil-harness/BRIEF.md) needs a *programmable* SCPI
+instrument on the bench — a scope, a bench supply or a meter with a USB/LAN command interface.
+It first bites in **week 11**, but that is not when you want to discover you do not have one.
+Everything else in the plan runs on the machine you already have.
 
 Then check the machine is ready. This should pass on a clean tree, and it is the same set CI
 runs:
@@ -60,13 +67,19 @@ Scaffold each one with `make newkata NAME=<module>`, then, in this order:
    - **Python module** (`<name>_py`): there is no header and no `include/`. The contract is the
      API written out in `BRIEF.md`, and the frozen suite is what enforces it. The day-0 build
      includes two of these, so this is not a footnote.
-2. **List the cases** in `BRIEF.md` under "What to test," before writing any of them.
+2. **List the cases** in `BRIEF.md` under "Tests it must pass," before writing any of them.
 3. **Write the cases** in `tests/`. Yourself.
 4. **Check it took.** `make drill KATA=<name>` refuses a module whose suite is still the
    scaffolded placeholder, so if it refuses, step 3 is not finished.
 
 About an hour each; `ring_buffer`, `protocol_parser` and `concurrency_sim` are budgeted at
 ninety minutes, and the printed plan says so per session.
+
+**Be honest about the size of this one.** The day-0 weekend is the largest single session in
+the plan — the printed figure is six modules and around six and a half hours, and it is the
+only session not capped by `make check-calendar`, because it is not a calendar day. Split it
+across both days of the weekend. It is also the highest-stakes work here: those suites are
+frozen for fourteen weeks, so a rushed suite is a rushed fourteen weeks.
 
 > **This is not setup overhead.** Writing the API and the test suite before the implementation is
 > the single most-interviewed skill in both tracks. You are doing rep zero of "how would you test
@@ -104,9 +117,11 @@ generated calendar prints the real hours per week; don't trust a number typed in
 document, including this one.
 
 **Every kata ships with a written `BRIEF.md` and `VARIANTS.md`.** For each one you owe the
-tests, and for the C ones the header as well. Read the BRIEF's "What to test" section — it lists the
-cases, in prose. Turning that list into actual test cases is your job and nobody else's; it is
-the single most-interviewed skill in both tracks.
+tests, and for the C ones the header as well. Every BRIEF teaches the module from the ground
+up — the problem in plain language, a diagram, the API line by line, and a set of paper
+questions to answer before you type — and ends with a "Tests it must pass" table listing the
+cases in prose, each with the bug it protects against. Turning that table into actual test
+cases is your job and nobody else's; it is the single most-interviewed skill in both tracks.
 
 Some katas do not follow the standard build:
 

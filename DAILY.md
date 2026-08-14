@@ -16,10 +16,10 @@ with your real dates, and that is the one to open.
 
 | Timer | Block | What |
 |---|---|---|
-| **15 min** | Kata — sprint | make drill KATA=bitops VARIANT=v1 |
-| **25 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v1 |
-| **55 min** | Main block | Mimic: S0 bench, toolchain, repo · S1 motor forensics |
-| **12 min** | Deck | make review  (types, pointers, strings) |
+| **18 min** | Kata — sprint | make drill KATA=bitops VARIANT=v1 |
+| **28 min** | Kata — Python | make drill KATA=binary_frame_py VARIANT=v1 |
+| **49 min** | Main block | Mimic: S0 bench, toolchain, repo · S1 motor forensics |
+| **12 min** | Deck | make review  (bitops, memory) |
 | **8 min** | Log and commit | make done, log the session, git commit |
 
 Six things to know about that table.
@@ -44,12 +44,16 @@ and read **nothing else**. Your previous solution no longer exists, and that is 
 every rep is a genuine cold start, so what accumulates is the fluency and the lesson rather
 than the code.
 
-**Text in parentheses is context, not arguments.** `make review  (types, pointers,
-strings)` is the command `make review`, alone — the bracket tells you what this week's deck
-focus is, so you know what most of the due cards will be about. Likewise `make drill   (no
-argument — picks your weakest built module)` is the command `make drill`, with nothing after
-it. If you genuinely want to pin the deck to one topic, that is `make review N="--topic
-interrupts"`.
+**Text in parentheses is context, not arguments.** `make review  (bitops, memory)` is the
+command `make review`, alone. Likewise `make drill   (no argument — picks your weakest built
+module)` is the command `make drill`, with nothing after it.
+
+**The deck focus is a theme, not a filter.** `make review` on its own draws from *everything*
+due, across all three decks, shuffled — the Leitner schedule decides what you see, not the
+week. The bracket names the week's theme so you know what to read up on if a card catches you
+out, and it is what the week's kata and main block are about. If you actually want to pin the
+deck to one topic, that is `make review N="--topic interrupts"`, and it is worth doing in the
+week whose theme you are weakest on.
 
 **Two katas every weekday.** Both are `make drill`, back to back, from week 1. On Monday,
 Wednesday, Thursday and Friday that is a C rep beside a Python one — interleaved rather than
@@ -140,8 +144,8 @@ the calendar, so they live in exactly one place and are not repeated here.
 
 Saturday's rep has no assigned module on purpose. `make drill` with no arguments picks by
 worst recent time, then longest since the last rep, then never attempted — so one day a week
-catches whatever you have been quietly avoiding. It is also the only slack in the rotation,
-which is where a module's fourth and fifth reps come from.
+catches whatever you have been quietly avoiding. It is also the only slack in the rotation:
+fourteen spare reps that go wherever they are most needed.
 
 ---
 
@@ -149,7 +153,10 @@ which is where a module's fourth and fifth reps come from.
 
 **Weeks 1–5 — a kata build session.** The calendar names the modules. See below.
 
-**Week 6 onward — a design prompt and rehearsal:**
+**Rehearsal runs every Sunday from week 3**, build session or not — three takes. Fill in
+`practice/rehearsal/STORIES.md` at the end of week 2, which is where the calendar tells you to.
+
+**Week 6 onward — a design prompt as well** (weeks 1–5 spend that slot on the build session):
 
 - [ ] `make prompt` — draws one of the 60 "how would you test X" subjects and opens a
       pre-scored answer file. Ten minutes written, then said aloud. **Fill in the rubric
@@ -187,7 +194,7 @@ which is where a module's fourth and fifth reps come from.
 
 ## Build sessions
 
-Three Sundays in weeks 1–3, plus the day-0 weekend before the plan starts. `make
+Five Sundays, weeks 1 to 5, plus the day-0 weekend before the plan starts. `make
 check-calendar` prints which modules and how long; the order is derived from the rotation,
 so it is never written down twice.
 

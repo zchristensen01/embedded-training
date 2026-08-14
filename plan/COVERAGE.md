@@ -234,7 +234,7 @@ with a call, change it; but change it here first.
 
 | Bar | The research asked for | What is implemented | Why |
 |---|---|---|---|
-| **Y2, Y3** | the decoder written against an **unseen** packet spec / **unseen** parse prompts | three clean reps across three known variants | "Unseen" is not available in a solo repo: you write the frozen suite yourself, so you have seen every spec here. The variants are the nearest honest substitute. The genuinely unseen version is a take-home, and that is what week 10's mock is for |
+| **Y2, Y3** | the decoder written against an **unseen** packet spec / **unseen** parse prompts | three clean reps across three known variants | "Unseen" is not available in a solo repo: you write the frozen suite yourself, so you have seen every spec here. The variants are the nearest honest substitute. The genuinely unseen version is a take-home, and that is what the weeks 13 and 14 mocks are for |
 | **Y3** | three prompts back to back in **45 minutes total** | three separate reps at 20 minutes each | Back-to-back-under-one-clock is a different exercise — endurance rather than fluency. Worth adding once the individual reps are at target; not worth blocking the capability on |
 | **E29** | deck card **and** a written super-loop-vs-RTOS comparison for a real system | deck card | The written comparison belongs to Mimic, which is where you actually make that decision. Recorded here so nobody thinks the deck card alone was the whole ask |
 | **E31, E33** | deck card **and** a diagram drawn from memory (bootloader handoff / signed-boot chain) | deck card | A flashcard cannot verify a drawing. Drawing these is genuinely worth doing — do it in a `make design` session, where the rubric already scores a labelled diagram |
@@ -255,9 +255,17 @@ postings named DO-178C), **T25** (deck only — a Gauge R&R study is metrology c
 ### The deck bar is a proportion, not all of them
 
 **Decision, taken deliberately.** A capability whose bar is the deck is met when **80% of its
-cards are in box 4 or higher, with a floor of three** — or all of them, where it has fewer
-than three. `tools/progress.py:cards_needed()` is that rule, and `make decks` prints the
-number beside every capability.
+cards are in box 4 or higher, with a floor of three**. `tools/progress.py:cards_needed()` is
+that rule, and `make decks` prints the number beside every capability.
+
+**In practice that is still every card for most of them, and it is worth knowing which.** The
+proportion only relaxes anything at five cards or more, because 80% of four rounds up to four.
+Of the 55 deck-barred capabilities, 50 have four cards or fewer and therefore need all of them;
+only 5 get any slack. So the rule below fixed the incomparability at the top of the range —
+Y1's twenty cards now need sixteen rather than twenty — and left the bottom of the range where
+it was. Adding a card to a one-, two- or three-card capability still raises its own bar by one
+and un-meets it until the new card reaches box 4. Write the card anyway; the score catching up
+a fortnight later is the correct behaviour, not a reason to skip it.
 
 It used to be *every* card, which was wrong in two ways that pulled against each other. It
 made the bars incomparable: H7 has one card and needed one, T11 has nine and needed nine, Y1

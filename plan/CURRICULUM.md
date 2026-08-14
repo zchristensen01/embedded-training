@@ -45,7 +45,7 @@ reps halfway. So there are four block shapes:
 - **Sprint blocks — Mon, Tue, Thu, Fri.** A short C module, in a block sized to beat its target.
   Tuesday carries two of them.
 - **Long-rep blocks — Wed, Sun.** The C modules that need real time. Sunday carries two.
-- **Python blocks — Mon, Wed, Thu, Fri.** 25 minutes, alongside the C rep rather than instead
+- **Python blocks — Mon, Wed, Thu, Fri.** 28 minutes, alongside the C rep rather than instead
   of it. Interleaved on purpose: an interview loop does not block by language, and working out
   which kind of problem you are looking at before solving it is part of the skill.
 - **Saturday** is adaptive: no assigned module, a long block, and `make drill` with no
@@ -92,7 +92,9 @@ the calendar.
 ### Week 8 gate — both must be true
 
 1. Mimic's Stage 0 exit gate, all ten criteria, tagged `v0.0-stage0-exit`.
-2. From this repo: clean-first-compile rate above 55%, and 60+ logged kata reps.
+2. From this repo: clean-first-compile rate above 55%, and the logged-rep floor printed in the
+   gate block of [`plan/CALENDAR.md`](CALENDAR.md). It is derived from the rotation rather than
+   restated here, because a number typed into a document is a number that goes stale.
 
 If (1) slips, push everything a week. If (2) is failing, the robot has been eating the kata
 slot — that is the exact failure mode this plan is built to prevent, and it is why the gate

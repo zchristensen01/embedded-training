@@ -132,6 +132,11 @@ DESIGN_WEEKS = (6, 8, 10, 12)
 MIMIC_WEEKS = 8
 GATE_WEEK = MIMIC_WEEKS
 
+# The gate's rep floor, as a share of what the calendar actually schedules by then. A fixed
+# number here goes stale every time the rotation changes, which is how it came to read "25+"
+# against a calendar handing out 96.
+GATE_REP_SHARE = 0.75
+
 WEEKDAY_TOTAL = 115
 FIXED_TAIL = 20       # Deck (12) + Log and commit (8)
 
@@ -210,7 +215,11 @@ DECK = {
     14: "full deck, no filter",
 }
 
-# Not topics — the week 10 instruction to stop filtering. Exempt from the check above.
+# Not topics — the final week's instruction to stop filtering. check_decks.py validates that
+# every other name here is a real topic in a deck, and skips these two.
+#
+# The focus is a THEME, not a filter: `make review` with no argument draws from everything due
+# across all three decks. Nothing here changes what a deck pass shows you. See DAILY.md.
 DECK_NOT_A_TOPIC = {"full deck", "no filter"}
 
 # ------------------------------------------------------------------ rotation ---
@@ -242,6 +251,21 @@ REPS_REINFORCEMENT = 4
 
 # Overrides, where a kata is reinforcement but still worth more than the floor.
 REPS_OVERRIDE = {"cli_tool_py": 5}
+
+# No module goes longer than this without a rep, if it still has reps owed. A kata you have
+# not touched in a fortnight is not being reinforced, it is being relearned.
+#
+# Without this, need-per-week alone decided everything, and a reinforcement module — four reps
+# against a bar-owner's fourteen — was never the one "furthest behind pace". It lost every
+# contest until the bar-owners finished, so its remaining reps piled up in weeks 12-14:
+# protocol_parser ran day 10, then day 80. Seventy days is not a gap between reps, it is three
+# separate first attempts, and it wasted the build session three times over.
+#
+# Ten days, measured rather than picked: at 14 the worst gap in the plan is still 18 days, at
+# 12 it is 21, and at 10 it is 14 — which is the point where every module's second rep lands
+# while the first is still yours. It costs the bar-owners nothing; they average a rep every
+# seven days anyway and rarely trip it.
+MAX_GAP_DAYS = 10
 
 # The week each kata may first be drilled. Hand-authored, and the only ordering decision
 # left: it is what makes week 1 the fundamentals and week 6 the concurrency work, and the
@@ -328,14 +352,22 @@ def _rotation():
                 weeks_left = max(1, WEEKS - week + 1)
 
                 def urgency(k):
-                    # A kata that has just been introduced gets its first rep promptly.
-                    # Without this, need-per-week alone deferred every low-rep module —
-                    # debouncer, protocol_parser, concurrency_sim — to week 11, eight weeks
-                    # after the session that built it. That wastes the build, breaks the
-                    # deck focus it was paired with, and makes `first_use` disagree with
-                    # INTRO, which is what the build plan is derived from.
-                    return (done[k] == 0, (want[k] - done[k]) / weeks_left,
-                            n - last[k], k)
+                    # Three tiers, in order.
+                    #
+                    # 1. A kata that has just been introduced gets its first rep promptly.
+                    #    Without this, need-per-week alone deferred every low-rep module —
+                    #    debouncer, protocol_parser, concurrency_sim — to week 11, eight
+                    #    weeks after the session that built it. That wastes the build,
+                    #    breaks the deck focus it was paired with, and makes `first_use`
+                    #    disagree with INTRO, which the build plan is derived from.
+                    # 2. Anything gone stale jumps the queue. Tier 1 only ever fixed the
+                    #    FIRST rep; reps two onward were still deferred to the end of the
+                    #    plan, so the same module got three cold starts instead of one
+                    #    start and three reps. See MAX_GAP_DAYS.
+                    # 3. Otherwise, furthest behind the pace it needs to finish on time.
+                    gap = n - last[k]
+                    return (done[k] == 0, gap >= MAX_GAP_DAYS,
+                            (want[k] - done[k]) / weeks_left, gap, k)
 
                 kata = max(fresh, key=urgency)
                 variants = variants_in(kata) or ["v1"]
@@ -766,6 +798,26 @@ def rehearsal_schedule():
 STRONG_RATE = 0.75
 
 
+def rep_shortfall():
+    """{kata: (scheduled, owed)} for anything the rotation cannot give its full budget.
+
+    The weekday shape fixes the supply at len(DAY_SLOTS-days) * WEEKS slots. reps_wanted()
+    is the demand. When demand exceeds supply the greedy placer silently drops the tail,
+    and until this existed nothing compared the two: check #8 only asks for three slots and
+    three distinct trailing variants, which a kata twelve reps short still passes.
+
+    Deliberately an advisory rather than a problem. Saturday is fourteen unassigned reps
+    over the plan and the adaptive picker spends them worst-first, so a small shortfall is
+    what that slack is for. A large one means the day shape can no longer fund the bar, and
+    the number below is how you tell the two apart.
+    """
+    got = {}
+    for _, _, kata, _, _ in all_slots():
+        got[kata] = got.get(kata, 0) + 1
+    return {k: (got.get(k, 0), n) for k, n in sorted(reps_wanted().items())
+            if got.get(k, 0) < n}
+
+
 def advisories():
     """Things worth knowing that are not build failures. Printed by `make check-calendar`.
 
@@ -774,6 +826,17 @@ def advisories():
     manages. This says how much real slack there is.
     """
     notes = []
+    short = rep_shortfall()
+    if short:
+        total = sum(n - g for g, n in short.values())
+        notes.append(
+            "rep budget: " + ", ".join(f"{k} {g}/{n}" for k, (g, n) in short.items())
+            + f". The weekday shape supplies {len(all_slots())} slots and reps_wanted() "
+            f"asks for {sum(reps_wanted().values())}, so {total} rep(s) fall off the end. "
+            f"Saturday's {WEEKS} adaptive reps are the designed slack and the picker spends "
+            f"them worst-first, so a shortfall this size closes itself. If it grows, either "
+            f"lower a rep budget or add a slot to DAY_SLOTS — do not ignore it."
+        )
     stories = _story_ids()
     if stories:
         takes, _ = rehearsal_schedule()
@@ -913,7 +976,11 @@ def render(start=None):
     a(f"**Long-rep days (Wed, Sun):** {LONG_BLOCK}-minute kata. The modules that need real time.")
     a(f"**Saturday:** a {LONG_BLOCK}-minute adaptive rep, then the main block. Still no deck.")
     a("**Sunday:** one long rep, the weekly review, a full deck pass — then whatever the")
-    a("week owes: a kata build session in weeks 1–3, an architecture drill in weeks "
+    # Both halves derived. The build-session weeks used to be the literal string "1–3" sitting
+    # next to a derived DESIGN_WEEKS, and it went stale the moment SESSIONS grew to five.
+    a("week owes: a kata build session in weeks "
+      + ", ".join(str(w) for w in sorted(w for w in build_plan() if w))
+      + ", an architecture drill in weeks "
       + ", ".join(str(w) for w in DESIGN_WEEKS) + ".")
     a("")
     a("Every block is at least as long as the kata's target time in `tools/drill.py`, and")
@@ -993,9 +1060,14 @@ def render(start=None):
         a(f"**Deck focus:** {DECK[week]}")
         a("")
         if week == GATE_WEEK:
+            # Derived, not typed. This said "25+" while plan/CURRICULUM.md said "60+", and the
+            # rotation actually delivers 96 scheduled reps by here — so both numbers were
+            # relics that would only fire after the kata slot had already been gutted.
+            due = sum(1 for w, _, _, _, _ in all_slots() if w <= GATE_WEEK)
             a("> **GATE WEEK.** Stage 0 exit tagged `v0.0-stage0-exit`, clean-first-compile")
-            a("> above 55%, 25+ logged reps. If the second one is failing, the kata slot has")
-            a("> been getting eaten — that is the exact failure mode this plan exists to stop.")
+            a(f"> above 55%, and {int(due * GATE_REP_SHARE)}+ logged kata reps — the calendar")
+            a(f"> schedules {due} by the end of this week. If that one is failing, the kata slot")
+            a("> has been getting eaten, which is the exact failure mode this plan exists to stop.")
             a("")
         for i, day in enumerate(DAYS):
             n = (week - 1) * 7 + i + 1

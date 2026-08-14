@@ -7,7 +7,7 @@ position wraps back to the start when it reaches the end.
 
 > **Before your first rep you owe this module two files:** `include/ring_buffer.h` — the API
 > contract — and the suite in `tests/`. Write the header first, then list the cases under
-> **What to test** below in your own words, then write every one of them yourself. AI writes
+> **Tests it must pass** below in your own words, then write every one of them yourself. AI writes
 > neither. `make drill` refuses a module whose header and tests do not exist, because a rep
 > against an empty suite is not a rep. Both are frozen once written: you do not edit them
 > during a rep, only your `src/`, which is deleted each time. See

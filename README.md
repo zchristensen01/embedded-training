@@ -94,10 +94,10 @@ finding it. `make help` lists everything and [DAILY.md](DAILY.md) explains what 
 
 | Day | Shape | Total |
 |---|---|---|
-| Mon, Thu, Fri | 15 C kata · **25 Python kata** · 55 main · 12 deck · 8 log | 115 min |
-| Tue | 15 C kata · **15 C kata** · 65 main · 12 deck · 8 log | 115 min |
-| Wed | 28 C kata · **25 Python kata** · 42 main · 12 deck · 8 log | 115 min |
-| Sat | 28 kata (adaptive, either language) · 100 main · 10 rehearsal | 138 min |
+| Mon, Thu, Fri | 18 C kata · **28 Python kata** · 49 main · 12 deck · 8 log | 115 min |
+| Tue | 18 C kata · **18 C kata** · 59 main · 12 deck · 8 log | 115 min |
+| Wed | 28 C kata · **28 Python kata** · 39 main · 12 deck · 8 log | 115 min |
+| Sat | 28 kata (adaptive, either language) · 100 main · 10–20 rehearsal | 138–148 min |
 | Sun | **two** 28-min katas · 20 review · 15 deck · 10 prompt · 30 rehearsal | 131 min |
 | Sun, weeks 6/8/10/12 | the same, plus a 45-minute architecture drill | 176 min |
 
@@ -123,7 +123,7 @@ card at a time, spaced out far enough that a single generous `y` cannot carry it
 |---|---|
 | **C** — C fluency | Three consecutive clean reps at or under target, across three variants. C1 is the clean-first-compile rate itself, over 20+ reps — C modules only |
 | **Y** — Python fluency | The same kata bar for Y2 and Y3. Y1 is the deck. "Clean" for a Python rep means it ran first try with no traceback, and is reported apart from C |
-| **E** — concepts | 80% of its deck cards in Leitner box 4 or higher (all of them, below three cards), said aloud with the trap |
+| **E** — concepts | 80% of its deck cards in Leitner box 4 or higher, floor of three — which is every card for any capability with four or fewer, said aloud with the trap |
 | **T** — test & integration | Deck boxes, the design-prompt rubric for T1, or artifacts in the harness repo |
 | **B** — behavioural | Three takes rated strong, on three different days |
 | **H** — hardware | Deck boxes, or bench evidence — reported as tracked outside this repo, which is not the same as done |

@@ -159,10 +159,9 @@ Four numbers matter, and all four come from the logs rather than from self-asses
   about a different skill, and one number covering both would measure neither.
 - **`write` + `compile` as a share of total rep time** — syntax fluency in one number, and
   `write` + `run` for a Python rep. Under 40% by week 14. `make report` prints the two apart.
-- **Reps per week** — consistency beats intensity. The calendar schedules ten a week: seven C
-  and three Python for most of the plan, shifting to six and four in weeks 7, 8 and 10 when
-  `test_harness_py` comes into the rotation. Nine is the target, because one missed day is real
-  life and two is a drift.
+- **Reps per week** — consistency beats intensity. The calendar schedules thirteen a week:
+  eight C and four Python across the weekdays and Sunday, plus Saturday's adaptive one. Eleven
+  is the target, because one missed day is real life and two is a drift.
 - **Capabilities met** — `make progress`. Should climb steadily, not in a rush at the end.
   The kata and rubric bars behind it are measured; the deck bar is graded by you, spaced out
   so a single generous `y` cannot carry a card. `plan/COVERAGE.md` says which is which.
