@@ -82,40 +82,50 @@ you type the format string*.
 
 ### Phase splits — the diagnosis
 
-A total time tells you whether you're getting faster. It doesn't tell you *what* is slow. Call
-`make lap` at each transition during a rep and you get that:
+A total time tells you whether you're getting faster. It doesn't tell you *what* is slow. Three
+phases do:
 
-| Phase | From | To |
-|---|---|---|
-| `design` | `make drill` | the first line of code you type |
-| `write` | first line | your first compile attempt |
-| `compile` | first compile attempt | it compiles clean |
-| `debug` | clean compile | tests pass |
+| Phase | From | To | Closed by |
+|---|---|---|---|
+| `write` | `make drill` | your first `make test` | `make test` |
+| `compile` | first `make test` | it compiles clean | `make test` |
+| `debug` | clean compile | tests pass | `make done` |
 
-A Python kata has no compile step, so its third phase is **`run`** — from your first
+A Python kata has no compile step, so its second phase is **`run`** — from your first
 execution attempt to the point where it runs without a syntax or import error. Same position
 in the sequence, same meaning: the gap between having typed something and the machine
-accepting it. `make lap` picks the right set from the module name.
+accepting it. Everything picks the right set from the module name.
+
+**You don't lap any of this by hand.** Both boundaries `make test` can observe, it closes:
+`write` when you invoke it, and `compile`/`run` when the build or the import succeeds. That
+second one fires on *acceptance*, not on passing — a failing assertion means your code ran,
+so you're debugging; a compile error or an `ImportError` means it didn't, and you stay put
+until the next `make test` gets further. `make lap` remains for a rep you drive by hand and
+always overrides.
+
+**There is no `design` phase, deliberately.** It measured reading the BRIEF — real work
+exactly once per module, and a glance at one signature thereafter. Across the reps that make
+up the bulk of the plan it was a near-zero column that still had to be lapped, and a missed
+lap doesn't lose a little precision, it moves minutes into `write`. Read the BRIEF and the
+variant line first; the clock starts at the keyboard.
 
 `make done` prints the breakdown and writes it to `logs/splits.tsv`. `make report` aggregates it
 and, once you have enough reps, compares your first reps against your recent ones.
 
 **How to read it:**
 
-- **`design` dominates** — you don't know the pattern. Reread the BRIEF and draw the invariant on
-  paper before starting the clock next time.
 - **`write` dominates** — this is the syntax-fluency gap, the one you set out to fix. It should
   shrink faster than any other phase.
 - **`compile` dominates** — syntax errors, not logic. Type 20% slower on the first pass; it
   usually beats three compile cycles.
+- **`run` dominates** (Python) — imports, indentation, typos. The same claim as `compile`.
 - **`debug` dominates** — logic and edge cases. Write the test you'd add *before* the
-  implementation on the next rep.
+  implementation on the next rep. If the failure is silent — a wrong answer with no sanitizer
+  report — stop re-reading your own code and open the debugger: `make debug MODULE=x`, then
+  `gdb build/x-debug`. See [`../reference/GDB.md`](../reference/GDB.md).
 
 **`write` + `compile` combined is your syntax fluency in one number** (`write` + `run` for a
 Python rep). Watch it fall. Under 40% by week 14 is the target.
-
-Missing a lap call isn't a problem — `make done` attributes whatever is left to the next phase in
-sequence. Skipping laps entirely just means you get totals without the diagnosis.
 
 ### Selection — the default chooses, you can always override
 
@@ -249,6 +259,14 @@ Mutations are chosen to be *silent*: a `<` becomes `<=`, a `volatile` disappears
 format's endianness prefix flips. None of them raise. `make hunts` shows which kinds keep
 catching you, and that list is a reading list.
 
+**This is the debugger exercise, and the only one.** Because nothing raises, there is no
+sanitizer report naming a file and a line — which is exactly the condition gdb is for and
+exactly what a normal kata rep never produces. `make hunt` builds the `-g -O0` binary for
+you and prints the invocation; `make hunt-done` then asks whether you found it by stepping
+or by reading, and `make hunts` reports the split. Both routes are legitimate, but only one
+of them transfers to a codebase you did not write, which is the point of the exercise.
+[`../reference/GDB.md`](../reference/GDB.md) is the twelve commands worth knowing.
+
 ---
 
 ## Format F — Rehearsal
@@ -355,7 +373,7 @@ for.
 | Thing | File | Written by |
 |---|---|---|
 | Every kata rep: date, module, variant, minutes, clean, note | `logs/log.tsv` | `make done` |
-| Phase splits: design, write, compile/run, debug | `logs/splits.tsv` | `make lap` + `make done` |
+| Phase splits: write, compile/run, debug | `logs/splits.tsv` | `make test` + `make done` |
 | One design decision or bug per rep | `practice/katas/*/NOTES.md` | `make done` |
 | Every AI use | `logs/ai-use.tsv` | you, by hand |
 | Deck scheduling and box state | `practice/decks/.state.json` | `make review` |

@@ -163,6 +163,13 @@ SAN_SELECT = case $$m in \
 	  *)               san="$(SAN)";      runner="";; \
 	esac
 
+# Two of the three phase boundaries are visible from here, so this target closes them
+# rather than leaving them to you: `autolap start` ends `write` the moment the suite is
+# invoked, and `autolap accepted` ends `compile`/`run` once the code is accepted. Accepted
+# is not the same as passing — a failing assertion means the machine ran your code, so the
+# phase is over and you are debugging. For C that distinction is the compiler's exit
+# status; for pytest it is exit 0 or 1 (ran) versus 2, 3, 4 or 5 (never got that far).
+# Both calls no-op unless a rep is in flight for that exact module. See drill.py:cmd_autolap.
 test: | $(BUILD)
 	@if [ -z "$(MODULES)" ] && [ -z "$(PY_MODULES)" ]; then \
 	    if [ -n "$(MODULE)" ]; then \
@@ -178,14 +185,24 @@ test: | $(BUILD)
 	        echo "  no tests/ — write the suite before the implementation"; exit 1; \
 	    fi; \
 	    $(SAN_SELECT); \
+	    $(PY) tools/drill.py autolap $$m start; \
 	    $(CC) $(CSTD) $(WARN) -O1 $$san -I$(KATAS)/$$m/include \
 	        $(KATAS)/$$m/src/*.c $(KATAS)/$$m/tests/*.c -o $(BUILD)/$$m || exit 1; \
-	    $$runner $(BUILD)/$$m || exit 1; \
+	    $(PY) tools/drill.py autolap $$m accepted; \
+	    $$runner $(BUILD)/$$m || { \
+	        echo "  debug it:  make debug MODULE=$$m   then   gdb $(BUILD)/$$m-debug"; \
+	        echo "  commands:  reference/GDB.md"; \
+	        exit 1; }; \
 	done
 	@for m in $(PY_MODULES); do \
 	    echo "=== $$m (pytest) ==="; \
+	    $(PY) tools/drill.py autolap $$m start; \
 	    PYTHONPATH=$(KATAS)/$$m/src $(PY) -B -m pytest -q -p no:cacheprovider \
-	        $(KATAS)/$$m/tests || exit 1; \
+	        $(KATAS)/$$m/tests; rc=$$?; \
+	    if [ $$rc -eq 0 ] || [ $$rc -eq 1 ]; then \
+	        $(PY) tools/drill.py autolap $$m accepted; \
+	    fi; \
+	    [ $$rc -eq 0 ] || exit 1; \
 	done
 
 # Sanitizers stay on: they work fine under gdb and you want them there.

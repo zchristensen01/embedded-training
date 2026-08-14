@@ -111,13 +111,17 @@ generated, not written, so it cannot drift out of step with the rest.
 
 ```
 make today          what to do right now
-make drill          start a rep — wipes src/, starts the clock
-    make lap        at each transition: design -> write -> compile -> debug
-                    (a Python rep reads design -> write -> run -> debug)
+                    read the BRIEF and the variant line — the clock is not running yet
+make drill          start a rep — wipes src/, starts the clock. You are in `write`
 make test           run the frozen suite — sanitizers for C, pytest for Python
-make done           stop the clock, log the rep
+                    also closes `write`, then `compile`/`run`, for you
+make done           stop the clock, log the rep. Closes `debug`
 make review         deck pass — ANSWER OUT LOUD
 ```
+
+Three phases — `write -> compile -> debug`, and `write -> run -> debug` for a Python rep —
+and you lap none of them by hand. `make test` sees both boundaries it can see and closes
+them; `make done` closes the last. `make lap` is still there for a rep you drive yourself.
 
 Most weekdays carry two reps: the assigned C kata and the assigned Python one. Both are
 `make drill KATA=...`, and `make today` prints them in order.

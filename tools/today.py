@@ -89,7 +89,14 @@ def main():
         print(f"\n  !! WEEK {SCHED.GATE_WEEK} GATE: Stage 0 exit tagged, 55%+ clean rate, 25+ reps.")
         print("  !! If the clean rate is short, the kata slot has been getting eaten.")
 
-    print("\n  Next:  make drill\n")
+    # The clock starts at the keyboard, so the reading is a real step and it comes first.
+    # Printing `make drill` alone here was what taught the old habit of drilling and then
+    # reading, which is now backwards.
+    print("\n  Next:")
+    print("    1. Set a timer for the first block.")
+    print("    2. Read that kata's VARIANTS.md line and the API in its BRIEF.md.")
+    print("       This is off the clock — the clock starts when you start typing.")
+    print("    3. `make drill KATA=... VARIANT=...` exactly as printed above.\n")
 
 
 if __name__ == "__main__":

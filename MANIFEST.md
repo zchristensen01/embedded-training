@@ -11,6 +11,7 @@ Every file, what it's for, whether you edit it.
 | `SETUP.md` | Day 0 and the staged kata build order. **Start here** | No |
 | `DAILY.md` | What a calendar line means, the session checklist, and how to practise off-plan | No |
 | `MANIFEST.md` | This file | No |
+| `THIS_WEEKEND.md` | The day-0 build weekend with real dates on it. Delete it once the six suites exist | **Yes** |
 | `Makefile` | The command interface. Put your build rules under `test:` | **Yes** |
 | `.gitignore` | Contains `practice/katas/*/src/` — the line that makes reps repeatable | Rarely |
 | `.gitattributes` | Forces LF endings. The log validator rejects carriage returns | No |
@@ -65,6 +66,7 @@ rotation — `make check-calendar` prints it.
 | `question-bank/test-integration.md` | The T&I track: coding, conceptual, process, behavioural |
 | `COMMANDS.md` | Every command, what it does, and what it writes |
 | `ARCHITECTURE.md` | Repo internals and the gitignore trick |
+| `GDB.md` | The twelve gdb commands, how to read a sanitizer report, and pdb for the Python katas |
 
 ## `projects/` — one-shot artifacts
 

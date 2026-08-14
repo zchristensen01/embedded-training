@@ -43,27 +43,33 @@ hand you a module you have not built yet, and neither will `KATA=` — a rep aga
 empty suite is not a rep.
 
 ### `make lap`
-Records a phase split. Call it at each transition:
+Records a phase split by hand. **You normally never call this** — `make test` and `make done`
+close all three boundaries for you. It exists for a rep you drive outside the Makefile, and a
+manual call always overrides the automatic one.
 
-| Phase | From | To |
-|---|---|---|
-| `design` | `make drill` | the first line of code you type |
-| `write` | first line | your first compile attempt |
-| `compile` | first compile | it compiles clean |
-| `debug` | clean compile | tests pass |
+| Phase | From | To | Closed by |
+|---|---|---|---|
+| `write` | `make drill` | your first `make test` | `make test` |
+| `compile` | first `make test` | it compiles clean | `make test` |
+| `debug` | clean compile | tests pass | `make done` |
 
-A Python kata (`*_py`) has no compile step, so its third phase is **`run`** — first execution
-attempt until it runs without a syntax or import error. `make lap` picks the right set from
-the module name, so you call it the same way either way.
+A Python kata (`*_py`) has no compile step, so its second phase is **`run`** — first execution
+attempt until it runs without a syntax or import error. Everything picks the right set from
+the module name.
 
 ```bash
 make lap            # auto-advances to the next phase in sequence
 make lap P=debug    # name it explicitly
 ```
 
+**There is no `design` phase.** Read the BRIEF and the variant line before `make drill`; the
+clock starts at the keyboard. It was dropped because it measured reading — genuine work once
+per module, a glance thereafter — while still needing a lap call whose omission moved minutes
+into `write`, the number the whole fluency claim rests on. `logs/splits.tsv` still accepts a
+`design` row so rows written before the change stay valid.
+
 A total time tells you whether you are getting faster. The split tells you *what is
-slow*, which is the part you can act on. Missing a lap call is fine — `make done`
-attributes the remainder to the next phase.
+slow*, which is the part you can act on.
 
 ### `make test`
 Builds and runs the frozen test suites under sanitizers: `-std=c11 -Wall -Wextra
@@ -79,6 +85,57 @@ Some katas are handled automatically: `concurrency_sim` builds under ThreadSanit
 of AddressSanitizer (the two cannot coexist in one binary), and the four `*_py` modules
 (`binary_frame_py`, `log_parser_py`, `cli_tool_py`, `test_harness_py`) run under pytest
 instead of being compiled. The `_py` suffix is the switch, in the Makefile and in every tool.
+
+**It also laps the rep.** If a drill is in flight for the module being tested, this closes
+`write` when you invoke it and `compile`/`run` once the build or the import succeeds. That
+second one fires on **acceptance, not on passing**: a failing assertion means the machine ran
+your code, so the phase is over and you are debugging; a compile error or an `ImportError`
+means it never got that far, and you stay in `compile`/`run` until a later `make test` gets
+through. For C the distinction is the compiler's exit status; for pytest it is exit 0 or 1
+against 2, 3, 4 or 5. Both calls are silent no-ops when no rep is in flight, so running
+`make test` during unrelated work never writes a split row.
+
+**When a C suite fails**, it prints the debugger line — `make debug MODULE=x`, then
+`gdb build/x-debug`. Worth taking whenever the failure is silent: sanitizers name the file
+and line for a memory bug, but a wrong answer with no report is what a debugger is for.
+[`GDB.md`](GDB.md) has the commands.
+
+### What the build actually runs
+
+Worth reading once. `make test` does this per C module:
+
+```bash
+gcc -std=c11 -Wall -Wextra -Werror -O1 \
+    -fsanitize=address,undefined -fno-sanitize-recover=all \
+    -Ipractice/katas/<m>/include \
+    practice/katas/<m>/src/*.c practice/katas/<m>/tests/*.c -o build/<m>
+./build/<m>
+```
+
+and this per Python module:
+
+```bash
+PYTHONPATH=practice/katas/<m>/src \
+  python3 -B -m pytest -q -p no:cacheprovider practice/katas/<m>/tests
+```
+
+| Flag | Why |
+|---|---|
+| `-std=c11` | One language version, so a GNU extension that happens to work here is still a portability bug |
+| `-Wall -Wextra` | The warnings that catch real bugs, not just style |
+| `-Werror` | A warning **stops the build**. Otherwise warnings accumulate and stop being read |
+| `-O1` | Some warnings only appear once the optimiser runs the dataflow analysis. `-O0` hides them |
+| `-fsanitize=address` | Instruments every memory access: overflow, use-after-free, leaks |
+| `-fsanitize=undefined` | Signed overflow, bad shifts, misaligned access, null deref |
+| `-fno-sanitize-recover=all` | **Undefined behaviour aborts** rather than printing and exiting 0. Without it a sanitizer finding can pass CI |
+| `-I<m>/include` | The frozen header. `src/` is compiled *against* it and never edits it |
+| `-B` (Python) | Don't write `__pycache__` into `src/`, which `make drill` then has to delete |
+| `-p no:cacheprovider` | Don't write `.pytest_cache` either |
+| `PYTHONPATH=<m>/src` | How the frozen suite finds your implementation. It is the Python equivalent of `-I` |
+
+`concurrency_sim` swaps `-fsanitize=address,undefined` for `-fsanitize=thread -pthread` —
+ThreadSanitizer and AddressSanitizer cannot coexist in one binary, and a concurrency kata
+needs the one that finds data races.
 
 ### `make done`
 Stops the clock, prints where the time went, and asks two questions: whether it was
@@ -207,6 +264,14 @@ did not write today.
 
 **Do not diff against the snapshot.** That is the answer, and it is the one thing that
 makes the exercise worthless.
+
+**This is the debugger exercise.** The mutations are chosen to be silent, so nothing raises
+and no sanitizer names a line for you — which is the condition gdb exists for and one a
+normal kata rep never produces. `make hunt` builds the `-g -O0` binary and prints the
+invocation; `make hunt-done` asks whether you found it by stepping or by reading, and
+`make hunts` reports the split alongside your found rate. Reading works fine on code you
+wrote; it is the habit that breaks on a take-home. [`GDB.md`](GDB.md) is the short version
+of the tool.
 
 ### `make report`
 Four measurements, all from the logs:
@@ -366,7 +431,7 @@ the next `make calendar` silently reverts it.
 | File | Written by | Committed |
 |---|---|---|
 | `logs/log.tsv` | `make done` | yes |
-| `logs/splits.tsv` | `make lap` + `make done` | yes |
+| `logs/splits.tsv` | `make test` + `make done` | yes |
 | `logs/rehearsal.tsv` | `make rehearse` | yes |
 | `logs/ai-use.tsv` | you, by hand | yes |
 | `logs/design-prompts/*.md` | `make prompt`, then you | yes |

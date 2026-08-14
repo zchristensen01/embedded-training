@@ -282,6 +282,21 @@ def cmd_start(argv):
         json.dump({"kata": kata, "variant": variant, "file": fname,
                    "snapshot": path, "start": time.time(), "record": record}, fh)
 
+    # A hunt is the one exercise here where a debugger is the right tool rather than
+    # theatre. The mutations are chosen to be silent — a flipped comparison, a dropped
+    # `volatile` — so nothing raises and the sanitizers stay quiet: there is no file and
+    # line handed to you the way a memory bug hands you one. Build the debug binary now so
+    # that reaching for gdb is one command and not a detour, and say so in the banner.
+    debugger = None
+    if not kata.endswith("_py"):
+        built = subprocess.run(["make", "debug", f"MODULE={kata}"], cwd=ROOT,
+                               capture_output=True, text=True)
+        if built.returncode == 0:
+            debugger = f"gdb build/{kata}-debug"
+    else:
+        rel = f"practice/katas/{kata}"
+        debugger = f"PYTHONPATH={rel}/src python3 -m pytest --pdb {rel}/tests"
+
     print("=" * 70)
     print(f"  BUG HUNT — {kata}")
     print("=" * 70)
@@ -293,6 +308,12 @@ def cmd_start(argv):
     print(f"  Do NOT diff against the snapshot — that is the answer, and looking at it")
     print(f"  is the one thing that makes this worthless.")
     print()
+    if debugger:
+        print(f"  The debugger is built and waiting. Use it — nothing raises here, so")
+        print(f"  reading harder is the slow way and stepping is the fast one:")
+        print(f"    {debugger}")
+        print(f"  Commands: reference/GDB.md")
+        print()
     print(f"  Target: {TARGET_MIN} min to a green suite. Clock is running.")
     print(f"  `make hunt-done` when the tests pass, or when you give up.")
     print("=" * 70)
@@ -307,9 +328,13 @@ def read_log():
         if len(p) < 5 or p[0] == "date":
             continue
         try:
+            # `tool` was added after `note` already existed, and sits BEFORE it: cmd_done
+            # writes the note by rewriting the tail of the last line, so the note has to
+            # stay the final field. A 6-field row predates the column and has no tool.
             rows.append({"date": p[0], "module": p[1], "kind": p[2],
                          "minutes": float(p[3]), "found": p[4].strip() == "y",
-                         "note": p[5] if len(p) > 5 else ""})
+                         "tool": p[5] if len(p) > 6 else "",
+                         "note": p[6] if len(p) > 6 else (p[5] if len(p) > 5 else "")})
         except ValueError:
             continue
     return rows
@@ -337,6 +362,14 @@ def cmd_done():
     found = input("\n  Did you find that exact line yourself? [y/N]: ").strip().lower()
     found = "y" if found in ("y", "yes") else "n"
 
+    # How, not just whether. A silent mutation gives you no diagnostic to read, so the two
+    # honest routes are stepping through it and re-reading your own code until you spot it
+    # — and the second one is the one that does not scale to a codebase you did not write.
+    # `make hunts` reports the split, which turns "I should use gdb more" into a number.
+    dbg = "gdb" if not kata.endswith("_py") else "pdb"
+    tool = input(f"  How did you find it? [d] {dbg}  [r] reading  [enter] skip: ").strip().lower()
+    tool = {"d": dbg, "r": "reading"}.get(tool, "")
+
     # Log before asking for the note, not after. The reveal has already happened by this
     # point, so the hunt is spent; an interrupt between here and the write would lose the
     # rep while leaving nothing to redo it against. The note is the optional part, so it is
@@ -345,8 +378,9 @@ def cmd_done():
     new = not os.path.exists(LOG)
     with open(LOG, "a") as fh:
         if new:
-            fh.write("date\tmodule\tkind\tminutes\tfound\tnote\n")
-        fh.write(f"{date.today().isoformat()}\t{kata}\t{rec['kind']}\t{minutes}\t{found}\t\n")
+            fh.write("date\tmodule\tkind\tminutes\tfound\ttool\tnote\n")
+        fh.write(f"{date.today().isoformat()}\t{kata}\t{rec['kind']}\t{minutes}"
+                 f"\t{found}\t{tool}\t\n")
     os.remove(STATE)
 
     note = input("  One line: what led you to it, or what misled you: ").strip()
@@ -383,7 +417,19 @@ def cmd_stats():
     for kind, (n, f) in sorted(by_kind.items(), key=lambda kv: kv[1][1] / kv[1][0]):
         print(f"    {kind:<12} {f}/{n} found")
     print("\n  The kinds at the top are your blind spots. They are also, not by")
-    print("  coincidence, the bugs you are most likely to write.\n")
+    print("  coincidence, the bugs you are most likely to write.")
+
+    # The debugger rate, alongside the found rate. A hunt found by reading is still a hunt
+    # found, but the skill that transfers to a codebase you did not write is the other one.
+    answered = [r for r in rows if r["tool"]]
+    if answered:
+        stepped = sum(1 for r in answered if r["tool"] != "reading")
+        print(f"\n  Debugger: {stepped}/{len(answered)} of the hunts you answered for "
+              f"({round(100 * stepped / len(answered))}%).")
+        if stepped * 2 < len(answered):
+            print("  Mostly reading. That works on code you wrote; it is the habit that")
+            print("  breaks on a take-home. See reference/GDB.md.")
+    print()
 
 
 def cmd_list():

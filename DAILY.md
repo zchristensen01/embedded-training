@@ -39,10 +39,18 @@ do. Running it:
   "write it on paper first") which applies to that rep only.
 
 `v1` names a line in `practice/katas/bitops/VARIANTS.md` — the constraint you are working
-under this time. Open that file, read the one line for `v1`, open `BRIEF.md` for the API,
-and read **nothing else**. Your previous solution no longer exists, and that is the point:
-every rep is a genuine cold start, so what accumulates is the fluency and the lesson rather
-than the code.
+under this time. Read that one line, and the API section of `BRIEF.md`, **before** you run
+`make drill`, and read **nothing else**. The clock starts at the keyboard, so orientation
+is deliberately off it — on rep one that is a few real minutes, and by rep four it is a
+glance at one function signature.
+
+Your previous solution no longer exists, and that is the point: every rep is a genuine cold
+start, so what accumulates is the fluency and the lesson rather than the code.
+
+Two things you cannot read in advance, by design: **Saturday's module**, because the rep is
+adaptive and `make drill` picks it, and **the constraint card**, because it is dealt when
+the clock starts. Both will land a little orientation inside `write`. That is one rep a
+week, and it is the price of the card being a surprise.
 
 **Text in parentheses is context, not arguments.** `make review  (bitops, memory)` is the
 command `make review`, alone. Likewise `make drill   (no argument — picks your weakest built
@@ -84,23 +92,53 @@ Four things, about ninety seconds.
 
 ## Every session — the rep, in order
 
+**Read the BRIEF and the variant line *before* you start the clock.** The clock starts at
+the keyboard.
+
 ```bash
-make drill KATA=<name> VARIANT=<vN>   # exactly as the calendar prints it
-    make lap                          # the first line of code you type   -> ends `design`
-    make lap                          # your first compile attempt        -> ends `write`
-                                      # (a Python rep: your first run attempt)
+make drill KATA=<name> VARIANT=<vN>   # exactly as the calendar prints it. You are in `write`
+                                      # ...type...
 make test                             # frozen suite, under sanitizers
-    make lap                          # it compiled clean                 -> ends `compile`
-make done                             # tests pass. Stop the clock and log it
+                                      #   auto-lap: write closed
+                                      #   auto-lap: compile/run closed, if it built or imported
+                                      # ...fix...  make test again until green
+make done                             # stop the clock, log it. Closes `debug`
 ```
 
-`make lap` takes four seconds and turns a total into a diagnosis. A total time tells you
-whether you are getting faster; the split tells you *what is slow*, which is the part you
-can act on. Missing a call is fine — `make done` attributes the remainder to the next phase.
+**Three phases, and you do not lap any of them by hand.**
+
+| Phase | From | To | Closed by |
+|---|---|---|---|
+| `write` | `make drill` | your first `make test` | `make test`, automatically |
+| `compile` *(C)* · `run` *(Python)* | first `make test` | it builds / imports cleanly | `make test`, automatically |
+| `debug` | it builds | the suite is green | `make done` |
+
+`make test` can see both boundaries, so it closes them. It closes the second one when the
+code is **accepted**, not when the tests pass — a failing assertion means the machine ran
+your code, so you are debugging. A compile error or an `ImportError` means it did not, and
+you stay in `compile`/`run` until the next `make test` succeeds.
+
+`make lap` still exists for a rep you drive by hand, and a manual call always wins. There is
+no `design` phase: reading the BRIEF is real work exactly once per module and a glance
+thereafter, so it happens off the clock.
+
+A total time tells you whether you are getting faster; the split tells you *what is slow*,
+which is the part you can act on. **`write` + `compile` is your syntax fluency in one
+number** — `write` + `run` for a Python rep — and it should fall.
 
 **When the kata timer rings, stop and run `make done` anyway.** An unfinished rep is data.
 A rep that ate the main block is a lost day. Answer `n` to the clean question and say so in
 the note.
+
+**When a C suite fails and the failure is silent** — a wrong answer with no sanitizer
+report — `make test` prints the debugger line. Take it:
+
+```bash
+make debug MODULE=<name>     # -g -O0, sanitizers still on. Does not run it
+gdb build/<name>-debug
+```
+
+[`reference/GDB.md`](reference/GDB.md) is the twelve commands that cover almost everything.
 
 ---
 
@@ -261,7 +299,7 @@ what you owe it instead.
 | What you did | What records it | What you owe by hand |
 |---|---|---|
 | A kata rep | `make done` → `logs/log.tsv` | The clean answer, honestly, and the one-line note |
-| Where the rep's time went | `make lap` → `logs/splits.tsv` | Calling `make lap` at each transition |
+| Where the rep's time went | `make test` + `make done` → `logs/splits.tsv` | Nothing — the phases lap themselves |
 | Something you got wrong | `make card` → `practice/decks/*.tsv` | The question, the answer, and the **trap** |
 | A deck pass | `make review` → local box state | Saying it **out loud**, with the trap |
 | A design prompt | `make prompt` → `logs/design-prompts/` | **The rubric total.** Unscored counts for nothing |
@@ -278,8 +316,11 @@ Full command reference: [`reference/COMMANDS.md`](reference/COMMANDS.md).
 
 ## The five ways to lose a day
 
-1. **Reading before starting the clock.** `make drill` first, then read the BRIEF. The
-   design phase is a measurement, and it only measures if it is inside the timer.
+1. **Starting the clock before you know what you are building.** Read the BRIEF and the
+   variant line first, then `make drill`. The clock measures typing, compiling and
+   debugging — not reading — so time spent oriented is time the numbers never see, and
+   time spent orienting *inside* the timer inflates `write`, which is the one figure the
+   whole fluency claim rests on.
 2. **Letting the main block run over.** It takes the kata slot, then the deck slot, then the
    week. Take it out of tomorrow instead.
 3. **Skipping the deck because the rep went badly.** The verbal round is the one that fails

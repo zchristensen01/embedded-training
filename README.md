@@ -80,13 +80,17 @@ What accumulates across reps is the lesson and the time, not the code.
 ## The daily loop
 
 ```bash
-make today            # what to do right now
+make today            # what to do right now — then read the BRIEF, off the clock
 make drill            # start a rep — wipes src/, starts the clock
-    make lap          # at each transition: design -> write -> compile -> debug
 make test             # build + run the frozen suite under sanitizers
+                      # closes `write`, then `compile`/`run`, automatically
 make done             # stop the clock, log the rep
 make review           # deck pass, ANSWER OUT LOUD
 ```
+
+Three timed phases — `write -> compile -> debug`, `run` in place of `compile` for a Python
+rep — lapped for you by `make test` and `make done`. Reading the BRIEF happens before the
+clock starts.
 
 None of it is gated by the calendar. `make drill KATA=fsm` runs that module now, whatever the
 day says; `make hunt` plants a single-token bug in one of your own older solutions and times you

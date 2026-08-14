@@ -4,7 +4,9 @@
   `clean` means "compiled first try, no sanitizer findings" for a C module and "ran first try,
   no traceback" for a `*_py` one. The two are never averaged together: C1 is scored on the C
   rate alone, and `make report` prints them as separate tables.
-- `splits.tsv` — phase breakdown per rep: design, write, compile, debug. Written by `make lap`.
+- `splits.tsv` — phase breakdown per rep: write, compile, debug. Written by `make test` and
+  `make done`, which lap the boundaries automatically; `make lap` overrides by hand. Rows
+  carrying a `design` phase predate its removal and are still valid.
   A Python rep records `run` where a C rep records `compile`, because there is nothing to
   compile. `write + compile` as a share of total is your C syntax fluency in one number, and
   `write + run` is the Python one. `make report` prints them apart, never combined.

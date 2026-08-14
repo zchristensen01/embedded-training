@@ -6,15 +6,23 @@
   python3 tools/drill.py done                     stop the clock, log the rep
   python3 tools/drill.py status                   what's in progress
 
-The four phases, in order. Call `make lap` at each transition:
+The three phases, in order:
 
-  design    start -> the first line of code you type
-  write     first line -> your first compile attempt
+  write     make drill -> your first compile attempt
   compile   first compile attempt -> it compiles clean
   debug     clean compile -> tests pass
 
 A Python kata (`*_py`) records `run` where a C one records `compile` — first execution
 attempt until it runs without a syntax or import error. Same position, same meaning.
+
+**You do not normally call `make lap` at all.** `make test` laps both boundaries for you:
+it closes `write` when you invoke it, and closes `compile`/`run` when the build or the
+import succeeds — even if the tests then fail, because a failing assertion means the code
+ran. `make done` closes `debug`. `make lap` stays available for a rep you drive by hand.
+
+There is no `design` phase. Read the BRIEF and the variant BEFORE `make drill`; the clock
+starts when you start typing. On the first rep of a module that reading is real work, and
+it is deliberately not measured, because by rep four it is a glance at one API line.
 
 The breakdown is the diagnosis. See `make report`.
 
@@ -52,13 +60,32 @@ TARGETS = {
     "test_harness_py": 25,
 }
 
-# The four phases, per language. A Python kata has no compile step, so the third phase is
+# The three phases, per language. A Python kata has no compile step, so the second phase is
 # the first *run* — from your first execution attempt to the point where it runs without a
 # syntax or import error. Same diagnostic shape, same position in the sequence: it is the
 # gap between "I have typed something" and "the machine accepts it". Keeping the C name
 # would put a column in logs/splits.tsv that means two different things.
-PHASES = ["design", "write", "compile", "debug"]
-PHASES_PY = ["design", "write", "run", "debug"]
+#
+# `design` used to sit in front of these and was dropped deliberately. It measured reading
+# the BRIEF, which is real work exactly once per module and a glance thereafter — so across
+# the reps that make up the bulk of the plan it was a near-zero column that still had to be
+# lapped, and a missed lap silently moved minutes into `write`, which is the number the
+# whole C1/Y-group fluency claim rests on. Read before you drill; the clock starts at the
+# keyboard. logs/splits.tsv keeps accepting `design` so historical rows stay valid.
+PHASES = ["write", "compile", "debug"]
+PHASES_PY = ["write", "run", "debug"]
+
+# One line per phase, printed by `make done` against whichever one dominated. The point of
+# splitting a rep at all is that "slow" has four different causes and four different fixes;
+# seeing the fix at the moment you finish is worth more than finding it in `make report` on
+# Sunday. report.py carries the long version.
+DIAGNOSIS = {
+    "write": "Most time typing — the syntax-fluency gap. This is the one that should shrink.",
+    "compile": "Most time fighting the compiler. Syntax, not logic. Type the first pass 20% slower.",
+    "run": "Most time getting it to run — imports, indentation, typos. Slow the first pass down.",
+    "debug": "Most time on logic. Next rep, write the test you'd add BEFORE the implementation.",
+    "design": "A pre-2026 rep. Reading now happens before the clock starts.",
+}
 
 # The placeholder case newkata.py scaffolds. While it is the only case in a suite, the
 # module is not drillable — see is_built().
@@ -93,6 +120,12 @@ CONSTRAINT_CARDS = [
     "Write it on paper first, then type it in. Timer runs during the paper phase.",
     "Name every variable in full words. No i, n, tmp, buf.",
     "Write the test you'd add before you write the implementation.",
+    # gdb, twice, and C-only on purpose. The sanitizers name the file and line for most
+    # memory bugs, so reaching for a debugger on every rep would be theatre — but a logic
+    # bug raises nothing at all, and that is the one you are least practised at. See
+    # reference/GDB.md, and `make hunt`, which is the dedicated version of this.
+    "No printf debugging. If it fails, you find it under gdb.",
+    "Set a breakpoint and inspect the state before you re-read your own code.",
 ]
 
 CONSTRAINT_CARDS_PY = [
@@ -371,12 +404,22 @@ def cmd_start(argv):
         print(f"  CONSTRAINT CARD: {card}")
         print("-" * 66)
     goal = "first run, no traceback" if is_python(kata) else "clean, first compile"
+    rel = f"practice/katas/{kata}"
     print(f"  Target: {target} min, {goal}.")
-    print(f"  Wrote empty stub: katas/{kata}/src/{fname}")
-    print(f"  Read BRIEF.md if you need the API. Do not read anything else.")
-    print(f"  Clock is running. `make test` when ready, `make done` when passing.")
-    print(f"  Call `make lap` at each transition: "
-          f"{' -> '.join(phases_for(kata))}.")
+    print(f"  Write     {rel}/src/{fname}   (empty stub)")
+    if is_python(kata):
+        print(f"  Contract  {rel}/BRIEF.md — the API. There is no header")
+    else:
+        hdr = os.path.join(KATAS, kata, "include")
+        hs = [f for f in os.listdir(hdr) if f.endswith(".h")] if os.path.isdir(hdr) else []
+        print(f"  Contract  {rel}/include/{hs[0] if hs else kata + '.h'}   FROZEN")
+    print(f"  Suite     {rel}/tests/   FROZEN — never edited during a rep")
+    print()
+    print(f"  Clock is running. Phases ({' -> '.join(phases_for(kata))}) lap themselves:")
+    print(f"    make test     run the frozen suite. Closes `write`, then "
+          f"`{phases_for(kata)[1]}`")
+    print(f"    make done     when the suite is green. Closes `debug`")
+    print(f"    make status   if you lose track of where you are")
     print("=" * 66)
 
 
@@ -404,6 +447,58 @@ def cmd_lap(argv):
     print(f"  {phase:<8} {mins:>6.2f} min   (total {total} min)   next: {nxt}")
 
 
+def cmd_autolap(argv):
+    """Close a phase boundary that `make test` can see. Called from the Makefile.
+
+      drill.py autolap <module> start      the suite was invoked   -> closes `write`
+      drill.py autolap <module> accepted   the build or the import succeeded
+                                           -> closes `compile` / `run`
+
+    Both boundaries are mechanically knowable and were previously left to you to call by
+    hand, which is a bad trade: a missed lap does not lose a little precision, it moves
+    minutes into the wrong bucket. A rep whose first run came back with a failing assertion
+    — meaning the code ran fine and the logic was wrong — recorded four minutes of thinking
+    as `run` and reported 62% syntax-fluency where the true figure was 17%.
+
+    `accepted` is deliberately not "the tests passed". A failing assertion means the machine
+    accepted the code, which is exactly what this phase measures; a compile error or an
+    ImportError means it did not. The Makefile makes that distinction from the exit status
+    and only calls this when the code actually ran.
+
+    Silent, and exit 0, in every case that is not a real boundary: no rep in flight, a
+    different module, or the phase already lapped by hand. `make test` gets run during
+    unrelated work and must never write a split row for it.
+    """
+    if len(argv) < 2 or not os.path.exists(STATE):
+        return
+    module, stage = argv[0], argv[1]
+    try:
+        with open(STATE) as fh:
+            st = json.load(fh)
+    except (ValueError, OSError):
+        return
+    if st.get("kata") != module:
+        return
+
+    laps = st.get("laps", [])
+    # Which stage closes which phase, expressed as the lap count it requires. This is also
+    # the guard against double-lapping: if you called `make lap` by hand, or ran `make test`
+    # twice, the count no longer matches and nothing happens.
+    want = {"start": 0, "accepted": 1}.get(stage)
+    if want is None or len(laps) != want:
+        return
+
+    phases = phases_for(module)
+    now = time.time()
+    mins = round((now - st.get("last", st["start"])) / 60.0, 2)
+    laps.append({"phase": phases[want], "minutes": mins})
+    st["laps"], st["last"] = laps, now
+    with open(STATE, "w") as fh:
+        json.dump(st, fh)
+    nxt = phases[len(laps)] if len(laps) < len(phases) else "done"
+    print(f"  auto-lap: {phases[want]} {mins:.2f} min   next: {nxt}")
+
+
 def cmd_done():
     if not os.path.exists(STATE):
         sys.exit("No drill in progress. Run `make drill` first.")
@@ -423,11 +518,18 @@ def cmd_done():
 
     print(f"\n{st['kata']} {st['variant']} — {minutes} min (target {target}).")
     if laps:
+        # Percentages are taken against the laps' own sum, not the rounded total. Against
+        # the total they did not add up to 100: `minutes` is rounded to one decimal and the
+        # laps are rounded to two, so a short rep printed 0% + 43% + 70%.
+        lapped = sum(lap["minutes"] for lap in laps)
         print("  where the time went:")
         for lap in laps:
-            pct = round(100 * lap["minutes"] / minutes) if minutes else 0
+            pct = round(100 * lap["minutes"] / lapped) if lapped else 0
             bar = "#" * max(1, pct // 4)
             print(f"    {lap['phase']:<8} {lap['minutes']:>6.2f} min  {pct:>3}%  {bar}")
+        top = max(laps, key=lambda l: l["minutes"])["phase"]
+        if lapped:
+            print(f"  -> {DIAGNOSIS.get(top, '')}")
     # "Clean" is one column in logs/log.tsv and it has to mean one thing per language, or
     # the number it feeds is measuring two skills at once. For C it is the clean-first-
     # compile rate that C1 is scored on; for Python there is no compile, so the equivalent
@@ -436,7 +538,13 @@ def cmd_done():
            else "Clean? compiled first try, no sanitizer findings [y/N]: ")
     clean = input(ask).strip().lower()
     clean = "y" if clean in ("y", "yes") else "n"
-    note = input("One line: a design decision or a bug you hit: ").strip()
+
+    # The note is the only thing that survives the deleted src/, so it is worth one line of
+    # coaching. "test was not working" is a real note that was really written, and three
+    # weeks later it says nothing at all. Name the thing, not the feeling.
+    print("\nOne line for NOTES.md — the decision you made, or the bug that cost you time.")
+    print("  Specific enough to recognise on rep four. Not \"tests failed\".")
+    note = input("  > ").strip()
 
     os.makedirs(os.path.dirname(LOG), exist_ok=True)
     new = not os.path.exists(LOG)
@@ -484,7 +592,9 @@ def cmd_done():
         subprocess.call([sys.executable, os.path.join(ROOT, "tools", "card.py")])
 
     os.remove(STATE)
-    print("Commit it.")
+    print("\n  Next:  make today   for the rest of the day, or")
+    print("         make drill   for the second kata if the calendar names one.")
+    print("  End of session:  make review  (out loud), then  git add -A && git commit")
 
 
 def cmd_status():
@@ -502,7 +612,13 @@ def cmd_status():
     nxt = phases[len(laps)] if len(laps) < len(phases) else "done"
     print(f"  current phase: {nxt}")
     if st.get("card"):
-        print(f"Constraint: {st['card']}")
+        print(f"  constraint: {st['card']}")
+    target = TARGETS.get(st["kata"], 15)
+    left = round(target - mins, 1)
+    print(f"  {left} min left of the {target} min target." if left > 0
+          else f"  {abs(left)} min over the {target} min target — finish and log it.")
+    print("  Next: " + ("make test" if nxt != "debug" else
+                        "make test until green, then make done"))
 
 
 if __name__ == "__main__":
@@ -511,6 +627,8 @@ if __name__ == "__main__":
         cmd_start(sys.argv[2:])
     elif cmd == "lap":
         cmd_lap(sys.argv[2:])
+    elif cmd == "autolap":
+        cmd_autolap(sys.argv[2:])
     elif cmd == "done":
         cmd_done()
     elif cmd == "status":

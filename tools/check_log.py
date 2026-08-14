@@ -29,6 +29,10 @@ SPLITS_HEADER = ["date", "module", "variant", "phase", "minutes"]
 
 # Both phase vocabularies. A C rep records `compile`, a Python one records `run`,
 # and `make done` may append a trailing `final`/`extraN` if you kept lapping.
+#
+# `design` is still accepted and is no longer produced. It was dropped from drill.py's
+# phase list — reading the BRIEF happens before the clock starts now — but rows written
+# before that change have to stay valid, so this set is a superset of what is emitted.
 PHASES_OK = {"design", "write", "compile", "run", "debug", "final"}
 
 # Non-kata modules PRACTICE_SYSTEM.md tells you to log by hand. Their variant field

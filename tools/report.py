@@ -6,7 +6,7 @@
 1. Time curve per kata. Should fall, then flatten.
 2. Clean-first-compile rate. Best single proxy for syntax fluency.
    40% by week 4, 55% by week 6, 70% by week 10.
-3. Where the time goes. design / write / compile / debug. This is the diagnosis.
+3. Where the time goes. write / compile / debug. This is the diagnosis.
 4. Reps per week and coverage. What you're avoiding.
 """
 import importlib.util
@@ -85,7 +85,9 @@ def read_splits():
 
 
 # Both phase lists, in order, so the report renders either kind of rep. drill.py owns the
-# definition; this is the union of the two, C first.
+# definition; this is the union of the two, C first. `design` is retained here and nowhere
+# else: it is no longer recorded, but rows written before it was dropped still have to
+# render in their right position rather than being silently omitted from an old rep.
 PHASE_ORDER = ("design", "write", "compile", "run", "debug")
 
 
@@ -143,8 +145,10 @@ def phase_report(rows):
     top = max(all_shares, key=all_shares.get)
     print("\n  Reading it:")
     verdicts = {
-        "design": "Most time before you type. You don't know the pattern yet — reread the BRIEF\n"
-                  "           and draw the invariant on paper before the timer next time.",
+        # Legacy only — `design` has not been recorded since the phase was dropped, but an
+        # old rep can still be the largest share in a historical report.
+        "design": "Most time before you type — a rep from before the design phase was dropped.\n"
+                  "           Reading now happens before `make drill`, so this cannot recur.",
         "write":  "Most time typing. That is the syntax-fluency gap, and it is exactly the one\n"
                   "           you set out to fix. It should shrink faster than the others.",
         "compile": "Most time fighting the compiler. Syntax errors, not logic. Slow down while\n"
