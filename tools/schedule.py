@@ -2,7 +2,7 @@
 """schedule.py — generate CALENDAR.md, all 98 days, with timers and kata assignments.
 
   python3 tools/schedule.py                 to stdout, dated if logs/.start_date exists
-  python3 tools/schedule.py 2026-08-17      to stdout, dated from that Monday
+  python3 tools/schedule.py 2026-08-24      to stdout, dated from that Monday
   python3 tools/schedule.py --write         write plan/CALENDAR.md      (always relative)
   python3 tools/schedule.py --dates         write plan/CALENDAR.dated.md (gitignored)
   python3 tools/schedule.py --check         prove the schedule is internally consistent
@@ -405,7 +405,7 @@ PHASE = {**{w: "MIMIC STAGE 0" for w in range(1, 9)},
 # `python3 tools/schedule.py --check` proves the two agree. CI runs it.
 #
 # Sessions, as (build week, latest first-use this session covers, label). Week 0 is
-# the Day 0 weekend, before the calendar starts.
+# the prep week, before the calendar starts.
 #
 # Five smaller sessions rather than three large ones, and that is a change forced by the
 # arithmetic rather than a preference. Sunday now carries two long reps instead of one, so
@@ -418,7 +418,7 @@ PHASE = {**{w: "MIMIC STAGE 0" for w in range(1, 9)},
 # It is still finite, it is still front-loaded, and after week 5 there is nothing left to
 # build. Fourteen weeks is what makes that affordable; in ten it would not have been.
 SESSIONS = [
-    (0, 1, "Day 0 weekend"),
+    (0, 1, "Prep week"),
     (1, 2, "Week 1 Sunday"),
     (2, 3, "Week 2 Sunday"),
     (3, 4, "Week 3 Sunday"),
@@ -457,6 +457,67 @@ BUILD_NOTE = {
     "concurrency_sim": "builds under -fsanitize=thread, not address",
     "test_harness_py": "pytest, not compiled",
 }
+
+# ---------------------------------------------------------------- prep week ---
+#
+# The seven days before day 1. Session 0 used to be a WEEKEND: six modules and six and a
+# half hours across two days, which is the largest single session in the plan sitting on
+# the two days of the week you have least control over. One module a day is the same work
+# at a third of the daily cost, and it buys the thing the weekend could not — time to read
+# each BRIEF properly and to learn the concepts the deck is about to start asking about.
+# A card you cannot answer because you have never met a semaphore is not a card the Leitner
+# schedule can help with; it is reading you have not done yet.
+#
+# It is DERIVED, not typed. The modules are session 0's — whatever build_plan() puts
+# there — ordered by the day the calendar first calls for each, so an interrupted prep
+# week costs you Wednesday rather than Monday. Change INTRO and this reorders itself.
+# Nothing about the ninety-eight days moves: the prep week replaces the day-0 weekend and
+# only the day-0 weekend, and the five Sunday sessions stay in weeks 1 to 5 where each
+# suite is still written the week before it is first drilled.
+PREP_DAYS = 7
+
+# Cards a day during the prep week, against the ~20 a weekday's 12-minute block draws.
+# Deliberately low: the point of this week is reading the question and going and learning
+# the answer, which is minutes per card rather than seconds. `make review N=20` any day you
+# want more — the Leitner schedule does not care which week you are in.
+PREP_DECK = 10
+
+# Days at the end of the prep week that carry no module, on purpose. The last one is the
+# eve of day 1: `make check`, a full deck pass, and reading DAILY.md cold.
+PREP_BUFFER = 1
+
+
+def prep_plan():
+    """[(day_index, kata, minutes)] for the prep week — one module a day.
+
+    Ordered by the day the calendar first needs each module, so stopping early costs you
+    the latest day rather than the earliest. Ties inside a day go to the longer build
+    first, which puts the 90-minute one on the freshest day of the week.
+
+    Truncated at the number of build days the week actually has, rather than spilling onto
+    the buffer day or past the start of the plan. Check #11 is what notices, and it has to
+    be able to see the overflow to report it.
+    """
+    plan = build_plan()
+    if 0 not in plan:
+        return []
+    _, katas = plan[0]
+    order = first_use()
+    katas = sorted(katas, key=lambda k: (order[k], -BUILD_MIN.get(k, BUILD_MIN_DEFAULT), k))
+    return [(i, k, BUILD_MIN.get(k, BUILD_MIN_DEFAULT))
+            for i, k in enumerate(katas[:max(0, PREP_DAYS - PREP_BUFFER)])]
+
+
+def prep_day(offset):
+    """What the prep week asks for on a given day, as (kata, minutes) or (None, 0).
+
+    `offset` is 0-based from the first day of the prep week, which is PREP_DAYS before
+    day 1.
+    """
+    for i, kata, mins in prep_plan():
+        if i == offset:
+            return kata, mins
+    return None, 0
 
 
 def block_for(day):
@@ -508,9 +569,9 @@ def build_text(katas):
     """The build instruction for one session. Branches on language.
 
     "Write the header first" is wrong for a `*_py` kata — it has no header and no
-    `include/`, its contract is the API in the BRIEF. The day-0 session builds two of
-    them, so the generic wording was wrong on the very first instruction a new user
-    reads. newkata.py already branches; this had not.
+    `include/`, its contract is the API in the BRIEF. Session 0 builds two of them, so
+    the generic wording was wrong on the very first instruction a new user reads.
+    newkata.py already branches; this had not.
     """
     parts = [f"{k} ({BUILD_NOTE[k]})" if k in BUILD_NOTE else k for k in katas]
     py = [k for k in katas if k.endswith("_py")]
@@ -661,7 +722,7 @@ def check():
     # day, because the build block is not the only thing on it.
     for build_week in sorted(plan):
         if build_week == 0:
-            continue          # the Day 0 weekend is not a calendar day
+            continue          # the prep week is not a calendar day
         total = sum(b[1] for b in timers("Sun", build_week))
         if total > SUNDAY_MAX_MIN:
             problems.append(
@@ -755,6 +816,24 @@ def check():
                 f"`make {cmd}`: the calendar schedules it {have} time(s), but it is the "
                 f"evidence bar for {', '.join(cids)}, which needs {need}. Add slots in "
                 f"timers(), or that capability cannot be met by following the plan."
+            )
+
+    # 11. The prep week has to be able to hold session 0. It is one module a day, so a
+    # session with more modules than the week has build days would silently drop the tail —
+    # and every module in session 0 is one the calendar drills in week 1. A dropped one is a
+    # week-1 rep against a suite that does not exist, which is exactly what check #1
+    # prevents inside the ninety-eight days and could not see outside them.
+    if 0 in plan:
+        _, day0 = plan[0]
+        placed = {k for _, k, _ in prep_plan()}
+        missing = sorted(set(day0) - placed)
+        build_days = PREP_DAYS - PREP_BUFFER
+        if missing:
+            problems.append(
+                f"prep week: {build_days} build day(s) for {len(day0)} module(s), so "
+                f"{', '.join(missing)} never gets one — and each of them is drilled in "
+                f"week 1. Raise PREP_DAYS, lower PREP_BUFFER, or move a kata's first use "
+                f"into a later build session."
             )
 
     return problems
@@ -1039,6 +1118,47 @@ def render(start=None):
         a(f"| {label} | {mods} | {when} | {mins // 60} hr {mins % 60 or ''}".rstrip()
           + (" min |" if mins % 60 else " |"))
     a("")
+
+    # The prep week, derived from session 0 the same way. It is the one part of the build
+    # plan that falls outside the ninety-eight days, which is exactly why it needs writing
+    # down here rather than in a document that can drift away from the rotation.
+    prep = prep_plan()
+    if prep:
+        a(f"### The prep week — the {PREP_DAYS} days before day 1")
+        a("")
+        a("The first row above is not a weekend. It is one module a day across the week")
+        a("before the plan starts, in the order the calendar first needs them — so an")
+        a("interrupted prep week costs you Wednesday rather than Monday. The five Sunday")
+        a("sessions do not move: every other suite is still written the week before it is")
+        a("first drilled.")
+        a("")
+        a(f"The deck runs at **{PREP_DECK} cards a day** here rather than the weekday's full")
+        a("pass. This week the answer to a card you have never met is reading, not recall,")
+        a("and reading takes minutes per card. `make review N=20` any day you want more.")
+        a("")
+        def prep_label(i):
+            """Prep day i, dated if we have a start date. i is 0-based."""
+            if start:
+                d = start - timedelta(days=PREP_DAYS - i)
+                return f"**{d.strftime('%a %d %b')}**  ·  prep day {i + 1}"
+            return f"Prep day {i + 1} · {DAYS[(i - PREP_DAYS) % 7]}"
+
+        a("| Day | Build | Time | Deck |")
+        a("|---|---|---|---|")
+        for i, kata, mins in prep:
+            note = f" ({BUILD_NOTE[kata]})" if kata in BUILD_NOTE else ""
+            a(f"| {prep_label(i)} | `{kata}`{note} | {mins} min | "
+              f"`make review N={PREP_DECK}` |")
+        # The buffer day takes a full default pass, not the prep week's ten: it is the eve
+        # of day 1 and the deck becomes a timed block tomorrow. No count typed here — bare
+        # `make review` is whatever review.py's default is, which is what a weekday hands you.
+        for i in range(len(prep), PREP_DAYS):
+            a(f"| {prep_label(i)} | — buffer, and `make check` | — | `make review` |")
+        a("")
+        a(f"Total {sum(m for _, _, m in prep)} min of building, spread over "
+          f"{len(prep)} days. The rest of each day is yours: the Mimic reading, and the")
+        a("concepts behind whatever the deck asked you that you could not answer.")
+        a("")
     for kata, (build_week, build_day, why) in sorted(EXEMPT.items()):
         a(f"**`{kata}` is not in the table above, deliberately.** {why}")
         a("")
@@ -1138,8 +1258,8 @@ if __name__ == "__main__":
     elif "--dates" in sys.argv:
         if not start:
             sys.exit("No start date, so there are no dates to stamp. Either:\n"
-                     "  date +%F > logs/.start_date          the Monday you're starting\n"
-                     "  python3 tools/schedule.py --dates 2026-08-17")
+                     "  echo 2026-08-24 > logs/.start_date   the Monday you're starting\n"
+                     "  python3 tools/schedule.py --dates 2026-08-24")
         with open(OUT_DATED, "w") as fh:
             fh.write(render(start) + "\n")
         print(f"Wrote {OUT_DATED} — gitignored. Yours, not the repo's.")

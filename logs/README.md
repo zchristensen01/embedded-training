@@ -28,6 +28,6 @@
   change every time you review, and checking them made CI unable to agree with any working tree.
   Regenerate them when you want the score current; the header says when it was last run.
 - `.start_date` — created on day 1 so `make today` knows where you are:
-  `date +%F > logs/.start_date`
+  `echo 2026-08-24 > logs/.start_date`
 - `.snapshots/` — copies of your own solutions, kept only so `make hunt` has something
   to mutate. Gitignored, like `src/`. Still disposable; just a slower bin.

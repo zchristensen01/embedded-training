@@ -85,10 +85,15 @@ What accumulates is the *lesson* and the *time*, not the code.
 ## Your first hour
 
 ```bash
-date +%F > logs/.start_date     # the Monday you're starting
+echo 2026-08-24 > logs/.start_date   # the Monday you're starting, even if that is not today
 make dates                      # plan/CALENDAR.dated.md — 98 days with real dates
 make today                      # what to do right now
 ```
+
+That date is day 1, and it can be in the future. The seven days before it are the **prep
+week**, where the katas week 1 needs get built one a day; `make today` prints the module due
+that day, and rolls over to the calendar on day 1 by itself. `make check-calendar` prints the
+whole build plan including that week.
 
 `plan/CALENDAR.md` is committed and carries relative labels (`Day 1 · Mon`), because
 your start date is yours and not the repo's. `make dates` writes the same ninety-eight
@@ -98,7 +103,7 @@ after editing `tools/schedule.py`.
 
 Then read, once, in this order — and then stop reading:
 
-1. **`SETUP.md`** — day 0 and the kata build order.
+1. **`SETUP.md`** — the prep week and the kata build order.
 2. **`plan/INTERVIEW_REQUIREMENTS.md`** — the research, and the capability list.
 3. **`plan/COVERAGE.md`** — which mechanism owns each capability.
 4. **`practice/PRACTICE_SYSTEM.md`** — how practice is made repeatable and AI-proof.

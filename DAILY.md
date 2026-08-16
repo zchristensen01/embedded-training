@@ -232,9 +232,10 @@ fourteen spare reps that go wherever they are most needed.
 
 ## Build sessions
 
-Five Sundays, weeks 1 to 5, plus the day-0 weekend before the plan starts. `make
-check-calendar` prints which modules and how long; the order is derived from the rotation,
-so it is never written down twice.
+Five Sundays, weeks 1 to 5, plus the prep week before the plan starts — that one is one
+module a day rather than one session, and `make today` walks you through it a day at a time.
+`make check-calendar` prints which modules and how long; the order is derived from the
+rotation, so it is never written down twice.
 
 For each module named:
 

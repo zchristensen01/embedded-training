@@ -28,7 +28,8 @@ one they all land between 76% and 86%.
 **Weeks 1–5 are heavier** — roughly 15 to 16.5 hours each — because they carry the kata build
 sessions. That is deliberate: building one kata a week for five weeks is a running
 dependency, and a single missed Sunday leaves the following week's rotation with nothing to
-draw from. Five front-loaded weekends, then it is over and there is nothing left to build.
+draw from. Five front-loaded Sundays, on top of the prep week that builds week 1's six
+before day 1, and then it is over and there is nothing left to build.
 
 The exact figures are computed by the generator and printed at the top of
 [`plan/CALENDAR.md`](CALENDAR.md), so they are always the real ones.

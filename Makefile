@@ -269,7 +269,7 @@ check-frozen:
 # used to claim: --collect-only *imports* the test module, which imports the implementation,
 # so it is the analogue of LINKING. It passed only while every Python suite was still the
 # scaffolded stub that imports nothing but pytest, and would have gone red — permanently, in
-# CI, where src/ never exists — on the first real suite written in the day-0 build session.
+# CI, where src/ never exists — on the first real suite written in the prep week.
 #
 # tools/check_frozen_py.py supplies the missing half: it generates a stand-in for whatever
 # the suite imports and cannot resolve, then collects against that. The stand-in is what

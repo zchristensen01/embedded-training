@@ -1,26 +1,31 @@
 # Setup
 
-**Do not build all fifteen katas before you start.** Build the ones week 1 needs, start on day 1,
-and take the rest in five Sunday sessions across the first five weeks.
+**Do not build all fifteen katas before you start.** Build the ones week 1 needs during the
+prep week, start on day 1, and take the rest in five Sunday sessions across the first five
+weeks.
 
 Fifteen katas, each needing a real test suite — and for the C ones a compiling header too —
 is around fifteen hours.
 Spent up front that is two weeks of building the gym before lifting anything, which is the most
 common way a plan like this dies. Spread one-per-week instead and you get the opposite problem: a
 running dependency where one missed Sunday leaves the next week with nothing to drill. A batch
-now, five more batches, then never again.
+first, five more batches, then never again.
 
 ---
 
-## Day 0 — about twenty minutes
+## Before day 1 — about twenty minutes
 
 The repo is set up and the tooling works. What is left is picking a start date:
 
 ```bash
-date +%F > logs/.start_date        # use the Monday you're starting
+echo 2026-08-24 > logs/.start_date # the Monday you're starting, even if that is not today
 make dates                         # plan/CALENDAR.dated.md — 98 days, real dates
-make today                         # should now print week 1
+make today                         # a prep day, then week 1 from day 1 on
 ```
+
+Set that date to the Monday you intend to start, not to today. `make today` reads it and
+knows where you are relative to it: the seven days before it are the prep week and it prints
+the module due that day, and on day 1 it rolls over to the calendar on its own.
 
 Two calendars, on purpose. `plan/CALENDAR.md` is committed and carries relative labels
 (`Day 1 · Mon`); the start date is gitignored, so stamping it into a committed file would
@@ -28,7 +33,8 @@ mean `make check-generated` failing on every machine but yours. `make dates` wri
 dated view to a gitignored file beside it. `make calendar` regenerates the committed one
 and you only need it after editing `tools/schedule.py`.
 
-One dependency, needed **from day 0**, because the Python katas are drilled from week 1:
+One dependency, needed **from the prep week**, because two of the six suites built there are
+pytest ones and the Python katas are drilled from week 1:
 
 ```bash
 python3 -m pip install pytest      # or: sudo apt install python3-pytest
@@ -50,22 +56,34 @@ make check                         # all seven checks
 
 ---
 
-## Day 0 weekend
+## The prep week — the seven days before day 1
 
-Build the katas week 1 calls for. **Which ones is not written down here on purpose** — it is
-derived from the rotation and printed by the command below, along with how long the session
-should take:
+Build the katas week 1 calls for, **one a day**. Which ones, in which order, and on which day
+is **not written down here on purpose** — it is derived from the rotation and printed by the
+commands below:
 
 ```bash
 make check-calendar     # prints the whole build plan, then verifies it
+make today              # during the prep week: the one module due today, and its checks
 ```
+
+One a day rather than one weekend, and that is a deliberate reversal. Six modules is six and
+a half hours; as a weekend it is the largest single session in the plan sitting on the two
+days of the week you have least control over, and it leaves no room for the reading that has
+to come first — the deck is 162 unseen cards and a card about a semaphore is not a card the
+Leitner schedule can help you with until you have read about semaphores. Spread across the
+week it is about an hour a day, and the other hour is the reading.
+
+The order is by the day the calendar first needs each module, so an interrupted prep week
+costs you Wednesday rather than Monday. The last day carries no module: it is the buffer, and
+the eve of day 1.
 
 Scaffold each one with `make newkata NAME=<module>`, then, in this order:
 
 1. **Write the contract, deliberately** — you live with it for weeks.
    - **C module:** `practice/katas/<name>/include/<name>.h`.
    - **Python module** (`<name>_py`): there is no header and no `include/`. The contract is the
-     API written out in `BRIEF.md`, and the frozen suite is what enforces it. The day-0 build
+     API written out in `BRIEF.md`, and the frozen suite is what enforces it. The prep week
      includes two of these, so this is not a footnote.
 2. **List the cases** in `BRIEF.md` under "Tests it must pass," before writing any of them.
 3. **Write the cases** in `tests/`. Yourself.
@@ -73,13 +91,19 @@ Scaffold each one with `make newkata NAME=<module>`, then, in this order:
    scaffolded placeholder, so if it refuses, step 3 is not finished.
 
 About an hour each; `ring_buffer`, `protocol_parser` and `concurrency_sim` are budgeted at
-ninety minutes, and the printed plan says so per session.
+ninety minutes, and the printed plan says so per module.
 
-**Be honest about the size of this one.** The day-0 weekend is the largest single session in
-the plan — the printed figure is six modules and around six and a half hours, and it is the
-only session not capped by `make check-calendar`, because it is not a calendar day. Split it
-across both days of the weekend. It is also the highest-stakes work here: those suites are
-frozen for fourteen weeks, so a rushed suite is a rushed fourteen weeks.
+**And then the checks, which are the half that gets skipped.** `make check-frozen` for a C
+module or `make test MODULE=<name>` for a `*_py` one, then `make drill KATA=<name>` — which
+must *start* a rep rather than refuse one — then `git commit`. There is nothing to write into
+`logs/log.tsv`: a build is not a rep, and the first row in that file belongs to day 1. The
+only log the prep week owes is `logs/ai-use.tsv`.
+
+**Be honest about the size of this.** Six modules and around six and a half hours is the
+largest block of building in the plan, and it is the only session not capped by
+`make check-calendar`, because none of its days are calendar days. It is also the
+highest-stakes work here: those suites are frozen for fourteen weeks, so a rushed suite is a
+rushed fourteen weeks. That is the whole argument for taking a week over it.
 
 > **This is not setup overhead.** Writing the API and the test suite before the implementation is
 > the single most-interviewed skill in both tracks. You are doing rep zero of "how would you test
@@ -154,9 +178,10 @@ research says test-and-integration candidates fail most.
 ## Day 1
 
 Read [DAILY.md](DAILY.md) once — it explains what a calendar line like `make drill
-KATA=bitops VARIANT=v1` actually does, and what you owe the log at each end of a session.
+KATA=bitops VARIANT=v1` actually does, and what you owe the log at each end of a session. The
+prep week's buffer day is the slot for it.
 
 Then `make today`. Then `make drill`. Then the main block on Mimic S0.
 
 Do not spend another evening on the repo. The plan is finished; the only thing left that matters
-is the first rep, and it should happen this week.
+is the first rep, and it should happen on day 1.

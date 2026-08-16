@@ -21,7 +21,7 @@ imports the implementation, so the obvious analogue fails the moment a suite say
 
 The old recipe put `src/` on PYTHONPATH and collected. That passed only while every
 suite was still the scaffolded stub, which imports nothing but pytest. The first real
-suite written in the day-0 build session would have turned CI red and kept it red.
+suite written in the prep week would have turned CI red and kept it red.
 
 WHAT THIS DOES INSTEAD
 ----------------------

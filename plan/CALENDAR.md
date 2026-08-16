@@ -42,12 +42,37 @@ session there is nothing left to build.
 
 | Built during | Modules | First drilled | Time |
 |---|---|---|---|
-| Day 0 weekend | `binary_frame_py`, `bitops`, `fsm`, `log_parser_py`, `mem_primitives`, `ring_buffer` | week 1 | 6 hr 30 min |
+| Prep week | `binary_frame_py`, `bitops`, `fsm`, `log_parser_py`, `mem_primitives`, `ring_buffer` | week 1 | 6 hr 30 min |
 | Week 1 Sunday | `protocol_parser`, `register_map` | week 2 | 2 hr 30 min |
 | Week 2 Sunday | `pool_allocator` | week 3 | 1 hr |
 | Week 3 Sunday | `debouncer` | week 4 | 1 hr |
 | Week 4 Sunday | `fixed_point_pid`, `rollover_timer` | week 5 | 2 hr |
 | Week 5 Sunday | `cli_tool_py`, `concurrency_sim` | week 6 | 2 hr 30 min |
+
+### The prep week — the 7 days before day 1
+
+The first row above is not a weekend. It is one module a day across the week
+before the plan starts, in the order the calendar first needs them — so an
+interrupted prep week costs you Wednesday rather than Monday. The five Sunday
+sessions do not move: every other suite is still written the week before it is
+first drilled.
+
+The deck runs at **10 cards a day** here rather than the weekday's full
+pass. This week the answer to a card you have never met is reading, not recall,
+and reading takes minutes per card. `make review N=20` any day you want more.
+
+| Day | Build | Time | Deck |
+|---|---|---|---|
+| Prep day 1 · Mon | `ring_buffer` | 90 min | `make review N=10` |
+| Prep day 2 · Tue | `log_parser_py` | 60 min | `make review N=10` |
+| Prep day 3 · Wed | `fsm` | 60 min | `make review N=10` |
+| Prep day 4 · Thu | `mem_primitives` | 60 min | `make review N=10` |
+| Prep day 5 · Fri | `binary_frame_py` | 60 min | `make review N=10` |
+| Prep day 6 · Sat | `bitops` | 60 min | `make review N=10` |
+| Prep day 7 · Sun | — buffer, and `make check` | — | `make review` |
+
+Total 390 min of building, spread over 6 days. The rest of each day is yours: the Mimic reading, and the
+concepts behind whatever the deck asked you that you could not answer.
 
 **`test_harness_py` is not in the table above, deliberately.** It is built by week 9's main block rather than by a build session. Week 9 is five consecutive days on pytest itself — discovery, assertions, fixtures, conftest.py, parametrize — and this kata is the artifact those five days produce. Giving it its own build slot would mean writing the same suite twice. This is a deliberate exception, not an oversight: it is the one module whose build IS the main work.
 

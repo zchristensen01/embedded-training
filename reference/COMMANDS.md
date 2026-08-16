@@ -17,7 +17,15 @@ to work out which day it is.
 `plan/CALENDAR.md`, so the two cannot disagree. This file used to read the main-block
 text out of the curriculum instead, and they drifted.
 
-Needs `logs/.start_date`. Create it once: `date +%F > logs/.start_date`.
+**Before day 1 it prints the prep week instead:** the seven days before your start date,
+one kata build a day, in the order the calendar first needs them, with the checks each one
+owes and the day's deck count. It rolls over to week 1 on day 1 by itself. Earlier than
+that it prints how many days are left. Same generator again — a prep week that lived only
+in a document would drift away from the rotation it is derived from.
+
+Needs `logs/.start_date`. Create it once: `echo 2026-08-24 > logs/.start_date`. **It is the Monday
+you intend to start, which may be in the future** — that is what makes the prep week a
+thing the tool can see.
 
 ### `make drill`
 Starts a kata rep. **Deletes `practice/katas/<kata>/src/`**, writes an empty stub
@@ -331,7 +339,7 @@ Run this after changing anything in `tools/schedule.py`. You do not need it othe
 ### `make dates`
 Writes the same ninety-eight days to `plan/CALENDAR.dated.md` with **real dates**, read from
 `logs/.start_date`. Gitignored — this is the one to open daily, or to paste into a real
-calendar.
+calendar. The prep week in the Build plan section gets real dates here too.
 
 The split is not fussiness. The shape of the ninety-eight days is a repo fact, identical for
 anyone who clones this. The Monday you started is not: `logs/.start_date` is gitignored
@@ -444,6 +452,6 @@ the next `make calendar` silently reverts it.
 | `practice/decks/*.tsv` | `make card` | yes |
 | `practice/decks/.state.json` | `make review` | **yes — a card's box is the evidence bar for the E group and Y1, so it is proof, not preference** |
 | `logs/.drill_state.json` | `make drill` | no — one rep in flight |
-| `logs/.start_date` | you, once | no — yours, not the repo's |
+| `logs/.start_date` | you, once — day 1, which may be in the future | no — yours, not the repo's |
 | `practice/katas/*/src/` | you, every rep | **no — deleted every rep, on purpose** |
 | `logs/.snapshots/` | `make done` | no — fuel for `make hunt` |

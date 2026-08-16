@@ -243,10 +243,14 @@ def pick(rows, lang=None):
     elif lang == "c":
         available = [k for k in available if not is_python(k)]
     if not available:
+        # Deliberately does not name the modules or how many. That count is derived from
+        # the rotation and it has already been wrong once here — this said "the day-0
+        # four" against a build plan of six. Point at the two commands that compute it.
         sys.exit(
             "No kata has a header and a test suite yet, so there is nothing to drill\n"
-            "cold. Build the day-0 four first — see SETUP.md, then:\n"
-            "  make newkata NAME=bitops"
+            "cold. Build the prep week's modules first — `make today` names the one due\n"
+            "today, and `make check-calendar` prints the whole build plan. See SETUP.md.\n"
+            "  make newkata NAME=<module>"
         )
 
     today = date.today()

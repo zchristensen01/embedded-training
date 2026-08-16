@@ -8,10 +8,10 @@ Every file, what it's for, whether you edit it.
 |---|---|---|
 | `README.md` | Front page: what this is, why it's built this way, the layout | No |
 | `START_HERE.md` | **Read this first.** How the whole system fits together, in five minutes | No |
-| `SETUP.md` | Day 0 and the staged kata build order. **Start here** | No |
+| `SETUP.md` | The prep week and the staged kata build order. **Start here** | No |
 | `DAILY.md` | What a calendar line means, the session checklist, and how to practise off-plan | No |
 | `MANIFEST.md` | This file | No |
-| `THIS_WEEKEND.md` | The day-0 build weekend with real dates on it. Delete it once the six suites exist | **Yes** |
+| `PREP_WEEK.md` | The prep week with real dates on it — one suite a day. Delete it once the six exist | **Yes** |
 | `Makefile` | The command interface. Put your build rules under `test:` | **Yes** |
 | `.gitignore` | Contains `practice/katas/*/src/` — the line that makes reps repeatable | Rarely |
 | `.gitattributes` | Forces LF endings. The log validator rejects carriage returns | No |
@@ -112,7 +112,7 @@ The project itself lives in its own repo, `~/embedded/mimic-hil`. This is only t
 | `architecture/` | Architecture drills with rubric scores | `make design`, then you |
 | `PROGRESS.md` | Every capability scored against its evidence bar. **Generated** | `make progress` |
 | `progress.json` | The same data, machine-readable — this is what a website reads | `make progress` |
-| `.start_date` | Day 1. `date +%F > logs/.start_date` | You, once |
+| `.start_date` | Day 1 — the Monday, not today. The seven days before it are the prep week | You, once |
 
 ## Not in this repo, on purpose
 
