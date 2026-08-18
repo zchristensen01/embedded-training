@@ -161,6 +161,48 @@ the start is part of the point.
 
 ---
 
+## The contract I decided
+
+> Transcribed from `include/ring_buffer.h`, which is the machine-checked version of this.
+> Read this section at the start of a rep; the header is the authority if they ever disagree.
+
+### Types
+
+```c
+typedef struct {
+    uint8_t *buffer;    /* caller-owned storage */
+    size_t   capacity;  /* bytes that storage holds */
+    size_t   count;     /* bytes currently in it */
+    size_t   head;      /* write index */
+    size_t   tail;      /* read index */
+} ring_buffer;
+```
+
+### Functions
+
+```c
+void   rb_init(ring_buffer *rb, uint8_t *buffer, size_t capacity);
+bool   rb_push(ring_buffer *rb, uint8_t byte);
+bool   rb_pop (ring_buffer *rb, uint8_t *out);
+bool   rb_is_empty(const ring_buffer *rb);
+bool   rb_is_full (const ring_buffer *rb);
+size_t rb_count   (const ring_buffer *rb);
+```
+
+`v1` is the count-based variant: a `count` field disambiguates full from empty, so every
+capacity slot is usable.
+
+### What no signature can say
+
+| Question | My answer |
+|---|---|
+| What does failure look like? | `rb_push` returns `false` when full, `rb_pop` returns `false` when empty. `rb_init` returns `void` and cannot fail. |
+| What is left untouched when it fails? | A failed `rb_push` changes **nothing** — no byte written, no index moved. A failed `rb_pop` leaves `*out` unmodified. |
+| Preconditions, and what happens if they don't hold | `rb` must be non-NULL and already through `rb_init`; `capacity` must be at least 1. Violating either is undefined behaviour, **not** a checked error — no runtime NULL checks. |
+| Ownership and lifetime | The caller supplies `buffer`. It is not copied and never freed, so it must outlive the `ring_buffer`. `rb_init` records the pointer and does **not** touch the storage contents. |
+| Safe to call concurrently? | **No.** `v1` is single-threaded only: both push and pop read-modify-write `count`, so an ISR pushing while `main()` pops can lose an update. `VARIANTS.md v2` is the lock-free version that removes `count` to fix this. |
+| The invariant that holds after every call | `rb_count()` equals successful pushes minus successful pops, and never exceeds `capacity`. |
+
 ## How to think about it
 
 Don't write code yet. Answer these on paper:

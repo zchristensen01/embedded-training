@@ -158,6 +158,50 @@ is a false report.
 
 ---
 
+## The contract I decided
+
+> Transcribed from `tests/test_log_parser_py.py`, which is the only thing that enforces it —
+> there is no header for a Python kata. Read this section at the start of a rep.
+
+### Types
+
+```python
+Report   # dataclass or NamedTuple
+  .violated: bool   # did any excursion reach the window?
+  .worst_ms: int    # longest excursion seen, in ms. 0 if none
+```
+
+### Functions
+
+```python
+def scan(lines: Iterable[str], max_ok: int, window_ms: int) -> Report
+def main(argv: list[str]) -> int
+```
+
+`scan` takes **lines, not a path** — that is what lets the suite feed it a generator of a
+million fabricated lines with no file on disk. `main` is the only thing that opens a file.
+
+Line format is `timestamp_ms,value`. Two fields, no header row.
+
+### What no signature can say
+
+| Question | My answer |
+|---|---|
+| What does failure look like? | `main` returns an exit code: `0` all readings in range, `1` a violation was found, `2` bad input. `scan` does not fail — malformed input is `main`'s problem. |
+| What is left untouched when it fails? | N/A — nothing is mutated in place. `scan` is pure. |
+| Preconditions, and what happens if they don't hold | A reading is **out of range when `value >= max_ok`** (so `50` violates `max_ok=50`). A violation is **`duration >= window_ms`** — an excursion exactly at the window counts. |
+| Ownership and lifetime | `lines` is consumed once. It may be a generator, and `scan` must never materialise it — one pass, O(1) memory, no `readlines()`. |
+| Safe to call concurrently? | Single-threaded. Not a consideration for this kata. |
+| The invariant that holds after every call | `scan` reads each line exactly once and holds only the start timestamp of the current excursion, so memory is constant in the size of the input. |
+
+**Decisions the tests pin down, spelled out:**
+
+- An excursion still **open when the input ends counts**, measured from its start to the last timestamp seen.
+- Duration is `closing timestamp - opening timestamp`.
+- A **malformed line is fatal**, not skipped-and-counted: truncated (`"30,"`), blank, or wrong field count (`"10,53,100"`) all make `main` return `2`.
+- An **empty file returns `2`**, and so does a file containing only a header row — the format has no header, so `timestamp,value` is just an unparseable line.
+- `argv` is **positional and excludes the program name**: `[max_ok, window_ms, path]`, all strings — e.g. `main(["50", "20", "/tmp/telemetry.log"])`.
+
 ## How to think about it
 
 Don't write code yet. Answer these on paper:

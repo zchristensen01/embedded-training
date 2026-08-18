@@ -152,6 +152,36 @@ six months from now, which is a genuinely uncommon signal in a junior portfolio.
 
 ---
 
+## The contract I decided
+
+> **Fill this in before you write a single test case, and read only this section at the
+> start of a rep.** Everything above is the brief teaching you the problem. This is what
+> *you* committed to — the suite in `tests/` enforces it, and it is frozen for fourteen
+> weeks. If it is blank, you have not finished the build session.
+
+### Types
+
+```
+(structs, enums, typedefs · dataclasses, NamedTuples, exceptions — names and fields)
+```
+
+### Functions
+
+```
+(exact signatures, spelled as you will write them)
+```
+
+### What no signature can say
+
+| Question | My answer |
+|---|---|
+| What does failure look like — return value, exception, exit code? | |
+| What is left untouched when it fails? | |
+| Preconditions the caller must honour, and what happens if they don't | |
+| Ownership and lifetime — who owns the memory, what gets consumed | |
+| Safe to call concurrently, from an ISR or a thread? Or single-threaded only? | |
+| The invariant that holds after every call | |
+
 ## How to think about it
 
 1. For each of the four states, answer: *a byte just arrived — what do I do with it,
